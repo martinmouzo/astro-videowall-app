@@ -1,0 +1,77 @@
+---
+// Props for title, etc.
+export interface Props {
+  title: string;
+}
+const { title } = Astro.props;
+
+// Base dimensions from App.vue
+const baseWidth = 3840;
+const baseHeight = 2160;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{title}</title>
+    <style
+      define:vars={{
+        baseWidth: `${baseWidth}px`,
+        baseHeight: `${baseHeight}px`,
+      }}
+    >
+      @import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Quicksand:wght@300..700&display=swap");
+
+      body {
+        margin: 0;
+        background-color: #1E1E1E;
+        color: #fff;
+        font-family: Inter, sans-serif;
+      }
+
+      :root {
+        font-family: Inter, sans-serif;
+        font-feature-settings:
+          "liga" 1,
+          "calt" 1;
+      }
+
+      @supports (font-variation-settings: normal) {
+        :root {
+          font-family: InterVariable, sans-serif;
+        }
+      }
+
+      .videowall-container {
+        width: var(--baseWidth);
+        height: var(--baseHeight);
+        overflow: hidden;
+        position: relative;
+      }
+
+      /* Simple Fade Transition (Astro uses <ViewTransitions /> or custom CSS) */
+      /* For page transitions, consider Astro's View Transitions: https://docs.astro.build/en/guides/view-transitions/ */
+      .fade-enter-active,
+      .fade-leave-active {
+        transition: opacity 0.3s ease;
+      }
+
+      .fade-enter-from,
+      .fade-leave-to {
+        opacity: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="videowall-container">
+      <slot />
+      {
+        /* This is where page content will be injected, similar to <router-view> */
+      }
+    </div>
+  </body>
+</html>

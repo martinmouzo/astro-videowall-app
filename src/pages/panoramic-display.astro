@@ -1,0 +1,36 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Panel1 from '../components/Panel1.vue';
+import Panel2 from '../components/Panel2.vue';
+---
+<BaseLayout title="Panoramic Display">
+    <style>
+        /* Styles from PanoramicDisplay.vue <style scoped> */
+        .panoramic-display-container {
+            display: flex;
+            flex-direction: row;
+            width: 100%;
+            height: 100%;
+            background-color: #1E1E1E;
+        }
+        .panel-wrapper {
+            flex: 1;
+            height: 100%;
+            overflow: hidden;
+            position: relative;
+            box-sizing: border-box;
+            border: 1px solid #333;
+            background-color: #000;
+        }
+    </style>
+    <div class="panoramic-display-container">
+        <div class="panel-wrapper">
+            <Panel1 />
+        </div>
+        <div class="panel-wrapper">
+            <Panel2 client:visible />
+            {/* client:load will load Panel2.vue as soon as the page loads */}
+            {/* Use client:visible if it's okay to load it when it scrolls into view */}
+        </div>
+    </div>
+</BaseLayout>
