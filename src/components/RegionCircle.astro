@@ -1,0 +1,114 @@
+---
+// Supports weights 300-700
+import '@fontsource-variable/quicksand';
+
+export interface Props {
+  id: string;
+  name: string;
+  mapPosition: { // Viene de la propiedad 'circle' del objeto 'regions'
+    cx: number;
+    cy: number;
+    r: number; // Radio para el círculo visual del overlay
+  };
+  viewBoxWidth: number;  // Ancho del viewBox del SVG principal
+  viewBoxHeight: number; // Alto del viewBox del SVG principal
+}
+
+const { id, name, mapPosition, viewBoxWidth, viewBoxHeight } = Astro.props;
+
+// Convertir coordenadas SVG a porcentajes para el centro del overlay
+const centerXPercent = (mapPosition.cx / viewBoxWidth) * 100;
+const centerYPercent = (mapPosition.cy / viewBoxHeight) * 100;
+
+// Usar el radio para definir el tamaño del overlay.
+// El diámetro como porcentaje del ancho del viewBox del SVG.
+const diameterPercentVW = (mapPosition.r * 2 / viewBoxWidth) * 100;
+
+// Estilo para el contenedor principal del overlay
+// Se posiciona absolutamente y se centra usando transform.
+// Su tamaño se basa en el radio proporcionado, relativo al ancho del SVG.
+const overlayContainerStyle = `
+  position: absolute;
+  left: ${centerXPercent}%;
+  top: ${centerYPercent}%;
+  width: ${diameterPercentVW}%;
+  aspect-ratio: 1 / 1; /* Para mantener la forma circular si el contenido lo requiere */
+  transform: translate(-50%, -50%);
+  pointer-events: none; /* El contenedor no bloquea clics, los elementos internos sí pueden */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%; /* Hace que el contenedor mismo sea un círculo */
+  background-color: rgba(0, 0, 0, 0.4); /* Color de fondo semitransparente para el círculo */
+  box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
+`;
+---
+
+<div style={overlayContainerStyle} id={`overlay-${id}`} class="region-overlay-container">
+  {/* El círculo visual ahora es el fondo del div principal.
+      Si se quisiera un círculo SVG explícito aquí, se podría añadir,
+      pero para un fondo semitransparente, el CSS en el div es más simple. */}
+
+  <div class="overlay-content">
+    <div class="overlay-header">
+      <h4>{name}</h4>
+    </div>
+    <div class="overlay-body">
+      <p class="future-content-placeholder">(Contenido adicional futuro)</p>
+    </div>
+  </div>
+</div>
+
+<style>
+  .region-overlay-container {
+    /* Estilos adicionales si son necesarios más allá del style inline */
+    box-sizing: border-box;
+  }
+
+  .overlay-content {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center; /* Centra el contenido si es corto, o ajusta según necesidad */
+    padding: 10%; /* Espaciado interno relativo al tamaño del círculo */
+    box-sizing: border-box;
+    pointer-events: auto; /* Permite interacción con el contenido */
+    color: white;
+    text-align: center;
+    font-size: clamp(0.6em, 2vmin, 1em); /* Tamaño de fuente responsivo */
+    overflow: hidden; /* Evita que el contenido desborde el círculo */
+  }
+
+  .overlay-header {
+    padding: 0.4em 0.8em;
+    border-radius: 0.25em;
+    margin-bottom: 0.5em;
+    width: auto; /* Ajusta al contenido */
+    max-width: 90%; /* Evita que sea demasiado ancho */
+  }
+
+  .overlay-header h4 {
+    margin: 0;
+    font-size: 1.6em; /* Relativo al font-size del .overlay-content */
+    white-space: pre-wrap; /* Para manejar nombres multilínea */
+    font-weight: 700;
+    letter-spacing: .2em;
+    text-shadow: 1px 1px 2px black;
+    font-family: 'Quicksand Variable', sans-serif;
+  }
+
+  .overlay-body {
+    flex-grow: 1; /* Permite que el cuerpo ocupe el espacio restante */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+  }
+
+  .future-content-placeholder {
+    font-size: 0.85em;
+    opacity: 0.8;
+  }
+</style>

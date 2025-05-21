@@ -1,6 +1,8 @@
 ---
+import RegionCircle from "./RegionCircle.astro";
 // Define las regiones con sus posiciones y radios para los círculos
-interface RegionIndicator {
+
+interface RegionData {
   id: string;
   name: string;
   iconSrc: string;
@@ -10,59 +12,41 @@ interface RegionIndicator {
     transform?: string;
   };
   circle: {
-    cx: number; // Coordenada X del centro del círculo
-    cy: number; // Coordenada Y del centro del círculo
-    r: number;  // Radio del círculo
+    cx: number; // Coordenada X del centro del círculo en el viewBox del SVG
+    cy: number; // Coordenada Y del centro del círculo en el viewBox del SVG
+    r: number; // Radio para el nuevo overlay visual
   };
 }
 
-const regions: RegionIndicator[] = [
+const regions: RegionData[] = [
   {
     id: "america",
     name: "AMÉRICA",
     iconSrc: "/icons/america-pin.svg",
-    position: { top: "50%", left: "25%", transform: "translate(-50%, -50%)" },
-    circle: { cx: 960, cy: 1080, r: 650 },
+    position: { top: "10%", left: "14%", transform: "translate(-50%, -50%)" }, // Posición original del indicador de texto
+    circle: { cx: 650, cy: 650, r: 630 }, // cx, cy del SVG; 'r' es el radio para el *nuevo overlay*
   },
   {
     id: "europe",
     name: "EUROPA, ÁFRICA\nY ORIENTE MEDIO",
     iconSrc: "/icons/europe-pin.svg",
-    position: { top: "35%", left: "50%", transform: "translate(-50%, -50%)" },
-    circle: { cx: 1920, cy: 1080, r: 650 },
+    position: { top: "15%", left: "50%", transform: "translate(-50%, -50%)" },
+    circle: { cx: 1928, cy: 700, r: 630 },
   },
   {
     id: "asia",
     name: "ASIA Y AUSTRALIA",
     iconSrc: "/icons/asia-pin.svg",
-    position: { top: "45%", left: "75%", transform: "translate(-50%, -50%)" },
-    circle: { cx: 2880, cy: 1080, r: 650 },
+    position: { top: "20%", left: "150%", transform: "translate(-50%, -50%)" },
+    circle: { cx: 3200, cy: 950, r: 630 },
   },
 ];
----
 
-<div class="map-panel-container">
-  <div class="map-background">
-    <svg
-       version="1.1"
-  id="mapaMundo"
-  xmlns="http://www.w3.org/2000/svg"
-  xmlns:xlink="http://www.w3.org/1999/xlink"
-  viewBox="0 0 3840 2160"
-  enable-background="new 0 0 3840 2160"
-  xml:space="preserve"
-    >
-  <!-- Círculos transparentes para cada región -->
-  {regions.map(region => (
-    <circle
-      class="region-circle"
-      cx={region.circle.cx}
-      cy={region.circle.cy}
-      r={region.circle.r}
-    />
-  ))}
+const viewBoxWidth = 3840; // [cite: 1]
+const viewBoxHeight = 2160; // [cite: 1]
 
-  <g id="capaMundo">
+const svgMapContent = `
+<g id="capaMundo">
         <g id="america">
           <polygon
             fill="#55cbb9"
@@ -9641,32 +9625,75 @@ const regions: RegionIndicator[] = [
         2913.606,1029.897 2914.312,1029.705     "
           ></polygon>
         </g>
+        <!-- Círculos transparentes para cada región -->
+        {
+          regions.map((region) => (
+            <circle
+              class="region-circle"
+              cx={region.circle.cx}
+              cy={region.circle.cy}
+              r={region.circle.r}
+            />
+          ))
+        }
       </g>
-    </svg>
+`;
+---
 
-    {
-      regions.map((region) => (
-        <div
-          class:list={["regional-indicator", `indicator-${region.id}`]}
-          style={`top: ${region.position.top}; left: ${region.position.left}; transform: ${region.position.transform || "none"};`}
-          aria-label={`Indicador para ${region.name}`}
-          role="button"
-          tabindex="0"
-        >
-          {/* <img src={region.iconSrc} alt="" class="indicator-icon" aria-hidden="true" /> */}
-          <span class="indicator-text">{region.name}</span>
-        </div>
-      ))
-    }
+<div class="map-panel-container">
+  <div class="map-background">
+    <svg
+      version="1.1"
+      id="mapaMundo"
+      xmlns="http://www.w3.org/2000/svg"
+      xmlns:xlink="http://www.w3.org/1999/xlink"
+      viewBox={`0 0 ${viewBoxWidth} ${viewBoxHeight}`}
+      enable-background={`new 0 0 ${viewBoxWidth} ${viewBoxHeight}`}
+      xml:space="preserve"
+      style="width: 100%; height: 100%; display: block;"
+    >
+      <Fragment set:html={svgMapContent} />
+    </svg>
   </div>
 
+  {
+    regions.map((region) => (
+      <RegionCircle
+        id={region.id}
+        name={region.name}
+        mapPosition={region.circle}
+        viewBoxWidth={viewBoxWidth}
+        viewBoxHeight={viewBoxHeight}
+      />
+    ))
+  }
+
+  {
+    /* Los anteriores indicadores (<div class="regional-indicator"> y los <circle> SVG)
+      se eliminan o comentan, ya que RegionOverlay los reemplaza. */
+  }
   <style>
-    .map-panel-container {
-      position: relative;
+    /* is:global para asegurar que los estilos del contenedor se apliquen correctamente */
+    body,
+    html {
+      margin: 0;
+      padding: 0;
       width: 100%;
+      height: 100%;
+    }
+    .map-panel-container {
+      position: relative; /* Clave para el posicionamiento absoluto de los overlays */
+      width: 100%;
+      /* Se recomienda usar vw/vh para un escalado más predecible del SVG y los overlays,
+       o asegurar un aspect-ratio fijo para el contenedor del SVG.
+       Por ejemplo, para un video 16:9:
+    */
       aspect-ratio: 16 / 9;
-      overflow: hidden;
-      background-color: #1E1E1E;
+      /* O podrías usar un alto fijo y ancho 100% si el diseño lo permite:
+       height: 80vh;
+    */
+      overflow: hidden; /* Evita que los overlays se salgan si hay errores de cálculo */
+      background-color: #1e1e1e; /* Color de fondo si el SVG no carga */
     }
 
     .map-background {
@@ -9675,44 +9702,13 @@ const regions: RegionIndicator[] = [
       left: 0;
       width: 100%;
       height: 100%;
-      z-index: 0;
+      z-index: 0; /* El mapa SVG va detrás */
     }
 
-    .regional-indicator {
-      position: absolute;
-      z-index: 1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background-color: rgba(0, 0, 0, 0.7);
-      color: #fff;
-      padding: 0.5em 1em;
-      border-radius: 0.5em;
-      cursor: pointer;
-      transition:
-        transform 0.2s ease,
-        box-shadow 0.2s ease;
-    }
-
-    .regional-indicator:hover,
-    .regional-indicator:focus {
-      transform: scale(1.05);
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-    }
-
-    .indicator-icon {
-      width: 1.25em;
-      height: 1.25em;
-      margin-right: 0.5em;
-    }
-
-    .indicator-text {
-      font-size: 1rem;
-      font-weight: bold;
-    }
-
-    .region-circle {
-      fill: rgba(0, 0, 0, 0.3); /* Color con transparencia */
+    .map-background svg {
+      width: 100%;
+      height: 100%;
+      display: block;
     }
   </style>
 </div>

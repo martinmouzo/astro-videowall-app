@@ -41,7 +41,7 @@ const updateIframeUrl = async () => {
 
 onMounted(async () => {
     await updateIframeUrl(); // Carga inicial
-    intervalId = window.setInterval(updateIframeUrl, 15000);
+    intervalId = window.setInterval(updateIframeUrl, 60000);
 });
 
 onUnmounted(() => {
