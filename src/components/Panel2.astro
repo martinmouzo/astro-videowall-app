@@ -1,109 +1,83 @@
 ---
-// Server-side script (frontmatter).
-// You can define props or prepare data here to pass to the client-side script if needed.
-const grafanaGraphId = 'g1415105270.14471'; // Example: could be a prop
-const initialLoadingText = "Cargando iframe...";
+import GrafanaChart from './GrafanaChart.astro';
+
+// Configuración común para todos los gráficos
+const commonGraphId = "g1415105270.14471";
+const logoUrl = "/src/images/logoCadenas.webp";
+
+// Configuraciones específicas para cada gráfico (podrían personalizarse más)
+const charts = [
+  {
+    id: "chart-Zara",
+    startTime: "end-30m",
+    height: "360px",
+    refreshInterval: 60000,
+    graphId: "g1415104903.881",
+  },
+  {
+    id: "chart-Zara-IPOD",
+    startTime: "end-30m",
+    height: "360px",
+    refreshInterval: 60000,
+    graphId: "g1415105211.11850",
+  },
+  {
+    id: "chart-cadenas",
+    startTime: "end-30m",
+    height: "360px",
+    refreshInterval: 60000,
+    graphId: "g1415105270.14471",
+  },
+   {
+    id: "chart-cadenas2",
+    startTime: "end-30m",
+    height: "360px",
+    refreshInterval: 60000,
+    graphId: "g1415105344.17916",
+  }
+];
 ---
 
-<div class="iframe-container" id="panel2-iframe-container-unique">
-    <iframe id="panel2-grafana-iframe-unique" style="display: none; width: 100%; height: 100%; background-color: transparent; border: none;" frameborder="0"></iframe>
-    <div id="panel2-loading-div-unique" class="loading">
-        {initialLoadingText}
+<div class="charts-container">
+  {charts.map((chart) => (
+    <img src={logoUrl} class="logo" alt="Logo" />
+    <div class="chart-wrapper">
+      <GrafanaChart
+        graphId={chart.graphId}
+        logoHeight="40px"
+        startTime={chart.startTime}
+        height={chart.height}
+        refreshInterval={chart.refreshInterval}
+        uniqueId={chart.id}
+      />
     </div>
+  ))}
 </div>
 
-<script define:vars={{ grafanaGraphIdFromProps: grafanaGraphId }}>
-    // This script runs in the client's browser.
-    const iframeContainerElement = document.getElementById('panel2-iframe-container-unique');
-    const iframeElement = document.getElementById('panel2-grafana-iframe-unique');
-    const loadingDivElement = document.getElementById('panel2-loading-div-unique');
-    let intervalId = undefined;
-
-    const updateIframeUrl = () => {
-        if (iframeContainerElement && iframeElement && loadingDivElement) {
-            const actualWidth = iframeContainerElement.offsetWidth;
-            const actualHeight = iframeContainerElement.offsetHeight;
-
-            if (actualWidth === 0 || actualHeight === 0) {
-                setTimeout(updateIframeUrl, 100);
-                return;
-            }
-
-            const timestamp = new Date().getTime();
-            const params = new URLSearchParams({
-                Graph: grafanaGraphIdFromProps, // Using the variable passed via define:vars
-                Start: 'end-30m',
-                End: 'now',
-                Width: actualWidth.toString(),
-                Height: actualHeight.toString(),
-                _: timestamp.toString()
-            });
-
-            const newIframeUrl = `/api/grafana-proxy?${params.toString()}`;
-
-            if (iframeElement.src !== newIframeUrl) {
-                iframeElement.src = newIframeUrl;
-            }
-
-            loadingDivElement.style.display = 'none';
-            iframeElement.style.display = 'block';
-
-        } else {
-            console.error("Panel2: Iframe container, iframe, or loading div not found in the DOM.");
-        }
-    };
-
-
-    function initialize() {
-        updateIframeUrl(); // Initial load
-        intervalId = window.setInterval(updateIframeUrl, 60000); // Refresh every 60 seconds
-    }
-
-
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', initialize);
-    } else {
-
-        initialize();
-    }
-
-    
-    const cleanup = () => {
-        if (intervalId) {
-            clearInterval(intervalId);
-            intervalId = undefined;
-        }
-    };
-
-    // Equivalent to onUnmounted: clear interval when navigating away or closing the page
-    window.addEventListener('beforeunload', cleanup);
-    // If you are using Astro's View Transitions, this is a more specific event for page swaps
-    document.addEventListener('astro:before-swap', cleanup);
-
-</script>
-
 <style>
-.iframe-container {
-    width: 100%;
-    height: 500px; /* Fixed height */
-    background-color: #1E1E1E;
-    position: relative;
-    overflow: hidden; /* Evita que el contenido se desborde */
-}
 
-.loading {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
+      .logo {
+    max-width: fit-content;
+    max-height: 40px;
+    object-fit: contain;
+    z-index: 10;
+    top: 10px;
+    left: 10px;
+  }
+
+  .charts-container {
     display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #ccc;
-}
+    flex-direction: column;
+    width: 100%;
+    gap: 20px; /* Espacio entre las gráficas */
+    padding: 15px;y
+    background-color: #121212;
+  }
 
-/* iframe specific styles are set inline in the template or via script for dynamic display,
-   but base styles can be here. */
-/* #panel2-grafana-iframe-unique is styled inline/via script */
+  .chart-wrapper {
+    width: 100%;
+    border-radius: 4px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  }
 </style>

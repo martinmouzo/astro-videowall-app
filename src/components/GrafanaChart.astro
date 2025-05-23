@@ -1,0 +1,170 @@
+---
+// Define las propiedades que acepta el componente
+export interface Props {
+  /** ID único de la gráfica de Grafana */
+  graphId: string;
+  /** Tiempo de inicio para el rango de la gráfica (ej: 'end-30m', 'now-1h') */
+  startTime?: string;
+  /** Tiempo final para el rango de la gráfica (ej: 'now') */
+  endTime?: string;
+  /** Intervalo en milisegundos para actualizar la gráfica (0 para desactivar) */
+  refreshInterval?: number;
+  /** Altura del contenedor (CSS value) */
+  height?: string;
+  /** URL de un logo para mostrar (opcional) */
+  logoUrl?: string;
+  /** Altura máxima del logo (CSS value) */
+  logoHeight?: string;
+  /** Texto a mostrar durante la carga */
+  loadingText?: string;
+  /** ID único para el componente (opcional, se genera automáticamente) */
+  uniqueId?: string;
+  /** Parámetros adicionales para la URL de Grafana */
+  extraParams?: Record<string, string>;
+}
+
+// Establece valores predeterminados para props opcionales
+const {
+  graphId,
+  startTime = "end-30m",
+  endTime = "now",
+  refreshInterval = 60000,
+  height = "500px",
+  logoUrl = "",
+  logoHeight = "50px",
+  loadingText = "Cargando...",
+  uniqueId = `grafana-${Math.random().toString(36).substring(2, 11)}`,
+  extraParams = {},
+} = Astro.props;
+
+// IDs únicos para los elementos DOM
+const containerId = `container-${uniqueId}`;
+const iframeId = `iframe-${uniqueId}`;
+const loadingId = `loading-${uniqueId}`;
+---
+
+<div class="iframe-container" id={containerId}>
+  {logoUrl && <img src={logoUrl} class="logo" alt="Logo" />}
+  <iframe
+    id={iframeId}
+    style="display: none; width: 100%; height: 100%; background-color: transparent; border: none;"
+  ></iframe>
+  <div id={loadingId} class="loading">
+    {loadingText}
+  </div>
+</div>
+
+<script
+  define:vars={{
+    containerId,
+    iframeId,
+    loadingId,
+    graphId,
+    startTime,
+    endTime,
+    refreshInterval,
+    extraParams,
+  }}
+>
+  const containerElement = document.getElementById(containerId);
+  const iframeElement = document.getElementById(iframeId);
+  const loadingElement = document.getElementById(loadingId);
+  let intervalId = undefined;
+
+  const updateIframeUrl = () => {
+    if (containerElement && iframeElement && loadingElement) {
+      const actualWidth = containerElement.offsetWidth;
+      const actualHeight = containerElement.offsetHeight;
+
+      if (actualWidth === 0 || actualHeight === 0) {
+        setTimeout(updateIframeUrl, 100);
+        return;
+      }
+
+      // Parámetros base
+      const params = new URLSearchParams({
+        Graph: graphId,
+        Start: startTime,
+        End: endTime,
+        Width: actualWidth.toString(),
+        Height: actualHeight.toString(),
+        _: new Date().getTime().toString(), // Evita caché
+      });
+
+      // Añadir parámetros adicionales
+      for (const [key, value] of Object.entries(extraParams)) {
+        params.append(key, value);
+      }
+
+      const newIframeUrl = `/api/grafana-proxy?${params.toString()}`;
+
+      if (iframeElement.src !== newIframeUrl) {
+        iframeElement.src = newIframeUrl;
+      }
+
+      loadingElement.style.display = "none";
+      iframeElement.style.display = "block";
+    } else {
+      console.error("GrafanaFrame: Elementos DOM no encontrados.");
+    }
+  };
+
+  function initialize() {
+    updateIframeUrl(); // Carga inicial
+
+    // Configurar actualización periódica si refreshInterval > 0
+    if (refreshInterval > 0) {
+      intervalId = window.setInterval(updateIframeUrl, refreshInterval);
+    }
+  }
+
+  // Iniciar cuando el DOM esté listo
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initialize);
+  } else {
+    initialize();
+  }
+
+  // Limpiar recursos cuando se desmonte el componente
+  const cleanup = () => {
+    if (intervalId) {
+      clearInterval(intervalId);
+      intervalId = undefined;
+    }
+  };
+
+  window.addEventListener("beforeunload", cleanup);
+  document.addEventListener("astro:before-swap", cleanup);
+</script>
+
+<style define:vars={{ height, logoHeight }}>
+  .iframe-container {
+    width: 100%;
+    height: var(--height);
+    background-color: #1e1e1e;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .loading {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ccc;
+  }
+
+  .logo {
+    position: absolute;
+    max-width: 90%;
+    max-height: var(--logoHeight);
+    object-fit: contain;
+    z-index: 10;
+    top: 10px;
+    left: 10px;
+  }
+</style>

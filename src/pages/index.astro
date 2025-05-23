@@ -28,7 +28,7 @@ import Panel1 from '../components/Panel1.astro';
             <Panel1 />
         </div>
         <div class="panel-wrapper">
-            <Panel2 client:load />
+            <Panel2/>
             {/* client:load will load Panel2.vue as soon as the page loads */}
             {/* Use client:visible if it's okay to load it when it scrolls into view */}
         </div>
