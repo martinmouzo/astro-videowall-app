@@ -1,6 +1,6 @@
 ---
 import RegionCircle from "./RegionCircle.astro";
-// Define las regiones con sus posiciones y radios para los círculos
+
 
 interface RegionData {
   id: string;
@@ -12,9 +12,9 @@ interface RegionData {
     transform?: string;
   };
   circle: {
-    cx: number; // Coordenada X del centro del círculo en el viewBox del SVG
-    cy: number; // Coordenada Y del centro del círculo en el viewBox del SVG
-    r: number; // Radio para el nuevo overlay visual
+    cx: number;
+    cy: number;
+    r: number;
   };
 }
 
@@ -23,8 +23,8 @@ const regions: RegionData[] = [
     id: "america",
     name: "AMÉRICA",
     iconSrc: "/icons/america-pin.svg",
-    position: { top: "10%", left: "14%", transform: "translate(-50%, -50%)" }, // Posición original del indicador de texto
-    circle: { cx: 650, cy: 650, r: 630 }, // cx, cy del SVG; 'r' es el radio para el *nuevo overlay*
+    position: { top: "10%", left: "14%", transform: "translate(-50%, -50%)" },
+    circle: { cx: 650, cy: 650, r: 630 },
   },
   {
     id: "europe",

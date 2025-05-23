@@ -1,0 +1,109 @@
+---
+// Server-side script (frontmatter).
+// You can define props or prepare data here to pass to the client-side script if needed.
+const grafanaGraphId = 'g1415105270.14471'; // Example: could be a prop
+const initialLoadingText = "Cargando iframe...";
+---
+
+<div class="iframe-container" id="panel2-iframe-container-unique">
+    <iframe id="panel2-grafana-iframe-unique" style="display: none; width: 100%; height: 100%; background-color: transparent; border: none;" frameborder="0"></iframe>
+    <div id="panel2-loading-div-unique" class="loading">
+        {initialLoadingText}
+    </div>
+</div>
+
+<script define:vars={{ grafanaGraphIdFromProps: grafanaGraphId }}>
+    // This script runs in the client's browser.
+    const iframeContainerElement = document.getElementById('panel2-iframe-container-unique');
+    const iframeElement = document.getElementById('panel2-grafana-iframe-unique');
+    const loadingDivElement = document.getElementById('panel2-loading-div-unique');
+    let intervalId = undefined;
+
+    const updateIframeUrl = () => {
+        if (iframeContainerElement && iframeElement && loadingDivElement) {
+            const actualWidth = iframeContainerElement.offsetWidth;
+            const actualHeight = iframeContainerElement.offsetHeight;
+
+            if (actualWidth === 0 || actualHeight === 0) {
+                setTimeout(updateIframeUrl, 100);
+                return;
+            }
+
+            const timestamp = new Date().getTime();
+            const params = new URLSearchParams({
+                Graph: grafanaGraphIdFromProps, // Using the variable passed via define:vars
+                Start: 'end-30m',
+                End: 'now',
+                Width: actualWidth.toString(),
+                Height: actualHeight.toString(),
+                _: timestamp.toString()
+            });
+
+            const newIframeUrl = `/api/grafana-proxy?${params.toString()}`;
+
+            if (iframeElement.src !== newIframeUrl) {
+                iframeElement.src = newIframeUrl;
+            }
+
+            loadingDivElement.style.display = 'none';
+            iframeElement.style.display = 'block';
+
+        } else {
+            console.error("Panel2: Iframe container, iframe, or loading div not found in the DOM.");
+        }
+    };
+
+
+    function initialize() {
+        updateIframeUrl(); // Initial load
+        intervalId = window.setInterval(updateIframeUrl, 60000); // Refresh every 60 seconds
+    }
+
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initialize);
+    } else {
+
+        initialize();
+    }
+
+    
+    const cleanup = () => {
+        if (intervalId) {
+            clearInterval(intervalId);
+            intervalId = undefined;
+        }
+    };
+
+    // Equivalent to onUnmounted: clear interval when navigating away or closing the page
+    window.addEventListener('beforeunload', cleanup);
+    // If you are using Astro's View Transitions, this is a more specific event for page swaps
+    document.addEventListener('astro:before-swap', cleanup);
+
+</script>
+
+<style>
+.iframe-container {
+    width: 100%;
+    height: 500px; /* Fixed height */
+    background-color: #1E1E1E;
+    position: relative;
+    overflow: hidden; /* Evita que el contenido se desborde */
+}
+
+.loading {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ccc;
+}
+
+/* iframe specific styles are set inline in the template or via script for dynamic display,
+   but base styles can be here. */
+/* #panel2-grafana-iframe-unique is styled inline/via script */
+</style>
