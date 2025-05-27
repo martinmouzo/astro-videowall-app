@@ -5,7 +5,8 @@ export const GET: APIRoute = async ({ request }) => {
     const url = new URL(request.url);
     const searchParams = url.searchParams;
 
-    const graph = searchParams.get('Graph') || 'g1415105270.14471';
+    const graph = searchParams.get('Graph');
+    const graphId = graph || 'g1415105270.14471';
     const start = searchParams.get('Start') || 'end-30m';
     const end = searchParams.get('End') || 'now';
     const width = searchParams.get('Width') || '800';
@@ -19,8 +20,7 @@ export const GET: APIRoute = async ({ request }) => {
         return new Response("Error de configuración del servidor", { status: 500 });
     }
 
-    const timestamp = new Date().getTime();
-    const targetUrl = `https://axinstats.central.inditex.grp/drraw/?Mode=show;Graph=g1415105270.14471;Start=end-30m;End=now;Width=1450;Height=300`;
+    const targetUrl = `https://axinstats.central.inditex.grp/drraw/?Mode=show;Graph=${graphId};Start=${start};End=${end};Width=${width};Height=${height}`;
 
     const basicAuthToken = Buffer.from(`${username}:${password}`).toString('base64');
 
@@ -30,6 +30,7 @@ export const GET: APIRoute = async ({ request }) => {
                 'Authorization': `Basic ${basicAuthToken}`
             }
         });
+
         if (!response.ok) {
             const errorText = await response.text();
             console.error(`Error desde Grafana (${response.status}): ${errorText}`);
@@ -43,13 +44,15 @@ export const GET: APIRoute = async ({ request }) => {
             status: 200,
             headers: {
                 'Content-Type': contentType,
+                'Cache-Control': 'no-cache, no-store, must-revalidate',
+                'Pragma': 'no-cache',
+                'Expires': '0'
             }
         });
 
     } catch (error) {
         console.error("Error al hacer proxy a Grafana:", error);
         const errorMessage = error instanceof Error ? error.message : String(error);
-        console.error("Detalle del error:", errorMessage);
         return new Response(`Error interno del servidor al hacer proxy: ${errorMessage}`, { status: 500 });
     }
 };

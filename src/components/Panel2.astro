@@ -1,37 +1,33 @@
 ---
 import GrafanaChart from './GrafanaChart.astro';
 
-// Configuración común para todos los gráficos
-const commonGraphId = "g1415105270.14471";
-const logoUrl = "/src/images/logoCadenas.webp";
-
-// Configuraciones específicas para cada gráfico (podrían personalizarse más)
+// Configuraciones específicas para cada gráfico
 const charts = [
   {
     id: "chart-Zara",
+    title: "Zara - General",
     startTime: "end-30m",
-    height: "360px",
     refreshInterval: 60000,
     graphId: "g1415104903.881",
   },
   {
     id: "chart-Zara-IPOD",
+    title: "Zara - IPOD",
     startTime: "end-30m",
-    height: "360px",
     refreshInterval: 60000,
     graphId: "g1415105211.11850",
   },
   {
     id: "chart-cadenas",
+    title: "Cadenas - General",
     startTime: "end-30m",
-    height: "360px",
     refreshInterval: 60000,
     graphId: "g1415105270.14471",
   },
    {
     id: "chart-cadenas2",
+    title: "Cadenas - Detalle",
     startTime: "end-30m",
-    height: "360px",
     refreshInterval: 60000,
     graphId: "g1415105344.17916",
   }
@@ -40,44 +36,68 @@ const charts = [
 
 <div class="charts-container">
   {charts.map((chart) => (
-    <img src={logoUrl} class="logo" alt="Logo" />
-    <div class="chart-wrapper">
-      <GrafanaChart
-        graphId={chart.graphId}
-        logoHeight="40px"
-        startTime={chart.startTime}
-        height={chart.height}
-        refreshInterval={chart.refreshInterval}
-        uniqueId={chart.id}
-      />
+    <div class="chart-section">
+      <div class="chart-title">{chart.title}</div>
+      <div class="chart-wrapper">
+        <GrafanaChart
+          graphId={chart.graphId}
+          startTime={chart.startTime}
+          height="100%"
+          refreshInterval={chart.refreshInterval}
+          uniqueId={chart.id}
+          loadingText={`Cargando ${chart.title}...`}
+          logoUrl=""
+          logoHeight="0px"
+        />
+      </div>
     </div>
   ))}
 </div>
 
 <style>
-
-      .logo {
-    max-width: fit-content;
-    max-height: 40px;
-    object-fit: contain;
-    z-index: 10;
-    top: 10px;
-    left: 10px;
-  }
-
   .charts-container {
     display: flex;
     flex-direction: column;
     width: 100%;
-    gap: 20px; /* Espacio entre las gráficas */
-    padding: 15px;y
-    background-color: #121212;
+    height: 100vh; /* Ocupa toda la altura de la ventana */
+    gap: 16px; /* Espacio entre las secciones de gráficos */
+    padding: 16px;
+    background-color: #121212; /* Fondo oscuro general del cuerpo de la página */
+    box-sizing: border-box;
+    overflow: hidden; /* Evita scrollbars en el contenedor principal */
+  }
+
+  .chart-section {
+    flex: 1; /* Cada sección de gráfico ocupa la misma altura */
+    display: flex;
+    flex-direction: column;
+    background-color: #121212; /* Fondo igual al cuerpo de la página */
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25); /* Sombreado para dar volumen */
+    overflow: hidden; /* Asegura que el contenido no desborde la sección */
+    min-height: 0; /* Necesario para que flexbox maneje correctamente el tamaño en contenedores anidados */
+  }
+
+  .chart-title {
+    padding: 10px 15px;
+    font-size: 0.9em; /* Ajustado para que no sea muy grande */
+    font-weight: bold;
+    color: #e0e0e0;
+    background-color: #1e1e1e; /* Un poco más oscuro que el chart, pero no tanto como el header anterior */
+    border-bottom: 1px solid #333;
+    text-align: center;
+    flex-shrink: 0; /* Evita que el título se encoja */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .chart-wrapper {
+    flex-grow: 1; /* El wrapper del gráfico ocupa el espacio restante */
     width: 100%;
-    border-radius: 4px;
-    overflow: hidden;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    height: 100%;
+    overflow: hidden; /* Clave para evitar scrollbars en el iframe */
+    position: relative;
+    background-color: #121212; /* Fondo igual al cuerpo de la página */
   }
 </style>
