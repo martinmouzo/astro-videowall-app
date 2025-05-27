@@ -1,103 +1,291 @@
 ---
-import GrafanaChart from './GrafanaChart.astro';
+import GrafanaChart from "./GrafanaChart.astro";
+import "@fontsource-variable/quicksand";
 
-// Configuraciones específicas para cada gráfico
-const charts = [
-  {
-    id: "chart-Zara",
-    title: "Zara - General",
-    startTime: "end-30m",
-    refreshInterval: 60000,
-    graphId: "g1415104903.881",
-  },
-  {
-    id: "chart-Zara-IPOD",
-    title: "Zara - IPOD",
-    startTime: "end-30m",
-    refreshInterval: 60000,
-    graphId: "g1415105211.11850",
-  },
-  {
-    id: "chart-cadenas",
-    title: "Cadenas - General",
-    startTime: "end-30m",
-    refreshInterval: 60000,
-    graphId: "g1415105270.14471",
-  },
-   {
-    id: "chart-cadenas2",
-    title: "Cadenas - Detalle",
-    startTime: "end-30m",
-    refreshInterval: 60000,
-    graphId: "g1415105344.17916",
-  }
+const zaraConnectionsGraphId = "g1415104903.881";
+const zaraRequestsGraphId = "g1415105211.11850";
+const otherConnectionsGraphId = "g1415105270.14471";
+const otherRequestsGraphId = "g1415105344.17916";
+
+const indicatorItems = [
+  { label: "COMMERCE" },
+  { label: "AKAMAI" },
+  { label: "NGINX" },
+];
+
+const brandLogos = [
+  { src: "/images/logoCadenas.webp", alt: "Cadenasr" },
+  // { src: "/images/Massimo_Dutti_Logo.webp", alt: "Massimo Dutti" },
+  // { src: "/images/BERSHKA_Logo.webp", alt: "Bershka" },
+  // { src: "/images/Stradivarius_Logo.webp", alt: "Stradivarius" },
+  // { src: "/images/OYSHO_Logo.webp", alt: "Oysho" },
+  // { src: "/images/ZARA_HOME_Logo.webp", alt: "Zara Home" },
 ];
 ---
 
-<div class="charts-container">
-  {charts.map((chart) => (
-    <div class="chart-section">
-      <div class="chart-title">{chart.title}</div>
-      <div class="chart-wrapper">
-        <GrafanaChart
-          graphId={chart.graphId}
-          startTime={chart.startTime}
-          height="100%"
-          refreshInterval={chart.refreshInterval}
-          uniqueId={chart.id}
-          loadingText={`Cargando ${chart.title}...`}
-          logoUrl=""
-          logoHeight="0px"
-        />
+<div class="dashboard-container">
+  <!-- ZARA SECTION -->
+  <div class="section zara-section">
+    <div class="section-header-logo">
+      <img src="/images/logoZara.webp" alt="ZARA" class="main-brand-logo" />
+    </div>
+    <div class="section-body">
+      <div class="indicators-panel">
+        {
+          indicatorItems.map((item) => (
+            <div class="indicator-item">
+              <span class="indicator-label">{item.label}</span>
+              <div class="indicator-dot" />
+            </div>
+          ))
+        }
+      </div>
+      <div class="charts-panel">
+        <div class="chart-block">
+          <div class="chart-block-title">CONNECTIONS</div>
+          <div class="chart-wrapper">
+            <GrafanaChart
+              graphId={zaraConnectionsGraphId}
+              startTime="end-30m"
+              height="100%" /* GrafanaChart's host will fill the .chart-wrapper */
+              width="100%"
+              refreshInterval={60000}
+              uniqueId="zara-connections"
+              loadingText="Cargando Connections..."
+              imageAspectRatio="1430 / 300" /* Optional: if you want to override default or be explicit */
+            />
+          </div>
+        </div>
+        <div class="chart-block">
+          <div class="chart-block-title">REQUESTS</div>
+          <div class="chart-wrapper">
+            <GrafanaChart
+              graphId={zaraRequestsGraphId}
+              startTime="end-30m"
+              height="100%" /* GrafanaChart's host will fill the .chart-wrapper */
+              width="100%"
+              refreshInterval={60000}
+              uniqueId="zara-requests"
+              loadingText="Cargando Requests..."
+              imageAspectRatio="1430 / 300" /* Optional: if you want to override default or be explicit */
+            />
+          </div>
+        </div>
       </div>
     </div>
-  ))}
+  </div>
+
+  <!-- BRAND STRIP -->
+  <div class="brand-strip">
+    {
+      brandLogos.map((logo) => (
+        <img src={logo.src} alt={logo.alt} class="strip-logo" />
+      ))
+    }
+  </div>
+
+  <!-- OTHER BRANDS SECTION -->
+  <div class="section other-brands-section">
+    <div class="section-body">
+      <div class="indicators-panel">
+        {
+          indicatorItems.map((item) => (
+            <div class="indicator-item">
+              <span class="indicator-label">{item.label}</span>
+              <div class="indicator-dot" />
+            </div>
+          ))
+        }
+      </div>
+      <div class="charts-panel">
+        <div class="chart-block">
+          <div class="chart-block-title">CONNECTIONS</div>
+          <div class="chart-wrapper">
+            <GrafanaChart
+              graphId={otherConnectionsGraphId}
+              startTime="end-30m"
+              height="100%" /* GrafanaChart's host will fill the .chart-wrapper */
+              width="100%"
+              refreshInterval={60000}
+              uniqueId="other-connections"
+              loadingText="Cargando Connections..."
+              imageAspectRatio="1430 / 300" /* Optional: if you want to override default or be explicit */
+            />
+          </div>
+        </div>
+        <div class="chart-block">
+          <div class="chart-block-title">REQUESTS</div>
+          <div class="chart-wrapper">
+            <GrafanaChart
+              graphId={otherRequestsGraphId}
+              startTime="end-30m"
+              height="100%" /* GrafanaChart's host will fill the .chart-wrapper */
+              width="100%"
+              refreshInterval={60000}
+              uniqueId="other-requests"
+              loadingText="Cargando Requests..."
+              imageAspectRatio="1430 / 300" /* Optional: if you want to override default or be explicit */
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 
 <style>
-  .charts-container {
+  .dashboard-container {
     display: flex;
     flex-direction: column;
     width: 100%;
-    height: 100vh; /* Ocupa toda la altura de la ventana */
-    gap: 16px; /* Espacio entre las secciones de gráficos */
-    padding: 16px;
-    background-color: #121212; /* Fondo oscuro general del cuerpo de la página */
+    height: 100vh;
+    padding: 15px;
+    gap: 15px;
     box-sizing: border-box;
-    overflow: hidden; /* Evita scrollbars en el contenedor principal */
+    font-family: "Quicksand Variable", sans-serif;
+    color: #e0e0e0;
+    background-color: #121212; /* Added a background for context */
   }
 
-  .chart-section {
-    flex: 1; /* Cada sección de gráfico ocupa la misma altura */
+  .section {
     display: flex;
     flex-direction: column;
-    background-color: #121212; /* Fondo igual al cuerpo de la página */
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25); /* Sombreado para dar volumen */
-    overflow: hidden; /* Asegura que el contenido no desborde la sección */
-    min-height: 0; /* Necesario para que flexbox maneje correctamente el tamaño en contenedores anidados */
+    flex: 1; /* Sections share space in dashboard-container */
+    min-height: 0; /* Important for flex children */
+    overflow: hidden; /* Prevent content from breaking layout if too large */
   }
 
-  .chart-title {
-    padding: 10px 15px;
-    font-size: 0.9em; /* Ajustado para que no sea muy grande */
-    font-weight: bold;
-    color: #e0e0e0;
-    background-color: #1e1e1e; /* Un poco más oscuro que el chart, pero no tanto como el header anterior */
-    border-bottom: 1px solid #333;
+  .section-header-logo {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 1em; /* Adjusted margin */
+    padding-left: 135px; /* 120px (indicators-panel width) + 15px (gap) */
+    box-sizing: border-box;
+    min-height: 36px;
+    flex-shrink: 0; /* Prevent shrinking */
+  }
+
+  .main-brand-logo {
+    height: 36px;
+    object-fit: contain;
+  }
+
+  .section-body {
+    display: flex;
+    flex-grow: 1; /* Takes remaining space in section */
+    gap: 15px;
+    min-height: 0; /* Important for flex children */
+    overflow: hidden; /* Prevent content from breaking layout */
+  }
+
+  .indicators-panel {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center; /* Center items for better look */
+    flex-basis: 120px;
+    padding-right: 15px;
+    flex-shrink: 0;
+    box-sizing: border-box;
+  }
+
+  .indicator-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     text-align: center;
-    flex-shrink: 0; /* Evita que el título se encoja */
-    white-space: nowrap;
+    width: 100%;
+  }
+
+  .indicator-label {
+    font-size: 1.2em; /* Slightly adjusted */
+    font-weight: bold;
+    color: #c0c0c0;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .indicator-dot {
+    width: 50px; /* Slightly adjusted */
+    height: 50px; /* Slightly adjusted */
+    margin-top: 0.5em; /* Adjusted */
+    background-color: #6db53e;
+    border-radius: 50%;
+    box-shadow: 0 0 10px rgba(109, 181, 62, 0.5);
+  }
+
+  .charts-panel {
+    flex-grow: 1; /* Takes remaining space in section-body */
+    display: flex;
+    ;
+    flex-direction: column;
+    gap: 15px;
+    min-width: 0; /* Important for flex children */
+    min-height: 0; /* Important for flex children */
+  }
+
+  .chart-block {
+    flex: 1; /* Chart blocks share space equally in charts-panel */
+    display: flex;
+    flex-direction: column;
+    border-radius: 4px;
     overflow: hidden;
-    text-overflow: ellipsis;
+    width: 100%;
+    min-height: 0; /* Important for flex children */
+    background-color: #1e1e1e; /* Added for context */
+  }
+
+  .chart-block-title {
+    padding: 8px 12px;
+    font-size: 1.3em; /* Slightly adjusted */
+    letter-spacing: 0.05em; /* Slightly adjusted */
+    font-weight: bold;
+    color: #d0d0d0;
+    text-align: center;
+    text-transform: uppercase;
+    flex-shrink: 0; /* Prevent shrinking */
+    background-color: #2a2a2a; /* Added for context */
   }
 
   .chart-wrapper {
-    flex-grow: 1; /* El wrapper del gráfico ocupa el espacio restante */
-    width: 100%;
-    height: 100%;
-    overflow: hidden; /* Clave para evitar scrollbars en el iframe */
+    flex-grow: 1; /* Allow wrapper to fill space in chart-block */
     position: relative;
-    background-color: #121212; /* Fondo igual al cuerpo de la página */
+    width: 100%;
+    /* aspect-ratio is now primarily handled by the GrafanaChart's imageAspectRatio prop
+       and the fact that GrafanaChart component itself is 100% width/height of this wrapper.
+       The effective aspect ratio will be determined by the space given to chart-block
+       and then this wrapper filling it. The image inside GrafanaChart will respect its own AR.
+       If you want to force a specific aspect ratio for the *wrapper* itself, you can add it back,
+       but it might conflict with flex:1 on chart-block if space is constrained.
+       For now, let's let the GrafanaChart component handle its internal aspect ratio.
+    */
+    /* aspect-ratio: 1430 / 300; */ /* Consider re-adding if layout needs it explicitly */
+    min-height: 0; /* Important for flex children */
+    display: flex; /* To make GrafanaChart fill it */
+  }
+
+  /* Ensure GrafanaChart component fills the chart-wrapper */
+  .chart-wrapper > :first-child { /* This targets .grafana-chart-host */
+    flex-grow: 1; /* Make GrafanaChart fill the wrapper */
+    min-width: 0;
+    min-height: 0;
+  }
+
+  .brand-strip {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 8px 0; /* Adjusted padding */
+    border-radius: 4px;
+    margin: 10px 0; /* Adjusted margin */
+    flex-shrink: 0;
+    background-color: #2a2a2a; /* Added for context */
+  }
+
+  .strip-logo {
+    height: 22px; /* Adjusted size */
+    object-fit: contain;
+    filter: grayscale(80%) brightness(1.2); /* Adjusted filter */
   }
 </style>
