@@ -28,7 +28,7 @@ export interface Props {
 }
 
 // Default aspect ratio if not provided, matching common Grafana chart proportions
-const DEFAULT_IMAGE_ASPECT_RATIO = "1344 / 378";
+const DEFAULT_IMAGE_ASPECT_RATIO = "1430 / 300";
 
 // Establece valores predeterminados para props opcionales
 const {
@@ -57,7 +57,7 @@ const loadingId = `loading-${uniqueId}`;
   <img
     id={imageId}
     alt={`Grafana Chart ${graphId}`}
-    style={`display: none; max-width: 100%; max-height: 100%; width: auto; height: auto; object-fit: contain; margin: auto; border: none; padding: 0; background-color: transparent; aspect-ratio: ${imageAspectRatio};`}
+    style={`display: none; max-width: 100%; max-height: 100%; width: 100%; height: 100%; object-fit: contain; margin: auto; border: none; padding: 0; background-color: transparent; aspect-ratio: ${imageAspectRatio};`}
   />
   <div id={loadingId} class="loading">
     {loadingText}
@@ -98,8 +98,8 @@ const loadingId = `loading-${uniqueId}`;
         Graph: graphId,
         Start: startTime,
         End: endTime,
-        Width: actualWidth.toString(), // Use actual container dimensions
-        Height: actualHeight.toString(), // Use actual container dimensions
+        Width: "1400px",
+        Height: "300px",
         Theme: "dark",
         _: new Date().getTime().toString()
       });

@@ -26,9 +26,6 @@ const brandLogos = [
 <div class="dashboard-container">
   <!-- ZARA SECTION -->
   <div class="section zara-section">
-    <div class="section-header-logo">
-      <img src="/images/logoZara.webp" alt="ZARA" class="main-brand-logo" />
-    </div>
     <div class="section-body">
       <div class="indicators-panel">
         {
@@ -40,19 +37,23 @@ const brandLogos = [
           ))
         }
       </div>
-      <div class="charts-panel">
+      <div class="charts-section">
+        <div class="charts-header-logo">
+          <img src="/images/logoZara.webp" alt="ZARA" class="main-brand-logo" />
+        </div>
+        <div class="charts-panel">
         <div class="chart-block">
           <div class="chart-block-title">CONNECTIONS</div>
           <div class="chart-wrapper">
             <GrafanaChart
               graphId={zaraConnectionsGraphId}
               startTime="end-30m"
-              height="100%" /* GrafanaChart's host will fill the .chart-wrapper */
-              width="100%"
+              height="129px"
+              width="600px"
               refreshInterval={60000}
               uniqueId="zara-connections"
               loadingText="Cargando Connections..."
-              imageAspectRatio="1430 / 300" /* Optional: if you want to override default or be explicit */
+              imageAspectRatio="1400 / 300"
             />
           </div>
         </div>
@@ -62,12 +63,12 @@ const brandLogos = [
             <GrafanaChart
               graphId={zaraRequestsGraphId}
               startTime="end-30m"
-              height="100%" /* GrafanaChart's host will fill the .chart-wrapper */
-              width="100%"
+              height="129px"
+              width="600px"
               refreshInterval={60000}
               uniqueId="zara-requests"
               loadingText="Cargando Requests..."
-              imageAspectRatio="1430 / 300" /* Optional: if you want to override default or be explicit */
+              imageAspectRatio="1400 / 300"
             />
           </div>
         </div>
@@ -104,12 +105,12 @@ const brandLogos = [
             <GrafanaChart
               graphId={otherConnectionsGraphId}
               startTime="end-30m"
-              height="100%" /* GrafanaChart's host will fill the .chart-wrapper */
-              width="100%"
+              height="129px"
+              width="600px"
               refreshInterval={60000}
               uniqueId="other-connections"
               loadingText="Cargando Connections..."
-              imageAspectRatio="1430 / 300" /* Optional: if you want to override default or be explicit */
+              imageAspectRatio="1400 / 300"
             />
           </div>
         </div>
@@ -119,12 +120,12 @@ const brandLogos = [
             <GrafanaChart
               graphId={otherRequestsGraphId}
               startTime="end-30m"
-              height="100%" /* GrafanaChart's host will fill the .chart-wrapper */
-              width="100%"
+              height="129px"
+              width="600px"
               refreshInterval={60000}
               uniqueId="other-requests"
               loadingText="Cargando Requests..."
-              imageAspectRatio="1430 / 300" /* Optional: if you want to override default or be explicit */
+              imageAspectRatio="1400 / 300"
             />
           </div>
         </div>
@@ -137,20 +138,20 @@ const brandLogos = [
   .dashboard-container {
     display: flex;
     flex-direction: column;
-    width: 100%;
-    height: 100vh;
+    width: fit-content;
+    height: fit-content;
     padding: 15px;
     gap: 15px;
     box-sizing: border-box;
     font-family: "Quicksand Variable", sans-serif;
     color: #e0e0e0;
-    background-color: #121212; /* Added a background for context */
+
   }
 
   .section {
     display: flex;
     flex-direction: column;
-    flex: 1; /* Sections share space in dashboard-container */
+    width: fit-content;
     min-height: 0; /* Important for flex children */
     overflow: hidden; /* Prevent content from breaking layout if too large */
   }
@@ -160,21 +161,35 @@ const brandLogos = [
     justify-content: center;
     align-items: center;
     margin-bottom: 1em; /* Adjusted margin */
-    padding-left: 135px; /* 120px (indicators-panel width) + 15px (gap) */
+    padding-left: 165px; /* 120px (indicators-panel width) + 45px (increased gap) */
     box-sizing: border-box;
     min-height: 36px;
-    flex-shrink: 0; /* Prevent shrinking */
+    width: fit-content;
+  }
+
+  .charts-section {
+    display: flex;
+    flex-direction: column;
+    width: fit-content;
+  }
+
+  .charts-header-logo {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 600px; /* Same width as charts */
+    margin-bottom: 1em;
+    min-height: 36px;
   }
 
   .main-brand-logo {
-    height: 36px;
+    height: 28px;
     object-fit: contain;
   }
 
   .section-body {
     display: flex;
-    flex-grow: 1; /* Takes remaining space in section */
-    gap: 15px;
+    gap: 45px; /* Increased gap from 15px to 45px */
     min-height: 0; /* Important for flex children */
     overflow: hidden; /* Prevent content from breaking layout */
   }
@@ -216,76 +231,83 @@ const brandLogos = [
   }
 
   .charts-panel {
-    flex-grow: 1; /* Takes remaining space in section-body */
     display: flex;
-    ;
     flex-direction: column;
-    gap: 15px;
+    gap: 5px; /* Reduced from 15px to 5px for tighter spacing */
     min-width: 0; /* Important for flex children */
     min-height: 0; /* Important for flex children */
+    width: fit-content;
   }
 
   .chart-block {
-    flex: 1; /* Chart blocks share space equally in charts-panel */
     display: flex;
     flex-direction: column;
     border-radius: 4px;
     overflow: hidden;
-    width: 100%;
+    width: fit-content;
     min-height: 0; /* Important for flex children */
-    background-color: #1e1e1e; /* Added for context */
+    /* background-color: #1e1e1e; Added for context */
   }
 
   .chart-block-title {
-    padding: 8px 12px;
-    font-size: 1.3em; /* Slightly adjusted */
-    letter-spacing: 0.05em; /* Slightly adjusted */
-    font-weight: bold;
+    padding: 8px 16px; /* Reduced padding from 12px to 8px */
+    font-size: 1.2em; /* Increased font size */
+    letter-spacing: 0.05em;
+    font-weight: 600;
     color: #d0d0d0;
     text-align: center;
     text-transform: uppercase;
     flex-shrink: 0; /* Prevent shrinking */
-    background-color: #2a2a2a; /* Added for context */
+    /* background-color: #2a2a2a; */
   }
 
   .chart-wrapper {
-    flex-grow: 1; /* Allow wrapper to fill space in chart-block */
     position: relative;
-    width: 100%;
-    /* aspect-ratio is now primarily handled by the GrafanaChart's imageAspectRatio prop
-       and the fact that GrafanaChart component itself is 100% width/height of this wrapper.
-       The effective aspect ratio will be determined by the space given to chart-block
-       and then this wrapper filling it. The image inside GrafanaChart will respect its own AR.
-       If you want to force a specific aspect ratio for the *wrapper* itself, you can add it back,
-       but it might conflict with flex:1 on chart-block if space is constrained.
-       For now, let's let the GrafanaChart component handle its internal aspect ratio.
-    */
-    /* aspect-ratio: 1430 / 300; */ /* Consider re-adding if layout needs it explicitly */
-    min-height: 0; /* Important for flex children */
-    display: flex; /* To make GrafanaChart fill it */
+    width: fit-content;
+    height: fit-content;
+    display: inline-block;
+    margin: 0;
+    padding: 0;
+    line-height: 0;
+    vertical-align: top; /* Prevent baseline alignment gaps */
+    font-size: 0; /* Remove any font-based spacing */
+    /* background-color: aliceblue; */
   }
 
-  /* Ensure GrafanaChart component fills the chart-wrapper */
-  .chart-wrapper > :first-child { /* This targets .grafana-chart-host */
-    flex-grow: 1; /* Make GrafanaChart fill the wrapper */
-    min-width: 0;
-    min-height: 0;
+  /* Ensure GrafanaChart component has minimal spacing */
+  .chart-wrapper > :global(.grafana-chart-host) {
+    display: block;
+    margin: 0;
+    padding: 0;
+    width: fit-content;
+    height: fit-content;
+    border: none;
+    outline: none;
+  }
+
+  /* Remove any spacing from the chart image itself */
+  .chart-wrapper > :global(.grafana-chart-host) img {
+    display: block;
+    margin: 0;
+    padding: 0;
+    border: none;
+    vertical-align: top;
   }
 
   .brand-strip {
     display: flex;
-    justify-content: space-around;
+    justify-content: flex-start;
     align-items: center;
-    padding: 8px 0; /* Adjusted padding */
-    border-radius: 4px;
-    margin: 10px 0; /* Adjusted margin */
-    flex-shrink: 0;
-    background-color: #2a2a2a; /* Added for context */
+    padding: 12px 16px;
+    margin: 2em 0;
+    width: fit-content;
+    /* background-color: #2a2a2a; */
+    gap: 20px;
   }
 
   .strip-logo {
-    height: 22px; /* Adjusted size */
+    height: 24px;
     object-fit: contain;
-    filter: grayscale(80%) brightness(1.2); /* Adjusted filter */
+    filter: grayscale(80%) brightness(1.2);
   }
 </style>
