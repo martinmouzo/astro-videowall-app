@@ -48,8 +48,8 @@ const brandLogos = [
             <GrafanaChart
               graphId={zaraConnectionsGraphId}
               startTime="end-30m"
-              height="129px"
-              width="600px"
+              height="200px"
+              width="800px"
               refreshInterval={60000}
               uniqueId="zara-connections"
               loadingText="Cargando Connections..."
@@ -63,8 +63,8 @@ const brandLogos = [
             <GrafanaChart
               graphId={zaraRequestsGraphId}
               startTime="end-30m"
-              height="129px"
-              width="600px"
+              height="200px"
+              width="800px"
               refreshInterval={60000}
               uniqueId="zara-requests"
               loadingText="Cargando Requests..."
@@ -98,36 +98,41 @@ const brandLogos = [
           ))
         }
       </div>
-      <div class="charts-panel">
-        <div class="chart-block">
-          <div class="chart-block-title">CONNECTIONS</div>
-          <div class="chart-wrapper">
-            <GrafanaChart
-              graphId={otherConnectionsGraphId}
-              startTime="end-30m"
-              height="129px"
-              width="600px"
-              refreshInterval={60000}
-              uniqueId="other-connections"
-              loadingText="Cargando Connections..."
-              imageAspectRatio="1400 / 300"
-            />
-          </div>
+      <div class="charts-section">
+        <div class="charts-header-logo">
+          <!-- Empty header to maintain alignment with Zara section -->
         </div>
+        <div class="charts-panel">
+          <div class="chart-block">
+            <div class="chart-block-title">CONNECTIONS</div>
+            <div class="chart-wrapper">
+              <GrafanaChart
+                graphId={otherConnectionsGraphId}
+                startTime="end-30m"
+                height="200px"
+                width="800px"
+                refreshInterval={60000}
+                uniqueId="other-connections"
+                loadingText="Cargando Connections..."
+                imageAspectRatio="1400 / 300"
+              />
+            </div>
+          </div>
         <div class="chart-block">
           <div class="chart-block-title">REQUESTS</div>
           <div class="chart-wrapper">
             <GrafanaChart
               graphId={otherRequestsGraphId}
               startTime="end-30m"
-              height="129px"
-              width="600px"
+              height="200px"
+              width="800px"
               refreshInterval={60000}
               uniqueId="other-requests"
               loadingText="Cargando Requests..."
               imageAspectRatio="1400 / 300"
             />
           </div>
+        </div>
         </div>
       </div>
     </div>
@@ -177,7 +182,7 @@ const brandLogos = [
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 600px; /* Same width as charts */
+    width: 800px; /* Same width as charts */
     margin-bottom: 1em;
     min-height: 36px;
   }

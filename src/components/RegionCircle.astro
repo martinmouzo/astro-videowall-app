@@ -75,35 +75,37 @@ const overlayContainerStyle = `
   }
 
   .overlay-content {
-    width: 100%;
-    height: 100%;
+    width: 85%; /* Reducido de 100% a 85% para crear margen interno en el círculo */
+    height: 85%; /* Reducido de 100% a 85% para crear margen interno en el círculo */
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: space-between; /* Distribuye el contenido entre header, body y footer */
-    padding: 8%; /* Espaciado interno relativo al tamaño del círculo */
+    justify-content: space-between; /* Vuelto a space-between para mejor control */
+    padding: 8%; /* Aumentado a 8% para compensar el tamaño reducido */
     box-sizing: border-box;
     pointer-events: auto; /* Permite interacción con el contenido */
     color: white;
     text-align: center;
-    font-size: clamp(0.6em, 2vmin, 1em); /* Tamaño de fuente responsivo */
+    font-size: clamp(0.5em, 1.8vmin, 0.9em); /* Reducido ligeramente para mejor ajuste */
     overflow: hidden; /* Evita que el contenido desborde el círculo */
+    gap: 0.4em; /* Reducido gap para evitar desbordamiento */
   }
 
   .overlay-header {
-    padding: 0.4em 0.8em;
+    padding: 0.2em 0.4em; /* Reducido padding para optimizar espacio */
     border-radius: 0.25em;
-    margin-bottom: 0.3em;
+    margin-bottom: 0; /* Eliminado margen ya que usamos gap */
     width: auto; /* Ajusta al contenido */
-    max-width: 90%; /* Evita que sea demasiado ancho */
+    max-width: 100%; /* Ajustado para usar todo el ancho disponible */
+    flex-shrink: 0; /* Evita compresión */
   }
 
   .overlay-header h4 {
     margin: 0;
-    font-size: 1.4em; /* Relativo al font-size del .overlay-content */
+    font-size: 1.5em; /* Aumentado de 1.2em para mejor visibilidad */
     white-space: pre-wrap; /* Para manejar nombres multilínea */
     font-weight: 700;
-    letter-spacing: .15em;
+    letter-spacing: .12em; /* Ligeramente aumentado */
     text-shadow: 1px 1px 2px black;
     font-family: 'Quicksand Variable', sans-serif;
   }
@@ -111,11 +113,11 @@ const overlayContainerStyle = `
   .overlay-body {
     flex-grow: 1; /* Permite que el cuerpo ocupe el espacio restante */
     display: flex;
-    align-items: flex-start;
+    align-items: center; /* Centrado vertical para mejor distribución */
     justify-content: center;
     width: 100%;
     overflow: hidden;
-    padding-top: 0.5em;
+    padding: 0; /* Eliminado padding ya que usamos gap */
   }
 
   .overlay-footer {
@@ -123,7 +125,9 @@ const overlayContainerStyle = `
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-top: 0.5em;
+    margin-top: 1.2em; /* Aumentado margen superior para mover más abajo */
+    padding-top: 0; /* Eliminado padding superior */
     position: relative;
+    flex-shrink: 0; /* Evita compresión */
   }
 </style>
