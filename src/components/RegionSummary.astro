@@ -1,0 +1,142 @@
+---
+interface Props {
+  region: string;
+  indicadores: any[];
+}
+
+const { region, indicadores } = Astro.props;
+
+// Mapeo de regiones
+const regionMapping: Record<string, string> = {
+  'america': 'AMERICA',
+  'europe': 'EUROPA',
+  'asia': 'ASIA'
+};
+
+// Valores mock para el resumen
+const mockValues: Record<number, Record<string, number>> = {
+  3: { 'AMERICA': 779, 'EUROPA': 4323, 'ASIA': 483 }, // Tiendas abiertas
+  6: { 'AMERICA': 234, 'EUROPA': 578, 'ASIA': 156 }, // Incidencias
+  4: { 'AMERICA': 5, 'EUROPA': 4, 'ASIA': 1 }, // Tiendas offline
+};
+
+const regionKey = regionMapping[region] || region.toUpperCase();
+
+// Obtener valores para el resumen
+const totalTiendas = mockValues[3][regionKey] || 0;
+const incidencias = mockValues[6][regionKey] || 0;
+const offline = mockValues[4][regionKey] || 0;
+
+// Determinar color de estado basado en indicadores críticos
+const getStatusColor = () => {
+  if (offline > 10) return '#ff4444'; // Rojo crítico
+  if (offline > 5) return '#ff8800'; // Naranja advertencia
+  if (incidencias > 500) return '#ffaa00'; // Amarillo
+  return '#44ff44'; // Verde normal
+};
+---
+
+<div class="region-summary">
+  <div class="status-indicator" style={`background-color: ${getStatusColor()}`}></div>
+  <div class="summary-stats">
+    <div class="stat-item">
+      <span class="stat-value">{totalTiendas}</span>
+      <span class="stat-label">Tiendas</span>
+    </div>
+    {incidencias > 0 && (
+      <div class="stat-item warning">
+        <span class="stat-value">{incidencias}</span>
+        <span class="stat-label">Incidencias</span>
+      </div>
+    )}
+    {offline > 0 && (
+      <div class="stat-item critical">
+        <span class="stat-value">{offline}</span>
+        <span class="stat-label">Offline</span>
+      </div>
+    )}
+  </div>
+</div>
+
+<style>
+  .region-summary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin: 0.8em auto 0.6em auto;
+    padding: 0.4em 0.8em;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 15px;
+    backdrop-filter: blur(4px);
+    width: fit-content;
+    max-width: 90%;
+  }
+
+  .status-indicator {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    box-shadow: 0 0 10px currentColor;
+    animation: pulse 2s ease-in-out infinite;
+    flex-shrink: 0;
+  }
+
+  .summary-stats {
+    display: flex;
+    gap: 8px;
+    font-size: 0.90em;
+    align-items: center;
+  }
+
+  .stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+  }
+
+  .stat-item.critical {
+    color: #ff6666;
+  }
+
+  .stat-item.warning {
+    color: #ffaa66;
+  }
+
+  .stat-value {
+    font-weight: bold;
+    font-size: 1.1em;
+    line-height: 1;
+  }
+
+  .stat-label {
+    font-size: 0.75em;
+    opacity: 0.8;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.6; }
+  }
+
+  @media (max-width: 1400px) {
+    .region-summary {
+      margin: 0.6em auto 0.5em auto;
+      padding: 0.3em 0.6em;
+      gap: 8px;
+    }
+
+    .summary-stats {
+      font-size: 0.75em;
+      gap: 8px;
+    }
+
+    .status-indicator {
+      width: 8px;
+      height: 8px;
+    }
+  }
+</style>

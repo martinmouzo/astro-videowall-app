@@ -1,0 +1,1864 @@
+[
+    {
+        "idTipoIndicador": 3,
+        "descripcion": "Tiendas que tienen sesión de caja abierta para el día en curso y no han enviado el cierre",
+        "frecuenciaActualizacion": 300,
+        "indicadores": [
+            {
+                "idIndicador": 7,
+                "tipoIndicador": {
+                    "idTipoIndicador": 3,
+                    "descripcion": "TIPO_TIENDA_TIENDAS_ABIERTAS",
+                    "frecuenciaActualizacion": 300,
+                    "prioridad": null,
+                    "estatico": null,
+                    "sonido": null,
+                    "notificacion": false,
+                    "modoDemo": null,
+                    "formatedDescripcion": "TIPO TIENDA TIENDAS ABIERTAS"
+                },
+                "nombre": "TIENDAS_ABIERTAS_AMERICA",
+                "descripcion": "Tiendas que tienen sesión de caja abierta para el día en curso y no han enviado el cierre",
+                "severidad": null,
+                "parametros": [
+                    {
+                        "idParametro": 1,
+                        "descripcion": "NUMERO_ELEMENTOS",
+                        "valor": "779",
+                        "idIndicadorParametro": 314,
+                        "fechaAlta": 1418310867088
+                    }
+                ]
+            },
+            {
+                "idIndicador": 8,
+                "tipoIndicador": {
+                    "idTipoIndicador": 3,
+                    "descripcion": "TIPO_TIENDA_TIENDAS_ABIERTAS",
+                    "frecuenciaActualizacion": 300,
+                    "prioridad": null,
+                    "estatico": null,
+                    "sonido": null,
+                    "notificacion": false,
+                    "modoDemo": null,
+                    "formatedDescripcion": "TIPO TIENDA TIENDAS ABIERTAS"
+                },
+                "nombre": "TIENDAS_ABIERTAS_EUROPA",
+                "descripcion": "Tiendas que tienen sesión de caja abierta para el día en curso y no han enviado el cierre",
+                "severidad": null,
+                "parametros": [
+                    {
+                        "idParametro": 1,
+                        "descripcion": "NUMERO_ELEMENTOS",
+                        "valor": "4323",
+                        "idIndicadorParametro": 312,
+                        "fechaAlta": 1418310867026
+                    }
+                ]
+            },
+            {
+                "idIndicador": 9,
+                "tipoIndicador": {
+                    "idTipoIndicador": 3,
+                    "descripcion": "TIPO_TIENDA_TIENDAS_ABIERTAS",
+                    "frecuenciaActualizacion": 300,
+                    "prioridad": null,
+                    "estatico": null,
+                    "sonido": null,
+                    "notificacion": false,
+                    "modoDemo": null,
+                    "formatedDescripcion": "TIPO TIENDA TIENDAS ABIERTAS"
+                },
+                "nombre": "TIENDAS_ABIERTAS_ASIA",
+                "descripcion": "Tiendas que tienen sesión de caja abierta para el día en curso y no han enviado el cierre",
+                "severidad": null,
+                "parametros": [
+                    {
+                        "idParametro": 1,
+                        "descripcion": "NUMERO_ELEMENTOS",
+                        "valor": "483",
+                        "idIndicadorParametro": 313,
+                        "fechaAlta": 1418310867057
+                    }
+                ]
+            }
+        ],
+        "tipoIndicadorUmbrals": []
+    },
+    {
+        "idTipoIndicador": 13,
+        "descripcion": "Indicador tiendas con cierre",
+        "frecuenciaActualizacion": 300,
+        "indicadores": [
+            {
+                "idIndicador": 40,
+                "tipoIndicador": {
+                    "idTipoIndicador": 13,
+                    "descripcion": "TIPO_TIENDA_TIENDAS_CON_CIERRE",
+                    "frecuenciaActualizacion": 300,
+                    "prioridad": null,
+                    "estatico": null,
+                    "sonido": null,
+                    "notificacion": false,
+                    "modoDemo": null,
+                    "formatedDescripcion": "TIPO TIENDA TIENDAS CON CIERRE"
+                },
+                "nombre": "TIENDAS_CON_CIERRE_AMERICA",
+                "descripcion": "Indicador tiendas con cierre",
+                "severidad": null,
+                "parametros": [
+                    {
+                        "idParametro": 1,
+                        "descripcion": "NUMERO_ELEMENTOS",
+                        "valor": "1",
+                        "idIndicadorParametro": 317,
+                        "fechaAlta": 1418310867182
+                    }
+                ]
+            },
+            {
+                "idIndicador": 41,
+                "tipoIndicador": {
+                    "idTipoIndicador": 13,
+                    "descripcion": "TIPO_TIENDA_TIENDAS_CON_CIERRE",
+                    "frecuenciaActualizacion": 300,
+                    "prioridad": null,
+                    "estatico": null,
+                    "sonido": null,
+                    "notificacion": false,
+                    "modoDemo": null,
+                    "formatedDescripcion": "TIPO TIENDA TIENDAS CON CIERRE"
+                },
+                "nombre": "TIENDAS_CON_CIERRE_EUROPA",
+                "descripcion": "Indicador tiendas con cierre",
+                "severidad": null,
+                "parametros": [
+                    {
+                        "idParametro": 1,
+                        "descripcion": "NUMERO_ELEMENTOS",
+                        "valor": "4",
+                        "idIndicadorParametro": 315,
+                        "fechaAlta": 1418310867120
+                    }
+                ]
+            },
+            {
+                "idIndicador": 42,
+                "tipoIndicador": {
+                    "idTipoIndicador": 13,
+                    "descripcion": "TIPO_TIENDA_TIENDAS_CON_CIERRE",
+                    "frecuenciaActualizacion": 300,
+                    "prioridad": null,
+                    "estatico": null,
+                    "sonido": null,
+                    "notificacion": false,
+                    "modoDemo": null,
+                    "formatedDescripcion": "TIPO TIENDA TIENDAS CON CIERRE"
+                },
+                "nombre": "TIENDAS_CON_CIERRE_ASIA",
+                "descripcion": "Indicador tiendas con cierre",
+                "severidad": null,
+                "parametros": [
+                    {
+                        "idParametro": 1,
+                        "descripcion": "NUMERO_ELEMENTOS",
+                        "valor": "355",
+                        "idIndicadorParametro": 316,
+                        "fechaAlta": 1418310867151
+                    }
+                ]
+            }
+        ],
+        "tipoIndicadorUmbrals": []
+    },
+    {
+        "idTipoIndicador": 19,
+        "descripcion": "INDICADOR DINAMICO FICHERO",
+        "frecuenciaActualizacion": 300,
+        "indicadores": [
+            {
+                "idIndicador": 19019,
+                "tipoIndicador": {
+                    "idTipoIndicador": 19,
+                    "descripcion": "TIPO_TABLA_TIENDA_EUROPA",
+                    "frecuenciaActualizacion": 300,
+                    "prioridad": null,
+                    "estatico": null,
+                    "sonido": null,
+                    "notificacion": false,
+                    "modoDemo": null,
+                    "formatedDescripcion": "TIPO TABLA TIENDA EUROPA"
+                },
+                "nombre": "19_19019",
+                "descripcion": "INDICADOR DINAMICO FICHERO",
+                "severidad": null,
+                "parametros": [
+                    {
+                        "idParametro": 7,
+                        "descripcion": "NOMBRE",
+                        "valor": "\"8347 - PAR-RIVOLI\"",
+                        "idIndicadorParametro": 114772813,
+                        "fechaAlta": 1732805542988
+                    },
+                    {
+                        "idParametro": 13,
+                        "descripcion": "RESUMEN",
+                        "valor": "\"BERSHKA - FRANCIA - 2024-11-28 10:04:55+01 - INC000022908831: 8347- SCO 43- P7562723213 PDQ missing parts.... - ASIGNADO A: IT FRANCE\"",
+                        "idIndicadorParametro": 114772812,
+                        "fechaAlta": 1732805542972
+                    }
+                ]
+            },
+            {
+                "idIndicador": 19020,
+                "tipoIndicador": {
+                    "idTipoIndicador": 19,
+                    "descripcion": "TIPO_TABLA_TIENDA_EUROPA",
+                    "frecuenciaActualizacion": 300,
+                    "prioridad": null,
+                    "estatico": null,
+                    "sonido": null,
+                    "notificacion": false,
+                    "modoDemo": null,
+                    "formatedDescripcion": "TIPO TABLA TIENDA EUROPA"
+                },
+                "nombre": "19_19020",
+                "descripcion": "INDICADOR DINAMICO FICHERO",
+                "severidad": null,
+                "parametros": [
+                    {
+                        "idParametro": 13,
+                        "descripcion": "RESUMEN",
+                        "valor": "\"LEFTIES - ESPAÃ‘A - 2024-11-28 10:50:58+01 - INC000022909262: PDAS - APP Reetiquetado no aplica descuento B.Friday al imprimir.... - ASIGNADO A: SOPORTE TIENDA\"",
+                        "idIndicadorParametro": 114772815,
+                        "fechaAlta": 1732805543050
+                    },
+                    {
+                        "idParametro": 7,
+                        "descripcion": "NOMBRE",
+                        "valor": "\"2023 - COR-MARINEDA CITY\"",
+                        "idIndicadorParametro": 114772814,
+                        "fechaAlta": 1732805543019
+                    }
+                ]
+            },
+            {
+                "idIndicador": 19021,
+                "tipoIndicador": {
+                    "idTipoIndicador": 19,
+                    "descripcion": "TIPO_TABLA_TIENDA_EUROPA",
+                    "frecuenciaActualizacion": 300,
+                    "prioridad": null,
+                    "estatico": null,
+                    "sonido": null,
+                    "notificacion": false,
+                    "modoDemo": null,
+                    "formatedDescripcion": "TIPO TABLA TIENDA EUROPA"
+                },
+                "nombre": "19_19021",
+                "descripcion": "INDICADOR DINAMICO FICHERO",
+                "severidad": null,
+                "parametros": [
+                    {
+                        "idParametro": 13,
+                        "descripcion": "RESUMEN",
+                        "valor": "\"LEFTIES - ESPAÃ‘A - 2024-11-28 12:10:21+01 - INC000022910279: Caja 3  - 6\\No abre.... - ASIGNADO A: HELP DESK ESPAÃ‘A\"",
+                        "idIndicadorParametro": 114772817,
+                        "fechaAlta": 1732805543097
+                    },
+                    {
+                        "idParametro": 7,
+                        "descripcion": "NOMBRE",
+                        "valor": "\"2119 - BCN-PELAYO\"",
+                        "idIndicadorParametro": 114772816,
+                        "fechaAlta": 1732805543097
+                    }
+                ]
+            },
+            {
+                "idIndicador": 19022,
+                "tipoIndicador": {
+                    "idTipoIndicador": 19,
+                    "descripcion": "TIPO_TABLA_TIENDA_EUROPA",
+                    "frecuenciaActualizacion": 300,
+                    "prioridad": null,
+                    "estatico": null,
+                    "sonido": null,
+                    "notificacion": false,
+                    "modoDemo": null,
+                    "formatedDescripcion": "TIPO TABLA TIENDA EUROPA"
+                },
+                "nombre": "19_19022",
+                "descripcion": "INDICADOR DINAMICO FICHERO",
+                "severidad": null,
+                "parametros": [
+                    {
+                        "idParametro": 7,
+                        "descripcion": "NOMBRE",
+                        "valor": "\"6479 - MAD-SERRANO\"",
+                        "idIndicadorParametro": 114772819,
+                        "fechaAlta": 1732805543144
+                    },
+                    {
+                        "idParametro": 13,
+                        "descripcion": "RESUMEN",
+                        "valor": "\"ZARA - ESPAÃ‘A - 2024-11-28 11:36:09+01 - INC000022909963: Caja autocobro Pay&Go\\Falta empleado / empleados.... - ASIGNADO A: HELP DESK ESPAÃ‘A\"",
+                        "idIndicadorParametro": 114772818,
+                        "fechaAlta": 1732805543134
+                    }
+                ]
+            },
+            {
+                "idIndicador": 19002,
+                "tipoIndicador": {
+                    "idTipoIndicador": 19,
+                    "descripcion": "TIPO_TABLA_TIENDA_EUROPA",
+                    "frecuenciaActualizacion": 300,
+                    "prioridad": null,
+                    "estatico": null,
+                    "sonido": null,
+                    "notificacion": false,
+                    "modoDemo": null,
+                    "formatedDescripcion": "TIPO TABLA TIENDA EUROPA"
+                },
+                "nombre": "19_19002",
+                "descripcion": "INDICADOR DINAMICO FICHERO",
+                "severidad": null,
+                "parametros": [
+                    {
+                        "idParametro": 7,
+                        "descripcion": "NOMBRE",
+                        "valor": "\"429 - BCN-GRAN VIA DE LES CORTS CATALANES\"",
+                        "idIndicadorParametro": 114772779,
+                        "fechaAlta": 1732805541170
+                    },
+                    {
+                        "idParametro": 13,
+                        "descripcion": "RESUMEN",
+                        "valor": "\"MASSIMO DUTTI - ESPAÃ‘A - 2024-11-28 15:24:17+01 - INC000022912264: PDA ANDROID\\Idioma incorrecto.... - ASIGNADO A: HELP DESK ESPAÃ‘A\"",
+                        "idIndicadorParametro": 114772778,
+                        "fechaAlta": 1732805541154
+                    }
+                ]
+            },
+            {
+                "idIndicador": 19003,
+                "tipoIndicador": {
+                    "idTipoIndicador": 19,
+                    "descripcion": "TIPO_TABLA_TIENDA_EUROPA",
+                    "frecuenciaActualizacion": 300,
+                    "prioridad": null,
+                    "estatico": null,
+                    "sonido": null,
+                    "notificacion": false,
+                    "modoDemo": null,
+                    "formatedDescripcion": "TIPO TABLA TIENDA EUROPA"
+                },
+                "nombre": "19_19003",
+                "descripcion": "INDICADOR DINAMICO FICHERO",
+                "severidad": null,
+                "parametros": [
+                    {
+                        "idParametro": 13,
+                        "descripcion": "RESUMEN",
+                        "valor": "\"MASSIMO DUTTI - ESPAÃ‘A - 2024-11-28 12:25:08+01 - INC000022910426: iPhones - ItxStock no muestra stock real ni permite modificar exposiciÃ³n de algunos artÃ­culos.... - ASIGNADO A: MOVILIDAD - ITXSTOCK\"",
+                        "idIndicadorParametro": 114772780,
+                        "fechaAlta": 1732805542346
+                    },
+                    {
+                        "idParametro": 7,
+                        "descripcion": "NOMBRE",
+                        "valor": "\"4223 - BCN-PUERTA ANGEL\"",
+                        "idIndicadorParametro": 114772781,
+                        "fechaAlta": 1732805542377
+                    }
+                ]
+            },
+            {
+                "idIndicador": 19004,
+                "tipoIndicador": {
+                    "idTipoIndicador": 19,
+                    "descripcion": "TIPO_TABLA_TIENDA_EUROPA",
+                    "frecuenciaActualizacion": 300,
+                    "prioridad": null,
+                    "estatico": null,
+                    "sonido": null,
+                    "notificacion": false,
+                    "modoDemo": null,
+                    "formatedDescripcion": "TIPO TABLA TIENDA EUROPA"
+                },
+                "nombre": "19_19004",
+                "descripcion": "INDICADOR DINAMICO FICHERO",
+                "severidad": null,
+                "parametros": [
+                    {
+                        "idParametro": 7,
+                        "descripcion": "NOMBRE",
+                        "valor": "\"57 - MAD-GRAN VIA\"",
+                        "idIndicadorParametro": 114772782,
+                        "fechaAlta": 1732805542408
+                    },
+                    {
+                        "idParametro": 13,
+                        "descripcion": "RESUMEN",
+                        "valor": "\"ZARA - ESPAÃ‘A - 2024-11-28 11:19:50+01 - INC000022909590: SINT\\Sin aplicaciÃ³n SINT en caja.... - ASIGNADO A: HELP DESK ESPAÃ‘A\"",
+                        "idIndicadorParametro": 114772783,
+                        "fechaAlta": 1732805542408
+                    }
+                ]
+            },
+            {
+                "idIndicador": 19005,
+                "tipoIndicador": {
+                    "idTipoIndicador": 19,
+                    "descripcion": "TIPO_TABLA_TIENDA_EUROPA",
+                    "frecuenciaActualizacion": 300,
+                    "prioridad": null,
+                    "estatico": null,
+                    "sonido": null,
+                    "notificacion": false,
+                    "modoDemo": null,
+                    "formatedDescripcion": "TIPO TABLA TIENDA EUROPA"
+                },
+                "nombre": "19_19005",
+                "descripcion": "INDICADOR DINAMICO FICHERO",
+                "severidad": null,
+                "parametros": [
+                    {
+                        "idParametro": 13,
+                        "descripcion": "RESUMEN",
+                        "valor": "\"LEFTIES - ESPAÃ‘A - 2024-11-28 12:37:35+01 - INC000022910623: SOLICITO SUSTITUCIÃ“N iPhone TIENDA SE SN: PN9G27L17T - BotÃ³n home daÃ±ado.... - ASIGNADO A: PEDIDOS ALMACEN\"",
+                        "idIndicadorParametro": 114772784,
+                        "fechaAlta": 1732805542440
+                    },
+                    {
+                        "idParametro": 7,
+                        "descripcion": "NOMBRE",
+                        "valor": "\"2131 - BCN-MAREMAGNUM\"",
+                        "idIndicadorParametro": 114772785,
+                        "fechaAlta": 1732805542455
+                    }
+                ]
+            },
+            {
+                "idIndicador": 19006,
+                "tipoIndicador": {
+                    "idTipoIndicador": 19,
+                    "descripcion": "TIPO_TABLA_TIENDA_EUROPA",
+                    "frecuenciaActualizacion": 300,
+                    "prioridad": null,
+                    "estatico": null,
+                    "sonido": null,
+                    "notificacion": false,
+                    "modoDemo": null,
+                    "formatedDescripcion": "TIPO TABLA TIENDA EUROPA"
+                },
+                "nombre": "19_19006",
+                "descripcion": "INDICADOR DINAMICO FICHERO",
+                "severidad": null,
+                "parametros": [
+                    {
+                        "idParametro": 7,
+                        "descripcion": "NOMBRE",
+                        "valor": "\"4223 - BCN-PUERTA ANGEL\"",
+                        "idIndicadorParametro": 114772787,
+                        "fechaAlta": 1732805542487
+                    },
+                    {
+                        "idParametro": 13,
+                        "descripcion": "RESUMEN",
+                        "valor": "\"MASSIMO DUTTI - ESPAÃ‘A - 2024-11-28 10:47:26+01 - INC000022909235: SOLICITO ENVIO DE iPhone SNH705VF91XG boton Home roto.... - ASIGNADO A: PEDIDOS ALMACEN\"",
+                        "idIndicadorParametro": 114772786,
+                        "fechaAlta": 1732805542471
+                    }
+                ]
+            },
+            {
+                "idIndicador": 19007,
+                "tipoIndicador": {
+                    "idTipoIndicador": 19,
+                    "descripcion": "TIPO_TABLA_TIENDA_EUROPA",
+                    "frecuenciaActualizacion": 300,
+                    "prioridad": null,
+                    "estatico": null,
+                    "sonido": null,
+                    "notificacion": false,
+                    "modoDemo": null,
+                    "formatedDescripcion": "TIPO TABLA TIENDA EUROPA"
+                },
+                "nombre": "19_19007",
+                "descripcion": "INDICADOR DINAMICO FICHERO",
+                "severidad": null,
+                "parametros": [
+                    {
+                        "idParametro": 7,
+                        "descripcion": "NOMBRE",
+                        "valor": "\"6402 - PAR-BEAUGRENELLE\"",
+                        "idIndicadorParametro": 114772789,
+                        "fechaAlta": 1732805542518
+                    },
+                    {
+                        "idParametro": 13,
+                        "descripcion": "RESUMEN",
+                        "valor": "\"ZARA - FRANCIA - 2024-11-28 11:53:57+01 - INC000022910087: 6402- HF550XANLCBD192 does not turn on.... - ASIGNADO A: HELP DESK FRANCE\"",
+                        "idIndicadorParametro": 114772788,
+                        "fechaAlta": 1732805542502
+                    }
+                ]
+            },
+            {
+                "idIndicador": 19008,
+                "tipoIndicador": {
+                    "idTipoIndicador": 19,
+                    "descripcion": "TIPO_TABLA_TIENDA_EUROPA",
+                    "frecuenciaActualizacion": 300,
+                    "prioridad": null,
+                    "estatico": null,
+                    "sonido": null,
+                    "notificacion": false,
+                    "modoDemo": null,
+                    "formatedDescripcion": "TIPO TABLA TIENDA EUROPA"
+                },
+                "nombre": "19_19008",
+                "descripcion": "INDICADOR DINAMICO FICHERO",
+                "severidad": null,
+                "parametros": [
+                    {
+                        "idParametro": 7,
+                        "descripcion": "NOMBRE",
+                        "valor": "\"2107 - LIS-CAMPERA\"",
+                        "idIndicadorParametro": 114772791,
+                        "fechaAlta": 1732805542580
+                    },
+                    {
+                        "idParametro": 13,
+                        "descripcion": "RESUMEN",
+                        "valor": "\"LEFTIES - PORTUGAL - 2024-11-28 14:55:08+01 - INC000022911792: iPod\\Carregador danificado.... - ASIGNADO A: HELP DESK PORTUGAL\"",
+                        "idIndicadorParametro": 114772790,
+                        "fechaAlta": 1732805542565
+                    }
+                ]
+            },
+            {
+                "idIndicador": 19009,
+                "tipoIndicador": {
+                    "idTipoIndicador": 19,
+                    "descripcion": "TIPO_TABLA_TIENDA_EUROPA",
+                    "frecuenciaActualizacion": 300,
+                    "prioridad": null,
+                    "estatico": null,
+                    "sonido": null,
+                    "notificacion": false,
+                    "modoDemo": null,
+                    "formatedDescripcion": "TIPO TABLA TIENDA EUROPA"
+                },
+                "nombre": "19_19009",
+                "descripcion": "INDICADOR DINAMICO FICHERO",
+                "severidad": null,
+                "parametros": [
+                    {
+                        "idParametro": 13,
+                        "descripcion": "RESUMEN",
+                        "valor": "\"ZARA - FRANCIA - 2024-11-28 14:37:27+01 - INC000022911730: 304\\ SCO 44\\ P7560360905\\ Thermal printer.... - ASIGNADO A: HELP DESK FRANCE\"",
+                        "idIndicadorParametro": 114772792,
+                        "fechaAlta": 1732805542612
+                    },
+                    {
+                        "idParametro": 7,
+                        "descripcion": "NOMBRE",
+                        "valor": "\"304 - PAR-OPERA\"",
+                        "idIndicadorParametro": 114772793,
+                        "fechaAlta": 1732805542613
+                    }
+                ]
+            },
+            {
+                "idIndicador": 19010,
+                "tipoIndicador": {
+                    "idTipoIndicador": 19,
+                    "descripcion": "TIPO_TABLA_TIENDA_EUROPA",
+                    "frecuenciaActualizacion": 300,
+                    "prioridad": null,
+                    "estatico": null,
+                    "sonido": null,
+                    "notificacion": false,
+                    "modoDemo": null,
+                    "formatedDescripcion": "TIPO TABLA TIENDA EUROPA"
+                },
+                "nombre": "19_19010",
+                "descripcion": "INDICADOR DINAMICO FICHERO",
+                "severidad": null,
+                "parametros": [
+                    {
+                        "idParametro": 7,
+                        "descripcion": "NOMBRE",
+                        "valor": "\"62 - MAD-PRECIADOS\"",
+                        "idIndicadorParametro": 114772795,
+                        "fechaAlta": 1732805542644
+                    },
+                    {
+                        "idParametro": 13,
+                        "descripcion": "RESUMEN",
+                        "valor": "\"ZARA - ESPAÃ‘A - 2024-11-28 14:02:23+01 - INC000022911365: Impresora multifunciÃ³n\\Impresora daÃ±ada.... - ASIGNADO A: HELP DESK ESPAÃ‘A\"",
+                        "idIndicadorParametro": 114772794,
+                        "fechaAlta": 1732805542628
+                    }
+                ]
+            },
+            {
+                "idIndicador": 19011,
+                "tipoIndicador": {
+                    "idTipoIndicador": 19,
+                    "descripcion": "TIPO_TABLA_TIENDA_EUROPA",
+                    "frecuenciaActualizacion": 300,
+                    "prioridad": null,
+                    "estatico": null,
+                    "sonido": null,
+                    "notificacion": false,
+                    "modoDemo": null,
+                    "formatedDescripcion": "TIPO TABLA TIENDA EUROPA"
+                },
+                "nombre": "19_19011",
+                "descripcion": "INDICADOR DINAMICO FICHERO",
+                "severidad": null,
+                "parametros": [
+                    {
+                        "idParametro": 7,
+                        "descripcion": "NOMBRE",
+                        "valor": "\"4200 - MAD-SERRANO\"",
+                        "idIndicadorParametro": 114772796,
+                        "fechaAlta": 1732805542675
+                    },
+                    {
+                        "idParametro": 13,
+                        "descripcion": "RESUMEN",
+                        "valor": "\"MASSIMO DUTTI - ESPAÃ‘A - 2024-11-28 14:42:17+01 - INC000022911672: IPHONE\\Wifi.... - ASIGNADO A: HELP DESK ESPAÃ‘A\"",
+                        "idIndicadorParametro": 114772797,
+                        "fechaAlta": 1732805542675
+                    }
+                ]
+            },
+            {
+                "idIndicador": 19012,
+                "tipoIndicador": {
+                    "idTipoIndicador": 19,
+                    "descripcion": "TIPO_TABLA_TIENDA_EUROPA",
+                    "frecuenciaActualizacion": 300,
+                    "prioridad": null,
+                    "estatico": null,
+                    "sonido": null,
+                    "notificacion": false,
+                    "modoDemo": null,
+                    "formatedDescripcion": "TIPO TABLA TIENDA EUROPA"
+                },
+                "nombre": "19_19012",
+                "descripcion": "INDICADOR DINAMICO FICHERO",
+                "severidad": null,
+                "parametros": [
+                    {
+                        "idParametro": 13,
+                        "descripcion": "RESUMEN",
+                        "valor": "\"ZARA - ESPAÃ‘A - 2024-11-28 11:45:03+01 - INC000022910044: iPhone Nominal SNMVQD02Q09H Gestion Retail al acceder muestra otra tienda.... - ASIGNADO A: HELP DESK ESPAÃ‘A\"",
+                        "idIndicadorParametro": 114772799,
+                        "fechaAlta": 1732805542706
+                    },
+                    {
+                        "idParametro": 7,
+                        "descripcion": "NOMBRE",
+                        "valor": "\"300 - BCN-PUERTA ANGEL\"",
+                        "idIndicadorParametro": 114772798,
+                        "fechaAlta": 1732805542706
+                    }
+                ]
+            },
+            {
+                "idIndicador": 19013,
+                "tipoIndicador": {
+                    "idTipoIndicador": 19,
+                    "descripcion": "TIPO_TABLA_TIENDA_EUROPA",
+                    "frecuenciaActualizacion": 300,
+                    "prioridad": null,
+                    "estatico": null,
+                    "sonido": null,
+                    "notificacion": false,
+                    "modoDemo": null,
+                    "formatedDescripcion": "TIPO TABLA TIENDA EUROPA"
+                },
+                "nombre": "19_19013",
+                "descripcion": "INDICADOR DINAMICO FICHERO",
+                "severidad": null,
+                "parametros": [
+                    {
+                        "idParametro": 13,
+                        "descripcion": "RESUMEN",
+                        "valor": "\"ZARA - ESPAÃ‘A - 2024-11-28 15:11:04+01 - INC000022911985: PDA ANDROID\\Wifi \"\"DuFf66piMa\"\" no disponible.... - ASIGNADO A: HELP DESK ESPAÃ‘A\"",
+                        "idIndicadorParametro": 114772801,
+                        "fechaAlta": 1732805542753
+                    },
+                    {
+                        "idParametro": 7,
+                        "descripcion": "NOMBRE",
+                        "valor": "\"62 - MAD-PRECIADOS\"",
+                        "idIndicadorParametro": 114772800,
+                        "fechaAlta": 1732805542753
+                    }
+                ]
+            },
+            {
+                "idIndicador": 19014,
+                "tipoIndicador": {
+                    "idTipoIndicador": 19,
+                    "descripcion": "TIPO_TABLA_TIENDA_EUROPA",
+                    "frecuenciaActualizacion": 300,
+                    "prioridad": null,
+                    "estatico": null,
+                    "sonido": null,
+                    "notificacion": false,
+                    "modoDemo": null,
+                    "formatedDescripcion": "TIPO TABLA TIENDA EUROPA"
+                },
+                "nombre": "19_19014",
+                "descripcion": "INDICADOR DINAMICO FICHERO",
+                "severidad": null,
+                "parametros": [
+                    {
+                        "idParametro": 7,
+                        "descripcion": "NOMBRE",
+                        "valor": "\"2590 - MAD-GRAN VIA\"",
+                        "idIndicadorParametro": 114772803,
+                        "fechaAlta": 1732805542800
+                    },
+                    {
+                        "idParametro": 13,
+                        "descripcion": "RESUMEN",
+                        "valor": "\"STRADIVARIUS - ESPAÃ‘A - 2024-11-28 10:53:19+01 - INC000022909280: CAJA SCO 39 - MÃ¡quina de efectivo en rojo.... - ASIGNADO A: ES-PROV-GLORY\"",
+                        "idIndicadorParametro": 114772802,
+                        "fechaAlta": 1732805542800
+                    }
+                ]
+            },
+            {
+                "idIndicador": 19015,
+                "tipoIndicador": {
+                    "idTipoIndicador": 19,
+                    "descripcion": "TIPO_TABLA_TIENDA_EUROPA",
+                    "frecuenciaActualizacion": 300,
+                    "prioridad": null,
+                    "estatico": null,
+                    "sonido": null,
+                    "notificacion": false,
+                    "modoDemo": null,
+                    "formatedDescripcion": "TIPO TABLA TIENDA EUROPA"
+                },
+                "nombre": "19_19015",
+                "descripcion": "INDICADOR DINAMICO FICHERO",
+                "severidad": null,
+                "parametros": [
+                    {
+                        "idParametro": 13,
+                        "descripcion": "RESUMEN",
+                        "valor": "\"OYSHO - ESPAÃ‘A - 2024-11-28 14:14:12+01 - INC000022911436: Probador digital\\No lee Prendas Codigo Barras.... - ASIGNADO A: HELP DESK ESPAÃ‘A\"",
+                        "idIndicadorParametro": 114772805,
+                        "fechaAlta": 1732805542847
+                    },
+                    {
+                        "idParametro": 7,
+                        "descripcion": "NOMBRE",
+                        "valor": "\"2399 - MAD-GRAN VIA\"",
+                        "idIndicadorParametro": 114772804,
+                        "fechaAlta": 1732805542831
+                    }
+                ]
+            },
+            {
+                "idIndicador": 19016,
+                "tipoIndicador": {
+                    "idTipoIndicador": 19,
+                    "descripcion": "TIPO_TABLA_TIENDA_EUROPA",
+                    "frecuenciaActualizacion": 300,
+                    "prioridad": null,
+                    "estatico": null,
+                    "sonido": null,
+                    "notificacion": false,
+                    "modoDemo": null,
+                    "formatedDescripcion": "TIPO TABLA TIENDA EUROPA"
+                },
+                "nombre": "19_19016",
+                "descripcion": "INDICADOR DINAMICO FICHERO",
+                "severidad": null,
+                "parametros": [
+                    {
+                        "idParametro": 13,
+                        "descripcion": "RESUMEN",
+                        "valor": "\"LEFTIES - ESPAÃ‘A - 2024-11-28 13:29:06+01 - INC000022911053: Day 2 //ARCO SEGURIDAD\\Sonido que procede de las antenas/arcos de seguridad (Zona de abajo).... - ASIGNADO A: TYCO - RFID EAS - EMEA\"",
+                        "idIndicadorParametro": 114772807,
+                        "fechaAlta": 1732805542878
+                    },
+                    {
+                        "idParametro": 7,
+                        "descripcion": "NOMBRE",
+                        "valor": "\"2029 - BCN-MAQUINISTA\"",
+                        "idIndicadorParametro": 114772806,
+                        "fechaAlta": 1732805542863
+                    }
+                ]
+            },
+            {
+                "idIndicador": 19017,
+                "tipoIndicador": {
+                    "idTipoIndicador": 19,
+                    "descripcion": "TIPO_TABLA_TIENDA_EUROPA",
+                    "frecuenciaActualizacion": 300,
+                    "prioridad": null,
+                    "estatico": null,
+                    "sonido": null,
+                    "notificacion": false,
+                    "modoDemo": null,
+                    "formatedDescripcion": "TIPO TABLA TIENDA EUROPA"
+                },
+                "nombre": "19_19017",
+                "descripcion": "INDICADOR DINAMICO FICHERO",
+                "severidad": null,
+                "parametros": [
+                    {
+                        "idParametro": 13,
+                        "descripcion": "RESUMEN",
+                        "valor": "\"ZARA - ESPAÃ‘A - 2024-11-28 14:55:58+01 - INC000022911795: PANEL DE CARGA - No cargan las PDAs.... - ASIGNADO A: PROSEGUR - MINIRACKS ESPAÃ‘A\"",
+                        "idIndicadorParametro": 114772808,
+                        "fechaAlta": 1732805542894
+                    },
+                    {
+                        "idParametro": 7,
+                        "descripcion": "NOMBRE",
+                        "valor": "\"6659 - S.SEB-N.MERCADO\"",
+                        "idIndicadorParametro": 114772809,
+                        "fechaAlta": 1732805542910
+                    }
+                ]
+            },
+            {
+                "idIndicador": 19018,
+                "tipoIndicador": {
+                    "idTipoIndicador": 19,
+                    "descripcion": "TIPO_TABLA_TIENDA_EUROPA",
+                    "frecuenciaActualizacion": 300,
+                    "prioridad": null,
+                    "estatico": null,
+                    "sonido": null,
+                    "notificacion": false,
+                    "modoDemo": null,
+                    "formatedDescripcion": "TIPO TABLA TIENDA EUROPA"
+                },
+                "nombre": "19_19018",
+                "descripcion": "INDICADOR DINAMICO FICHERO",
+                "severidad": null,
+                "parametros": [
+                    {
+                        "idParametro": 13,
+                        "descripcion": "RESUMEN",
+                        "valor": "\"ZARA HOME - EMIRATOS ARABES UNIDOS - 2024-11-28 13:34:57+01 - INC000022911076: PDA Android\\WIFI.... - ASIGNADO A: IT UAE - AZADEA\"",
+                        "idIndicadorParametro": 114772811,
+                        "fechaAlta": 1732805542941
+                    },
+                    {
+                        "idParametro": 7,
+                        "descripcion": "NOMBRE",
+                        "valor": "\"1726 - DUB-MALL OF THE EMIRATES\"",
+                        "idIndicadorParametro": 114772810,
+                        "fechaAlta": 1732805542941
+                    }
+                ]
+            }
+        ],
+        "tipoIndicadorUmbrals": []
+    },
+    {
+        "idTipoIndicador": 6,
+        "descripcion": "Incidencias en tiendas",
+        "frecuenciaActualizacion": 300,
+        "indicadores": [
+            {
+                "idIndicador": 139,
+                "tipoIndicador": {
+                    "idTipoIndicador": 6,
+                    "descripcion": "TIPO_TIENDA_INCIDENCIAS_ABIERTAS",
+                    "frecuenciaActualizacion": 300,
+                    "prioridad": null,
+                    "estatico": null,
+                    "sonido": null,
+                    "notificacion": false,
+                    "modoDemo": null,
+                    "formatedDescripcion": "TIPO TIENDA INCIDENCIAS ABIERTAS"
+                },
+                "nombre": "INCIDENCIAS_TGT_EUROPA",
+                "descripcion": "Incidencias en tiendas",
+                "severidad": null,
+                "parametros": [
+                    {
+                        "idParametro": 1,
+                        "descripcion": "NUMERO_ELEMENTOS",
+                        "valor": "93",
+                        "idIndicadorParametro": 327,
+                        "fechaAlta": 1418310867416
+                    }
+                ]
+            },
+            {
+                "idIndicador": 140,
+                "tipoIndicador": {
+                    "idTipoIndicador": 6,
+                    "descripcion": "TIPO_TIENDA_INCIDENCIAS_ABIERTAS",
+                    "frecuenciaActualizacion": 300,
+                    "prioridad": null,
+                    "estatico": null,
+                    "sonido": null,
+                    "notificacion": false,
+                    "modoDemo": null,
+                    "formatedDescripcion": "TIPO TIENDA INCIDENCIAS ABIERTAS"
+                },
+                "nombre": "INCIDENCIAS_TGT_ASIA",
+                "descripcion": "Incidencias en tiendas",
+                "severidad": null,
+                "parametros": [
+                    {
+                        "idParametro": 1,
+                        "descripcion": "NUMERO_ELEMENTOS",
+                        "valor": "7",
+                        "idIndicadorParametro": 328,
+                        "fechaAlta": 1418310867448
+                    }
+                ]
+            },
+            {
+                "idIndicador": 141,
+                "tipoIndicador": {
+                    "idTipoIndicador": 6,
+                    "descripcion": "TIPO_TIENDA_INCIDENCIAS_ABIERTAS",
+                    "frecuenciaActualizacion": 300,
+                    "prioridad": null,
+                    "estatico": null,
+                    "sonido": null,
+                    "notificacion": false,
+                    "modoDemo": null,
+                    "formatedDescripcion": "TIPO TIENDA INCIDENCIAS ABIERTAS"
+                },
+                "nombre": "INCIDENCIAS_COMM_AMERICA",
+                "descripcion": "Incidencias en tiendas",
+                "severidad": null,
+                "parametros": [
+                    {
+                        "idParametro": 1,
+                        "descripcion": "NUMERO_ELEMENTOS",
+                        "valor": "14",
+                        "idIndicadorParametro": 332,
+                        "fechaAlta": 1418310867557
+                    }
+                ]
+            },
+            {
+                "idIndicador": 142,
+                "tipoIndicador": {
+                    "idTipoIndicador": 6,
+                    "descripcion": "TIPO_TIENDA_INCIDENCIAS_ABIERTAS",
+                    "frecuenciaActualizacion": 300,
+                    "prioridad": null,
+                    "estatico": null,
+                    "sonido": null,
+                    "notificacion": false,
+                    "modoDemo": null,
+                    "formatedDescripcion": "TIPO TIENDA INCIDENCIAS ABIERTAS"
+                },
+                "nombre": "INCIDENCIAS_COMM_EUROPA",
+                "descripcion": "Incidencias en tiendas",
+                "severidad": null,
+                "parametros": [
+                    {
+                        "idParametro": 1,
+                        "descripcion": "NUMERO_ELEMENTOS",
+                        "valor": "39",
+                        "idIndicadorParametro": 330,
+                        "fechaAlta": 1418310867479
+                    }
+                ]
+            },
+            {
+                "idIndicador": 143,
+                "tipoIndicador": {
+                    "idTipoIndicador": 6,
+                    "descripcion": "TIPO_TIENDA_INCIDENCIAS_ABIERTAS",
+                    "frecuenciaActualizacion": 300,
+                    "prioridad": null,
+                    "estatico": null,
+                    "sonido": null,
+                    "notificacion": false,
+                    "modoDemo": null,
+                    "formatedDescripcion": "TIPO TIENDA INCIDENCIAS ABIERTAS"
+                },
+                "nombre": "INCIDENCIAS_COMM_ASIA",
+                "descripcion": "Incidencias en tiendas",
+                "severidad": null,
+                "parametros": [
+                    {
+                        "idParametro": 1,
+                        "descripcion": "NUMERO_ELEMENTOS",
+                        "valor": "5",
+                        "idIndicadorParametro": 331,
+                        "fechaAlta": 1418310867510
+                    }
+                ]
+            },
+            {
+                "idIndicador": 144,
+                "tipoIndicador": {
+                    "idTipoIndicador": 6,
+                    "descripcion": "TIPO_TIENDA_INCIDENCIAS_ABIERTAS",
+                    "frecuenciaActualizacion": 300,
+                    "prioridad": null,
+                    "estatico": null,
+                    "sonido": null,
+                    "notificacion": false,
+                    "modoDemo": null,
+                    "formatedDescripcion": "TIPO TIENDA INCIDENCIAS ABIERTAS"
+                },
+                "nombre": "INCIDENCIAS_MKD_AMERICA",
+                "descripcion": "Incidencias en tiendas",
+                "severidad": null,
+                "parametros": [
+                    {
+                        "idParametro": 1,
+                        "descripcion": "NUMERO_ELEMENTOS",
+                        "valor": "107",
+                        "idIndicadorParametro": 335,
+                        "fechaAlta": 1418310867682
+                    }
+                ]
+            },
+            {
+                "idIndicador": 16,
+                "tipoIndicador": {
+                    "idTipoIndicador": 6,
+                    "descripcion": "TIPO_TIENDA_INCIDENCIAS_ABIERTAS",
+                    "frecuenciaActualizacion": 300,
+                    "prioridad": null,
+                    "estatico": null,
+                    "sonido": null,
+                    "notificacion": false,
+                    "modoDemo": null,
+                    "formatedDescripcion": "TIPO TIENDA INCIDENCIAS ABIERTAS"
+                },
+                "nombre": "INCIDENCIAS_ABIERTAS_AMERICA",
+                "descripcion": "Tiendas que tienen en Remedy incidencias abiertas",
+                "severidad": null,
+                "parametros": []
+            },
+            {
+                "idIndicador": 17,
+                "tipoIndicador": {
+                    "idTipoIndicador": 6,
+                    "descripcion": "TIPO_TIENDA_INCIDENCIAS_ABIERTAS",
+                    "frecuenciaActualizacion": 300,
+                    "prioridad": null,
+                    "estatico": null,
+                    "sonido": null,
+                    "notificacion": false,
+                    "modoDemo": null,
+                    "formatedDescripcion": "TIPO TIENDA INCIDENCIAS ABIERTAS"
+                },
+                "nombre": "INCIDENCIAS_ABIERTAS_EUROPA",
+                "descripcion": "Tiendas que tienen en Remedy incidencias abiertas",
+                "severidad": null,
+                "parametros": []
+            },
+            {
+                "idIndicador": 145,
+                "tipoIndicador": {
+                    "idTipoIndicador": 6,
+                    "descripcion": "TIPO_TIENDA_INCIDENCIAS_ABIERTAS",
+                    "frecuenciaActualizacion": 300,
+                    "prioridad": null,
+                    "estatico": null,
+                    "sonido": null,
+                    "notificacion": false,
+                    "modoDemo": null,
+                    "formatedDescripcion": "TIPO TIENDA INCIDENCIAS ABIERTAS"
+                },
+                "nombre": "INCIDENCIAS_MKD_EUROPA",
+                "descripcion": "Incidencias en tiendas",
+                "severidad": null,
+                "parametros": [
+                    {
+                        "idParametro": 1,
+                        "descripcion": "NUMERO_ELEMENTOS",
+                        "valor": "360",
+                        "idIndicadorParametro": 333,
+                        "fechaAlta": 1418310867588
+                    }
+                ]
+            },
+            {
+                "idIndicador": 146,
+                "tipoIndicador": {
+                    "idTipoIndicador": 6,
+                    "descripcion": "TIPO_TIENDA_INCIDENCIAS_ABIERTAS",
+                    "frecuenciaActualizacion": 300,
+                    "prioridad": null,
+                    "estatico": null,
+                    "sonido": null,
+                    "notificacion": false,
+                    "modoDemo": null,
+                    "formatedDescripcion": "TIPO TIENDA INCIDENCIAS ABIERTAS"
+                },
+                "nombre": "INCIDENCIAS_MKD_ASIA",
+                "descripcion": "Incidencias en tiendas",
+                "severidad": null,
+                "parametros": [
+                    {
+                        "idParametro": 1,
+                        "descripcion": "NUMERO_ELEMENTOS",
+                        "valor": "43",
+                        "idIndicadorParametro": 334,
+                        "fechaAlta": 1418310867635
+                    }
+                ]
+            },
+            {
+                "idIndicador": 18,
+                "tipoIndicador": {
+                    "idTipoIndicador": 6,
+                    "descripcion": "TIPO_TIENDA_INCIDENCIAS_ABIERTAS",
+                    "frecuenciaActualizacion": 300,
+                    "prioridad": null,
+                    "estatico": null,
+                    "sonido": null,
+                    "notificacion": false,
+                    "modoDemo": null,
+                    "formatedDescripcion": "TIPO TIENDA INCIDENCIAS ABIERTAS"
+                },
+                "nombre": "INCIDENCIAS_ABIERTAS_ASIA",
+                "descripcion": "Tiendas que tienen en Remedy incidencias abiertas",
+                "severidad": null,
+                "parametros": []
+            },
+            {
+                "idIndicador": 132,
+                "tipoIndicador": {
+                    "idTipoIndicador": 6,
+                    "descripcion": "TIPO_TIENDA_INCIDENCIAS_ABIERTAS",
+                    "frecuenciaActualizacion": 300,
+                    "prioridad": null,
+                    "estatico": null,
+                    "sonido": null,
+                    "notificacion": false,
+                    "modoDemo": null,
+                    "formatedDescripcion": "TIPO TIENDA INCIDENCIAS ABIERTAS"
+                },
+                "nombre": "INCIDENCIAS_CAJA_AMERICA",
+                "descripcion": "Incidencias en tiendas",
+                "severidad": null,
+                "parametros": [
+                    {
+                        "idParametro": 1,
+                        "descripcion": "NUMERO_ELEMENTOS",
+                        "valor": "207",
+                        "idIndicadorParametro": 323,
+                        "fechaAlta": 1418310867338
+                    }
+                ]
+            },
+            {
+                "idIndicador": 133,
+                "tipoIndicador": {
+                    "idTipoIndicador": 6,
+                    "descripcion": "TIPO_TIENDA_INCIDENCIAS_ABIERTAS",
+                    "frecuenciaActualizacion": 300,
+                    "prioridad": null,
+                    "estatico": null,
+                    "sonido": null,
+                    "notificacion": false,
+                    "modoDemo": null,
+                    "formatedDescripcion": "TIPO TIENDA INCIDENCIAS ABIERTAS"
+                },
+                "nombre": "INCIDENCIAS_CAJA_EUROPA",
+                "descripcion": "Incidencias en tiendas",
+                "severidad": null,
+                "parametros": [
+                    {
+                        "idParametro": 1,
+                        "descripcion": "NUMERO_ELEMENTOS",
+                        "valor": "578",
+                        "idIndicadorParametro": 321,
+                        "fechaAlta": 1418310867276
+                    }
+                ]
+            },
+            {
+                "idIndicador": 134,
+                "tipoIndicador": {
+                    "idTipoIndicador": 6,
+                    "descripcion": "TIPO_TIENDA_INCIDENCIAS_ABIERTAS",
+                    "frecuenciaActualizacion": 300,
+                    "prioridad": null,
+                    "estatico": null,
+                    "sonido": null,
+                    "notificacion": false,
+                    "modoDemo": null,
+                    "formatedDescripcion": "TIPO TIENDA INCIDENCIAS ABIERTAS"
+                },
+                "nombre": "INCIDENCIAS_CAJA_ASIA",
+                "descripcion": "Incidencias en tiendas",
+                "severidad": null,
+                "parametros": [
+                    {
+                        "idParametro": 1,
+                        "descripcion": "NUMERO_ELEMENTOS",
+                        "valor": "71",
+                        "idIndicadorParametro": 322,
+                        "fechaAlta": 1418310867307
+                    }
+                ]
+            },
+            {
+                "idIndicador": 135,
+                "tipoIndicador": {
+                    "idTipoIndicador": 6,
+                    "descripcion": "TIPO_TIENDA_INCIDENCIAS_ABIERTAS",
+                    "frecuenciaActualizacion": 300,
+                    "prioridad": null,
+                    "estatico": null,
+                    "sonido": null,
+                    "notificacion": false,
+                    "modoDemo": null,
+                    "formatedDescripcion": "TIPO TIENDA INCIDENCIAS ABIERTAS"
+                },
+                "nombre": "INCIDENCIAS_PDA_AMERICA",
+                "descripcion": "Incidencias en tiendas",
+                "severidad": null,
+                "parametros": [
+                    {
+                        "idParametro": 1,
+                        "descripcion": "NUMERO_ELEMENTOS",
+                        "valor": "472",
+                        "idIndicadorParametro": 326,
+                        "fechaAlta": 1418310867401
+                    }
+                ]
+            },
+            {
+                "idIndicador": 136,
+                "tipoIndicador": {
+                    "idTipoIndicador": 6,
+                    "descripcion": "TIPO_TIENDA_INCIDENCIAS_ABIERTAS",
+                    "frecuenciaActualizacion": 300,
+                    "prioridad": null,
+                    "estatico": null,
+                    "sonido": null,
+                    "notificacion": false,
+                    "modoDemo": null,
+                    "formatedDescripcion": "TIPO TIENDA INCIDENCIAS ABIERTAS"
+                },
+                "nombre": "INCIDENCIAS_PDA_EUROPA",
+                "descripcion": "Incidencias en tiendas",
+                "severidad": null,
+                "parametros": [
+                    {
+                        "idParametro": 1,
+                        "descripcion": "NUMERO_ELEMENTOS",
+                        "valor": "1408",
+                        "idIndicadorParametro": 324,
+                        "fechaAlta": 1418310867370
+                    }
+                ]
+            },
+            {
+                "idIndicador": 137,
+                "tipoIndicador": {
+                    "idTipoIndicador": 6,
+                    "descripcion": "TIPO_TIENDA_INCIDENCIAS_ABIERTAS",
+                    "frecuenciaActualizacion": 300,
+                    "prioridad": null,
+                    "estatico": null,
+                    "sonido": null,
+                    "notificacion": false,
+                    "modoDemo": null,
+                    "formatedDescripcion": "TIPO TIENDA INCIDENCIAS ABIERTAS"
+                },
+                "nombre": "INCIDENCIAS_PDA_ASIA",
+                "descripcion": "Incidencias en tiendas",
+                "severidad": null,
+                "parametros": [
+                    {
+                        "idParametro": 1,
+                        "descripcion": "NUMERO_ELEMENTOS",
+                        "valor": "170",
+                        "idIndicadorParametro": 325,
+                        "fechaAlta": 1418310867385
+                    }
+                ]
+            },
+            {
+                "idIndicador": 138,
+                "tipoIndicador": {
+                    "idTipoIndicador": 6,
+                    "descripcion": "TIPO_TIENDA_INCIDENCIAS_ABIERTAS",
+                    "frecuenciaActualizacion": 300,
+                    "prioridad": null,
+                    "estatico": null,
+                    "sonido": null,
+                    "notificacion": false,
+                    "modoDemo": null,
+                    "formatedDescripcion": "TIPO TIENDA INCIDENCIAS ABIERTAS"
+                },
+                "nombre": "INCIDENCIAS_TGT_AMERICA",
+                "descripcion": "Incidencias en tiendas",
+                "severidad": null,
+                "parametros": [
+                    {
+                        "idParametro": 1,
+                        "descripcion": "NUMERO_ELEMENTOS",
+                        "valor": "28",
+                        "idIndicadorParametro": 329,
+                        "fechaAlta": 1418310867463
+                    }
+                ]
+            }
+        ],
+        "tipoIndicadorUmbrals": []
+    },
+    {
+        "idTipoIndicador": 12,
+        "descripcion": "Indicador tiendas en reforma",
+        "frecuenciaActualizacion": 60,
+        "indicadores": [
+            {
+                "idIndicador": 39,
+                "tipoIndicador": {
+                    "idTipoIndicador": 12,
+                    "descripcion": "TIPO_TIENDA_TIENDAS_EN_REFORMA",
+                    "frecuenciaActualizacion": 60,
+                    "prioridad": null,
+                    "estatico": null,
+                    "sonido": null,
+                    "notificacion": false,
+                    "modoDemo": null,
+                    "formatedDescripcion": "TIPO TIENDA TIENDAS EN REFORMA"
+                },
+                "nombre": "TIENDAS_EN_REFORMA_ASIA",
+                "descripcion": "Indicador tiendas en reforma",
+                "severidad": null,
+                "parametros": [
+                    {
+                        "idParametro": 1,
+                        "descripcion": "NUMERO_ELEMENTOS",
+                        "valor": "2",
+                        "idIndicadorParametro": 74,
+                        "fechaAlta": 1418310619429
+                    }
+                ]
+            },
+            {
+                "idIndicador": 37,
+                "tipoIndicador": {
+                    "idTipoIndicador": 12,
+                    "descripcion": "TIPO_TIENDA_TIENDAS_EN_REFORMA",
+                    "frecuenciaActualizacion": 60,
+                    "prioridad": null,
+                    "estatico": null,
+                    "sonido": null,
+                    "notificacion": false,
+                    "modoDemo": null,
+                    "formatedDescripcion": "TIPO TIENDA TIENDAS EN REFORMA"
+                },
+                "nombre": "TIENDAS_EN_REFORMA_AMERICA",
+                "descripcion": "Indicador tiendas en reforma",
+                "severidad": null,
+                "parametros": [
+                    {
+                        "idParametro": 1,
+                        "descripcion": "NUMERO_ELEMENTOS",
+                        "valor": "1",
+                        "idIndicadorParametro": 75,
+                        "fechaAlta": 1418310619491
+                    }
+                ]
+            },
+            {
+                "idIndicador": 38,
+                "tipoIndicador": {
+                    "idTipoIndicador": 12,
+                    "descripcion": "TIPO_TIENDA_TIENDAS_EN_REFORMA",
+                    "frecuenciaActualizacion": 60,
+                    "prioridad": null,
+                    "estatico": null,
+                    "sonido": null,
+                    "notificacion": false,
+                    "modoDemo": null,
+                    "formatedDescripcion": "TIPO TIENDA TIENDAS EN REFORMA"
+                },
+                "nombre": "TIENDAS_EN_REFORMA_EUROPA",
+                "descripcion": "Indicador tiendas en reforma",
+                "severidad": null,
+                "parametros": [
+                    {
+                        "idParametro": 1,
+                        "descripcion": "NUMERO_ELEMENTOS",
+                        "valor": "43",
+                        "idIndicadorParametro": 73,
+                        "fechaAlta": 1418310619351
+                    }
+                ]
+            }
+        ],
+        "tipoIndicadorUmbrals": []
+    },
+    {
+        "idTipoIndicador": 49,
+        "descripcion": "Pedidos Zara.com",
+        "frecuenciaActualizacion": 300,
+        "indicadores": [
+            {
+                "idIndicador": 127,
+                "tipoIndicador": {
+                    "idTipoIndicador": 49,
+                    "descripcion": "TIPO_PEDIDOS_ZARA",
+                    "frecuenciaActualizacion": 300,
+                    "prioridad": null,
+                    "estatico": null,
+                    "sonido": null,
+                    "notificacion": null,
+                    "modoDemo": null,
+                    "formatedDescripcion": "TIPO PEDIDOS ZARA"
+                },
+                "nombre": "PEDIDOS_ZARA_EUROPA",
+                "descripcion": "Pedidos Zara.com",
+                "severidad": null,
+                "parametros": []
+            },
+            {
+                "idIndicador": 128,
+                "tipoIndicador": {
+                    "idTipoIndicador": 49,
+                    "descripcion": "TIPO_PEDIDOS_ZARA",
+                    "frecuenciaActualizacion": 300,
+                    "prioridad": null,
+                    "estatico": null,
+                    "sonido": null,
+                    "notificacion": null,
+                    "modoDemo": null,
+                    "formatedDescripcion": "TIPO PEDIDOS ZARA"
+                },
+                "nombre": "PEDIDOS_ZARA_ASIA",
+                "descripcion": "Pedidos Zara.com",
+                "severidad": null,
+                "parametros": []
+            },
+            {
+                "idIndicador": 126,
+                "tipoIndicador": {
+                    "idTipoIndicador": 49,
+                    "descripcion": "TIPO_PEDIDOS_ZARA",
+                    "frecuenciaActualizacion": 300,
+                    "prioridad": null,
+                    "estatico": null,
+                    "sonido": null,
+                    "notificacion": null,
+                    "modoDemo": null,
+                    "formatedDescripcion": "TIPO PEDIDOS ZARA"
+                },
+                "nombre": "PEDIDOS_ZARA_AMERICA",
+                "descripcion": "Pedidos Zara.com",
+                "severidad": null,
+                "parametros": []
+            }
+        ],
+        "tipoIndicadorUmbrals": []
+    },
+    {
+        "idTipoIndicador": 1,
+        "descripcion": "Número de tickets acumulados desde las 06:00",
+        "frecuenciaActualizacion": 60,
+        "indicadores": [
+            {
+                "idIndicador": 3,
+                "tipoIndicador": {
+                    "idTipoIndicador": 1,
+                    "descripcion": "TIPO_TIENDA_TICKETS_ACUMULADOS",
+                    "frecuenciaActualizacion": 60,
+                    "prioridad": null,
+                    "estatico": null,
+                    "sonido": null,
+                    "notificacion": null,
+                    "modoDemo": null,
+                    "formatedDescripcion": "TIPO TIENDA TICKETS ACUMULADOS"
+                },
+                "nombre": "TICKETS_ACUMULADOS_ASIA",
+                "descripcion": "Número de tickets acumulados desde las 06:00",
+                "severidad": null,
+                "parametros": []
+            },
+            {
+                "idIndicador": 1,
+                "tipoIndicador": {
+                    "idTipoIndicador": 1,
+                    "descripcion": "TIPO_TIENDA_TICKETS_ACUMULADOS",
+                    "frecuenciaActualizacion": 60,
+                    "prioridad": null,
+                    "estatico": null,
+                    "sonido": null,
+                    "notificacion": null,
+                    "modoDemo": null,
+                    "formatedDescripcion": "TIPO TIENDA TICKETS ACUMULADOS"
+                },
+                "nombre": "TICKETS_ACUMULADOS_AMERICA",
+                "descripcion": "Número de tickets acumulados desde las 06:00",
+                "severidad": null,
+                "parametros": []
+            },
+            {
+                "idIndicador": 2,
+                "tipoIndicador": {
+                    "idTipoIndicador": 1,
+                    "descripcion": "TIPO_TIENDA_TICKETS_ACUMULADOS",
+                    "frecuenciaActualizacion": 60,
+                    "prioridad": null,
+                    "estatico": null,
+                    "sonido": null,
+                    "notificacion": null,
+                    "modoDemo": null,
+                    "formatedDescripcion": "TIPO TIENDA TICKETS ACUMULADOS"
+                },
+                "nombre": "TICKETS_ACUMULADOS_EUROPA",
+                "descripcion": "Número de tickets acumulados desde las 06:00",
+                "severidad": null,
+                "parametros": []
+            }
+        ],
+        "tipoIndicadorUmbrals": []
+    },
+    {
+        "idTipoIndicador": 5,
+        "descripcion": "Tiendas que tienen contenidos de vídeo pendientes de descarga",
+        "frecuenciaActualizacion": 300,
+        "indicadores": [
+            {
+                "idIndicador": 15,
+                "tipoIndicador": {
+                    "idTipoIndicador": 5,
+                    "descripcion": "TIPO_TIENDA_CONTENIDOS_PENDIENTES",
+                    "frecuenciaActualizacion": 300,
+                    "prioridad": null,
+                    "estatico": null,
+                    "sonido": null,
+                    "notificacion": false,
+                    "modoDemo": null,
+                    "formatedDescripcion": "TIPO TIENDA CONTENIDOS PENDIENTES"
+                },
+                "nombre": "CONTENIDOS_PENDIENTES_ASIA",
+                "descripcion": "Tiendas que tienen contenidos de vídeo pendientes de descarga",
+                "severidad": null,
+                "parametros": [
+                    {
+                        "idParametro": 1,
+                        "descripcion": "NUMERO_ELEMENTOS",
+                        "valor": "0",
+                        "idIndicadorParametro": 310,
+                        "fechaAlta": 1418310866963
+                    }
+                ]
+            },
+            {
+                "idIndicador": 13,
+                "tipoIndicador": {
+                    "idTipoIndicador": 5,
+                    "descripcion": "TIPO_TIENDA_CONTENIDOS_PENDIENTES",
+                    "frecuenciaActualizacion": 300,
+                    "prioridad": null,
+                    "estatico": null,
+                    "sonido": null,
+                    "notificacion": false,
+                    "modoDemo": null,
+                    "formatedDescripcion": "TIPO TIENDA CONTENIDOS PENDIENTES"
+                },
+                "nombre": "CONTENIDOS_PENDIENTES_AMERICA",
+                "descripcion": "Tiendas que tienen contenidos de vídeo pendientes de descarga",
+                "severidad": null,
+                "parametros": [
+                    {
+                        "idParametro": 1,
+                        "descripcion": "NUMERO_ELEMENTOS",
+                        "valor": "0",
+                        "idIndicadorParametro": 311,
+                        "fechaAlta": 1418310866995
+                    }
+                ]
+            },
+            {
+                "idIndicador": 14,
+                "tipoIndicador": {
+                    "idTipoIndicador": 5,
+                    "descripcion": "TIPO_TIENDA_CONTENIDOS_PENDIENTES",
+                    "frecuenciaActualizacion": 300,
+                    "prioridad": null,
+                    "estatico": null,
+                    "sonido": null,
+                    "notificacion": false,
+                    "modoDemo": null,
+                    "formatedDescripcion": "TIPO TIENDA CONTENIDOS PENDIENTES"
+                },
+                "nombre": "CONTENIDOS_PENDIENTES_EUROPA",
+                "descripcion": "Tiendas que tienen contenidos de vídeo pendientes de descarga",
+                "severidad": null,
+                "parametros": [
+                    {
+                        "idParametro": 1,
+                        "descripcion": "NUMERO_ELEMENTOS",
+                        "valor": "0",
+                        "idIndicadorParametro": 309,
+                        "fechaAlta": 1418310866901
+                    }
+                ]
+            }
+        ],
+        "tipoIndicadorUmbrals": []
+    },
+    {
+        "idTipoIndicador": 2,
+        "descripcion": "Número de tickets recibidos en los últimos 5”",
+        "frecuenciaActualizacion": 60,
+        "indicadores": [
+            {
+                "idIndicador": 4,
+                "tipoIndicador": {
+                    "idTipoIndicador": 2,
+                    "descripcion": "TIPO_TIENDA_TICKETS_ONLINE",
+                    "frecuenciaActualizacion": 60,
+                    "prioridad": null,
+                    "estatico": null,
+                    "sonido": null,
+                    "notificacion": null,
+                    "modoDemo": null,
+                    "formatedDescripcion": "TIPO TIENDA TICKETS ONLINE"
+                },
+                "nombre": "TICKETS_ONLINE_AMERICA",
+                "descripcion": "Número de tickets recibidos en los últimos 5”",
+                "severidad": null,
+                "parametros": []
+            },
+            {
+                "idIndicador": 5,
+                "tipoIndicador": {
+                    "idTipoIndicador": 2,
+                    "descripcion": "TIPO_TIENDA_TICKETS_ONLINE",
+                    "frecuenciaActualizacion": 60,
+                    "prioridad": null,
+                    "estatico": null,
+                    "sonido": null,
+                    "notificacion": null,
+                    "modoDemo": null,
+                    "formatedDescripcion": "TIPO TIENDA TICKETS ONLINE"
+                },
+                "nombre": "TICKETS_ONLINE_EUROPA",
+                "descripcion": "Número de tickets recibidos en los últimos 5”",
+                "severidad": null,
+                "parametros": []
+            },
+            {
+                "idIndicador": 6,
+                "tipoIndicador": {
+                    "idTipoIndicador": 2,
+                    "descripcion": "TIPO_TIENDA_TICKETS_ONLINE",
+                    "frecuenciaActualizacion": 60,
+                    "prioridad": null,
+                    "estatico": null,
+                    "sonido": null,
+                    "notificacion": null,
+                    "modoDemo": null,
+                    "formatedDescripcion": "TIPO TIENDA TICKETS ONLINE"
+                },
+                "nombre": "TICKETS_ONLINE_ASIA",
+                "descripcion": "Número de tickets recibidos en los últimos 5”",
+                "severidad": null,
+                "parametros": []
+            }
+        ],
+        "tipoIndicadorUmbrals": []
+    },
+    {
+        "idTipoIndicador": 4,
+        "descripcion": "Tiendas que en las dos últimas horas no han enviado ventas a pesar de estar abiertas",
+        "frecuenciaActualizacion": 300,
+        "indicadores": [
+            {
+                "idIndicador": 11,
+                "tipoIndicador": {
+                    "idTipoIndicador": 4,
+                    "descripcion": "TIPO_TIENDA_TIENDAS_OFFLINE",
+                    "frecuenciaActualizacion": 300,
+                    "prioridad": null,
+                    "estatico": null,
+                    "sonido": null,
+                    "notificacion": true,
+                    "modoDemo": null,
+                    "formatedDescripcion": "TIPO TIENDA TIENDAS OFFLINE"
+                },
+                "nombre": "TIENDAS_OFFLINE_EUROPA",
+                "descripcion": "Tiendas que en las dos últimas horas no han enviado ventas a pesar de estar abiertas",
+                "severidad": null,
+                "parametros": [
+                    {
+                        "idParametro": 1,
+                        "descripcion": "NUMERO_ELEMENTOS",
+                        "valor": "4",
+                        "idIndicadorParametro": 318,
+                        "fechaAlta": 1418310867198
+                    }
+                ]
+            },
+            {
+                "idIndicador": 12,
+                "tipoIndicador": {
+                    "idTipoIndicador": 4,
+                    "descripcion": "TIPO_TIENDA_TIENDAS_OFFLINE",
+                    "frecuenciaActualizacion": 300,
+                    "prioridad": null,
+                    "estatico": null,
+                    "sonido": null,
+                    "notificacion": true,
+                    "modoDemo": null,
+                    "formatedDescripcion": "TIPO TIENDA TIENDAS OFFLINE"
+                },
+                "nombre": "TIENDAS_OFFLINE_ASIA",
+                "descripcion": "Tiendas que en las dos últimas horas no han enviado ventas a pesar de estar abiertas",
+                "severidad": null,
+                "parametros": [
+                    {
+                        "idParametro": 1,
+                        "descripcion": "NUMERO_ELEMENTOS",
+                        "valor": "1",
+                        "idIndicadorParametro": 319,
+                        "fechaAlta": 1418310867229
+                    }
+                ]
+            },
+            {
+                "idIndicador": 10,
+                "tipoIndicador": {
+                    "idTipoIndicador": 4,
+                    "descripcion": "TIPO_TIENDA_TIENDAS_OFFLINE",
+                    "frecuenciaActualizacion": 300,
+                    "prioridad": null,
+                    "estatico": null,
+                    "sonido": null,
+                    "notificacion": true,
+                    "modoDemo": null,
+                    "formatedDescripcion": "TIPO TIENDA TIENDAS OFFLINE"
+                },
+                "nombre": "TIENDAS_OFFLINE_AMERICA",
+                "descripcion": "Tiendas que en las dos últimas horas no han enviado ventas a pesar de estar abiertas",
+                "severidad": null,
+                "parametros": [
+                    {
+                        "idParametro": 1,
+                        "descripcion": "NUMERO_ELEMENTOS",
+                        "valor": "5",
+                        "idIndicadorParametro": 320,
+                        "fechaAlta": 1418310867245
+                    }
+                ]
+            }
+        ],
+        "tipoIndicadorUmbrals": [
+            {
+                "idTipoIndicadorUmbral": 2,
+                "tipoIndicador": null,
+                "umbral": {
+                    "idUmbral": 23,
+                    "idTipoIndicador": null,
+                    "minimo": 100,
+                    "maximo": 999999,
+                    "tipoUmbral": {
+                        "idTipoUmbral": 2,
+                        "rgb": "red    ",
+                        "descripcion": "Red"
+                    }
+                }
+            },
+            {
+                "idTipoIndicadorUmbral": 3,
+                "tipoIndicador": null,
+                "umbral": {
+                    "idUmbral": 41,
+                    "idTipoIndicador": null,
+                    "minimo": 60,
+                    "maximo": 101,
+                    "tipoUmbral": {
+                        "idTipoUmbral": 1,
+                        "rgb": "orange ",
+                        "descripcion": "Orange"
+                    }
+                }
+            }
+        ]
+    },
+    {
+        "idTipoIndicador": 50,
+        "descripcion": "Pedidos eCommerce",
+        "frecuenciaActualizacion": 300,
+        "indicadores": [
+            {
+                "idIndicador": 131,
+                "tipoIndicador": {
+                    "idTipoIndicador": 50,
+                    "descripcion": "TIPO_PEDIDOS_ECOMMERCE",
+                    "frecuenciaActualizacion": 300,
+                    "prioridad": null,
+                    "estatico": null,
+                    "sonido": null,
+                    "notificacion": null,
+                    "modoDemo": null,
+                    "formatedDescripcion": "TIPO PEDIDOS ECOMMERCE"
+                },
+                "nombre": "PEDIDOS_ECOMMERCE_ASIA",
+                "descripcion": "Pedidos eCommerce",
+                "severidad": null,
+                "parametros": []
+            },
+            {
+                "idIndicador": 129,
+                "tipoIndicador": {
+                    "idTipoIndicador": 50,
+                    "descripcion": "TIPO_PEDIDOS_ECOMMERCE",
+                    "frecuenciaActualizacion": 300,
+                    "prioridad": null,
+                    "estatico": null,
+                    "sonido": null,
+                    "notificacion": null,
+                    "modoDemo": null,
+                    "formatedDescripcion": "TIPO PEDIDOS ECOMMERCE"
+                },
+                "nombre": "PEDIDOS_ECOMMERCE_AMERICA",
+                "descripcion": "Pedidos eCommerce",
+                "severidad": null,
+                "parametros": []
+            },
+            {
+                "idIndicador": 130,
+                "tipoIndicador": {
+                    "idTipoIndicador": 50,
+                    "descripcion": "TIPO_PEDIDOS_ECOMMERCE",
+                    "frecuenciaActualizacion": 300,
+                    "prioridad": null,
+                    "estatico": null,
+                    "sonido": null,
+                    "notificacion": null,
+                    "modoDemo": null,
+                    "formatedDescripcion": "TIPO PEDIDOS ECOMMERCE"
+                },
+                "nombre": "PEDIDOS_ECOMMERCE_EUROPA",
+                "descripcion": "Pedidos eCommerce",
+                "severidad": null,
+                "parametros": []
+            }
+        ],
+        "tipoIndicadorUmbrals": []
+    }
+]

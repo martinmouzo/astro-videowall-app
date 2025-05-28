@@ -16,6 +16,7 @@ interface RegionData {
     cy: number;
     r: number;
   };
+  regionColor: string;
 }
 
 const regions: RegionData[] = [
@@ -25,6 +26,7 @@ const regions: RegionData[] = [
     iconSrc: "/icons/america-pin.svg",
     position: { top: "10%", left: "14%", transform: "translate(-50%, -50%)" },
     circle: { cx: 650, cy: 650, r: 630 },
+    regionColor: "#54ccb8",
   },
   {
     id: "europe",
@@ -32,6 +34,7 @@ const regions: RegionData[] = [
     iconSrc: "/icons/europe-pin.svg",
     position: { top: "15%", left: "50%", transform: "translate(-50%, -50%)" },
     circle: { cx: 1928, cy: 700, r: 630 },
+    regionColor: "#5e97fe",
   },
   {
     id: "asia",
@@ -39,6 +42,7 @@ const regions: RegionData[] = [
     iconSrc: "/icons/asia-pin.svg",
     position: { top: "20%", left: "150%", transform: "translate(-50%, -50%)" },
     circle: { cx: 3200, cy: 950, r: 630 },
+    regionColor: "#605beb",
   },
 ];
 

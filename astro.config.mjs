@@ -5,8 +5,10 @@ import vue from '@astrojs/vue';
 
 import react from '@astrojs/react';
 
+import icon from "astro-icon";
+
 // https://astro.build/config
 export default defineConfig({
   output: 'server',
-  integrations: [vue(), react()]
+  integrations: [vue(), react(), icon(),]
 });

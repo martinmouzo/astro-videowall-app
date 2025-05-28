@@ -1,6 +1,11 @@
 ---
 // Supports weights 300-700
 import '@fontsource-variable/quicksand';
+import { Icon } from 'astro-icon/components'
+import IndicatorList from './IndicatorList.astro';
+import RegionSummary from './RegionSummary.astro';
+import UpdateIndicator from './UpdateIndicator.astro';
+import indicadoresData from '../mocks/data/indicadores.json';
 
 export interface Props {
   id: string;
@@ -52,9 +57,13 @@ const overlayContainerStyle = `
   <div class="overlay-content">
     <div class="overlay-header">
       <h4>{name}</h4>
+      <RegionSummary region={id} indicadores={indicadoresData} />
     </div>
     <div class="overlay-body">
-      <p class="future-content-placeholder">(Contenido adicional futuro)</p>
+      <IndicatorList region={id} indicadores={indicadoresData} />
+    </div>
+    <div class="overlay-footer">
+      <UpdateIndicator frequency={300} />
     </div>
   </div>
 </div>
@@ -71,8 +80,8 @@ const overlayContainerStyle = `
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center; /* Centra el contenido si es corto, o ajusta según necesidad */
-    padding: 10%; /* Espaciado interno relativo al tamaño del círculo */
+    justify-content: space-between; /* Distribuye el contenido entre header, body y footer */
+    padding: 8%; /* Espaciado interno relativo al tamaño del círculo */
     box-sizing: border-box;
     pointer-events: auto; /* Permite interacción con el contenido */
     color: white;
@@ -84,17 +93,17 @@ const overlayContainerStyle = `
   .overlay-header {
     padding: 0.4em 0.8em;
     border-radius: 0.25em;
-    margin-bottom: 0.5em;
+    margin-bottom: 0.3em;
     width: auto; /* Ajusta al contenido */
     max-width: 90%; /* Evita que sea demasiado ancho */
   }
 
   .overlay-header h4 {
     margin: 0;
-    font-size: 1.6em; /* Relativo al font-size del .overlay-content */
+    font-size: 1.4em; /* Relativo al font-size del .overlay-content */
     white-space: pre-wrap; /* Para manejar nombres multilínea */
     font-weight: 700;
-    letter-spacing: .2em;
+    letter-spacing: .15em;
     text-shadow: 1px 1px 2px black;
     font-family: 'Quicksand Variable', sans-serif;
   }
@@ -102,13 +111,19 @@ const overlayContainerStyle = `
   .overlay-body {
     flex-grow: 1; /* Permite que el cuerpo ocupe el espacio restante */
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     justify-content: center;
     width: 100%;
+    overflow: hidden;
+    padding-top: 0.5em;
   }
 
-  .future-content-placeholder {
-    font-size: 0.85em;
-    opacity: 0.8;
+  .overlay-footer {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 0.5em;
+    position: relative;
   }
 </style>

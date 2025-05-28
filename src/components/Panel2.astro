@@ -311,3 +311,37 @@ const brandLogos = [
     filter: grayscale(80%) brightness(1.2);
   }
 </style>
+
+<script>
+  import { gsap } from "gsap";
+
+  function animateIndicatorDots() {
+    const indicatorDots = document.querySelectorAll(".indicator-dot");
+
+    console.log("Dots found:", indicatorDots.length); // Debug log
+
+    indicatorDots.forEach((dot, index) => {
+      gsap.to(dot, {
+        // Estado final de la animación (verde más contrastado)
+        backgroundColor: "#4ade80", // Verde más brillante y contrastado
+        boxShadow: "0 0 20px rgba(74, 222, 128, 0.7)", // Sombra verde suave pero visible
+        duration: 2.0, // Duración más lenta para un parpadeo más leve
+        repeat: -1, // Repetir indefinidamente
+        yoyo: true, // Alternar entre el estado inicial y el final
+        ease: "sine.inOut", // Suavizar el inicio y el final de la animación
+        delay: index * 0.4, // Retraso para que cada punto parpadee en secuencia
+      });
+    });
+  }
+
+  // Múltiples formas de inicializar para asegurar que funcione
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", animateIndicatorDots);
+  } else {
+    // DOM ya está listo, ejecutar inmediatamente
+    animateIndicatorDots();
+  }
+
+  // También para navegación en Astro
+  document.addEventListener("astro:page-load", animateIndicatorDots);
+</script>
