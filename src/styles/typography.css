@@ -1,0 +1,77 @@
+/*
+ * Videowall Typography Configuration
+ * Defines consistent usage of Roboto Mono Variable across components
+ */
+
+/* Primary data display elements */
+.videowall-data {
+  font-family: 'Roboto Mono Variable', 'Roboto Mono', monospace;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.3px;
+}
+
+/* Numeric values (statistics, counts, etc.) */
+.videowall-numeric {
+  font-family: 'Roboto Mono Variable', 'Roboto Mono', monospace;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.5px;
+}
+
+/* Technical status messages */
+.videowall-status {
+  font-family: 'Roboto Mono Variable', 'Roboto Mono', monospace;
+  font-weight: 400;
+  letter-spacing: 0.2px;
+}
+
+/* Error and warning messages */
+.videowall-alert {
+  font-family: 'Roboto Mono Variable', 'Roboto Mono', monospace;
+  font-weight: 500;
+  letter-spacing: 0.3px;
+}
+
+/* Timestamps and technical info */
+.videowall-timestamp {
+  font-family: 'Roboto Mono Variable', 'Roboto Mono', monospace;
+  font-weight: 300;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.4px;
+}
+
+/* Chart loading and error states */
+.grafana-chart .loading {
+  font-family: 'Roboto Mono Variable', 'Roboto Mono', monospace;
+  font-weight: 400;
+  letter-spacing: 0.3px;
+}
+
+.grafana-chart .loading-content.error {
+  font-family: 'Roboto Mono Variable', 'Roboto Mono', monospace;
+  font-weight: 500;
+  letter-spacing: 0.2px;
+}
+
+/* Indicator values */
+.indicator-value,
+.stat-value {
+  font-family: 'Roboto Mono Variable', 'Roboto Mono', monospace;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.5px;
+}
+
+/* Animation optimization for monospace fonts */
+@supports (font-variation-settings: normal) {
+  .videowall-data,
+  .videowall-numeric,
+  .videowall-status,
+  .videowall-alert,
+  .videowall-timestamp {
+    font-variation-settings:
+      "wght" var(--font-weight, 400),
+      "slnt" 0;
+  }
+}

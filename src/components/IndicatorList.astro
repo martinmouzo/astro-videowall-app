@@ -95,7 +95,8 @@ const formatIndicatorName = (nombre: string, region: string): string => {
     .toLowerCase()
     .split(' ')
     .map((word: string) => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(' ');
+    .join(' ')
+    .toUpperCase(); // Convertir todo a mayúsculas
 };
 
 const indicadoresRegion = getIndicadoresPorRegion(indicadores, region);
@@ -134,11 +135,12 @@ const indicadoresRegion = getIndicadoresPorRegion(indicadores, region);
     font-size: clamp(0.7em, 1.4vmin, 0.9em); /* Aumentado rango para mejor legibilidad */
     line-height: 1.1; /* Reducido para más compactación */
     padding: 6px 4px; /* Reducido padding para ahorrar espacio */
-    background: rgba(255, 255, 255, 0.15); /* Mejor contraste */
+    /* background: rgba(255, 255, 255, 0.15); Mejor contraste */
+    background: rgba(0, 0, 0, 0.3);
     border-radius: 4px;
-    border-left: 3px solid #00ff00;
+    border-left: 4px solid #00ff00;
     min-height: 26px; /* Reducido de 34px a 26px para mejor ajuste */
-    backdrop-filter: blur(2px);
+    backdrop-filter: blur(3px);
     transition: all 0.2s ease;
     box-sizing: border-box; /* Asegurar que el padding no cause desbordamiento */
   }
@@ -192,6 +194,10 @@ const indicadoresRegion = getIndicadoresPorRegion(indicadores, region);
     text-align: right;
     font-size: 1em; /* Reducido de 1.1em para mejor ajuste */
     text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+    font-family: 'Roboto Mono Variable', 'Roboto Mono', monospace;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.5px;
   }
 
   .indicator-label {

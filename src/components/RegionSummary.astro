@@ -84,7 +84,7 @@ const getStatusColor = () => {
 
   .summary-stats {
     display: flex;
-    gap: 6px; /* Reducido de 8px a 6px */
+    gap: 12px; /* Incrementado de 6px a 12px para mejor separación visual */
     font-size: 0.80em; /* Reducido de 0.90em */
     align-items: center;
   }
@@ -108,6 +108,10 @@ const getStatusColor = () => {
     font-weight: bold;
     font-size: 1.1em;
     line-height: 1;
+    font-family: 'Roboto Mono Variable', 'Roboto Mono', monospace;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.3px;
   }
 
   .stat-label {
@@ -131,7 +135,7 @@ const getStatusColor = () => {
 
     .summary-stats {
       font-size: 0.75em;
-      gap: 8px;
+      gap: 10px; /* Incrementado de 8px a 10px para mantener proporción */
     }
 
     .status-indicator {

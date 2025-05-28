@@ -35,7 +35,7 @@ const {
   graphId,
   startTime = "end-30m",
   endTime = "now",
-  refreshInterval = 120000,
+  refreshInterval = 240000,
   width = "100%",
   height = "100%",
   logoUrl = "",
@@ -49,18 +49,29 @@ const {
 // IDs únicos para los elementos DOM
 const containerId = `container-${uniqueId}`;
 const imageId = `image-${uniqueId}`;
+const imageBackId = `image-back-${uniqueId}`;
 const loadingId = `loading-${uniqueId}`;
 ---
 
 <div class="grafana-chart-host" id={containerId} style={`width: ${width}; height: ${height};`}>
   {logoUrl && logoHeight !== "0px" && <img src={logoUrl} class="logo" alt="Logo" />}
+  <!-- Imagen principal -->
   <img
     id={imageId}
     alt={`Grafana Chart ${graphId}`}
-    style={`display: none; max-width: 100%; max-height: 100%; width: 100%; height: 100%; object-fit: contain; margin: auto; border: none; padding: 0; background-color: transparent; aspect-ratio: ${imageAspectRatio};`}
+    class="chart-image"
+  />
+  <!-- Imagen de respaldo para transiciones suaves -->
+  <img
+    id={imageBackId}
+    alt={`Grafana Chart ${graphId} Background`}
+    class="chart-image-back"
   />
   <div id={loadingId} class="loading">
-    {loadingText}
+    <div class="loading-content">
+      <div class="spinner"></div>
+      <div>{loadingText}</div>
+    </div>
   </div>
 </div>
 
@@ -68,22 +79,26 @@ const loadingId = `loading-${uniqueId}`;
   define:vars={{
     containerId,
     imageId,
+    imageBackId,
     loadingId,
     graphId,
     startTime,
     endTime,
     refreshInterval,
     extraParams
-    // No longer passing fixed IMAGE_NATIVE_WIDTH/HEIGHT
   }}
 >
   const containerElement = document.getElementById(containerId);
   const imageElement = document.getElementById(imageId);
+  const imageBackElement = document.getElementById(imageBackId);
   const loadingElement = document.getElementById(loadingId);
   let intervalId = undefined;
+  let retryTimeoutId = undefined;
+  let isTransitioning = false;
+  let currentImageIsBack = false;
 
   const updateImageUrl = () => {
-    if (containerElement && imageElement && loadingElement) {
+    if (containerElement && imageElement && imageBackElement && loadingElement) {
       const actualWidth = Math.floor(containerElement.offsetWidth);
       const actualHeight = Math.floor(containerElement.offsetHeight);
 
@@ -91,6 +106,11 @@ const loadingId = `loading-${uniqueId}`;
         // If container has no dimensions yet, retry shortly.
         // This can happen during initial layout or if hidden.
         setTimeout(updateImageUrl, 100);
+        return;
+      }
+
+      if (isTransitioning) {
+        // Skip update if transition is in progress
         return;
       }
 
@@ -110,27 +130,124 @@ const loadingId = `loading-${uniqueId}`;
 
       const newImageUrl = `/api/grafana-proxy?${params.toString()}`;
 
-      if (imageElement.src !== newImageUrl) {
+      // Determine which image to load into (the one that's currently not visible)
+      const targetImage = currentImageIsBack ? imageElement : imageBackElement;
+      const visibleImage = currentImageIsBack ? imageBackElement : imageElement;
+
+      // Show loading state only for the first load
+      if (!visibleImage.src || visibleImage.style.opacity === "0") {
         loadingElement.style.display = "flex";
-        imageElement.style.display = "none";
-        imageElement.src = newImageUrl;
+        loadingElement.innerHTML = `
+          <div class="loading-content">
+            <div class="spinner"></div>
+            <div>Cargando gráfico...</div>
+          </div>
+        `;
       }
 
-      imageElement.onload = () => {
-        setTimeout(() => {
-          loadingElement.style.display = "none";
-          imageElement.style.display = "block";
-        }, 50);
+      targetImage.onload = () => {
+        // Clear any pending retry timeout
+        if (retryTimeoutId) {
+          clearTimeout(retryTimeoutId);
+          retryTimeoutId = undefined;
+        }
+
+        // Check if this is actually a placeholder image (error response)
+        fetch(newImageUrl, { method: 'HEAD' })
+          .then(response => {
+            if (response.headers.get('X-Grafana-Error')) {
+              const errorType = response.headers.get('X-Grafana-Error');
+              const retryDelay = errorType === 'service-error' ? 30000 : 45000; // 30s for service errors, 45s for network errors
+
+              console.warn(`Grafana ${errorType} detected for ${graphId}, will retry in ${retryDelay/1000} seconds`);
+
+              // Update loading message to show error state
+              loadingElement.innerHTML = `
+                <div class="loading-content error">
+                  <div class="error-icon">⚠</div>
+                  <div>Servicio temporalmente no disponible</div>
+                  <div class="retry-info">Reintentando automáticamente...</div>
+                </div>
+              `;
+              loadingElement.style.display = "flex";
+
+              // Schedule a retry
+              retryTimeoutId = setTimeout(updateImageUrl, retryDelay);
+            } else {
+              // Successful load - perform smooth transition
+              performSmoothTransition(targetImage, visibleImage);
+            }
+          })
+          .catch(() => {
+            // If HEAD request fails, assume it's a valid image
+            performSmoothTransition(targetImage, visibleImage);
+          });
       };
 
-      imageElement.onerror = () => {
-        loadingElement.innerHTML = "Error al cargar el gráfico";
-        imageElement.alt = `Error al cargar gráfico ${graphId}`;
-        console.error(`Error cargando gráfico ${graphId}`);
+      targetImage.onerror = () => {
+        console.error(`Error loading chart ${graphId}`);
+
+        // Show error state
+        loadingElement.innerHTML = `
+          <div class="loading-content error">
+            <div class="error-icon">⚠</div>
+            <div>Error al cargar gráfico</div>
+            <div class="retry-info">Reintentando en 45 segundos...</div>
+          </div>
+        `;
+        loadingElement.style.display = "flex";
+
+        // Schedule a retry for network errors
+        retryTimeoutId = setTimeout(updateImageUrl, 45000);
       };
+
+      // Only update src if it's different to avoid unnecessary reloads
+      if (targetImage.src !== newImageUrl) {
+        targetImage.src = newImageUrl;
+      }
     } else {
       console.error("GrafanaChart: Elementos DOM no encontrados.");
     }
+  };
+
+  const performSmoothTransition = (newImage, oldImage) => {
+    if (isTransitioning) return;
+
+    isTransitioning = true;
+    loadingElement.style.display = "none";
+
+    // If this is the first image load
+    if (oldImage.style.opacity === "0" && newImage.style.opacity === "0") {
+      newImage.style.opacity = "1";
+      currentImageIsBack = !currentImageIsBack;
+      isTransitioning = false;
+      return;
+    }
+
+    // Prepare the new image for transition
+    newImage.style.opacity = "0";
+    newImage.style.display = "block";
+
+    // Force reflow to ensure styles are applied
+    newImage.offsetHeight;
+
+    // Start the fade transition
+    requestAnimationFrame(() => {
+      newImage.style.transition = "opacity 0.8s ease-in-out";
+      oldImage.style.transition = "opacity 0.8s ease-in-out";
+
+      newImage.style.opacity = "1";
+      oldImage.style.opacity = "0";
+
+      // Complete the transition after animation
+      setTimeout(() => {
+        oldImage.style.display = "none";
+        oldImage.style.transition = "";
+        newImage.style.transition = "";
+        currentImageIsBack = !currentImageIsBack;
+        isTransitioning = false;
+      }, 850); // Slightly longer than transition duration for safety
+    });
   };
 
   let resizeObserver;
@@ -163,11 +280,18 @@ const loadingId = `loading-${uniqueId}`;
       clearInterval(intervalId);
       intervalId = undefined;
     }
+    if (retryTimeoutId) {
+      clearTimeout(retryTimeoutId);
+      retryTimeoutId = undefined;
+    }
     if (resizeObserver && containerElement) {
       resizeObserver.unobserve(containerElement);
     }
     if (imageElement) {
       imageElement.src = ""; // Clear src to stop loading
+    }
+    if (imageBackElement) {
+      imageBackElement.src = ""; // Clear src to stop loading
     }
   };
 
@@ -175,7 +299,7 @@ const loadingId = `loading-${uniqueId}`;
   document.addEventListener("astro:before-swap", cleanup);
 </script>
 
-<style define:vars={{ logoHeight }}>
+<style define:vars={{ logoHeight, imageAspectRatio }}>
   .grafana-chart-host {
     position: relative;
     overflow: hidden;
@@ -185,6 +309,31 @@ const loadingId = `loading-${uniqueId}`;
     align-items: center;
   }
 
+  .chart-image,
+  .chart-image-back {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    max-width: 100%;
+    max-height: 100%;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    margin: auto;
+    border: none;
+    padding: 0;
+    background-color: transparent;
+    opacity: 0;
+    transition: opacity 0.8s ease-in-out;
+    aspect-ratio: var(--imageAspectRatio);
+    /* Optimizaciones para transiciones suaves */
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    will-change: opacity;
+  }
+
   .loading {
     position: absolute;
     top: 0;
@@ -192,12 +341,59 @@ const loadingId = `loading-${uniqueId}`;
     right: 0;
     bottom: 0;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
     color: #ccc;
-    background-color: rgba(30, 30, 30, 0.8);
+    background-color: rgba(30, 30, 30, 0.9);
     font-size: 0.9em;
-    z-index: 1;
+    font-family: 'Roboto Mono Variable', 'Roboto Mono', monospace;
+    font-weight: 400;
+    z-index: 2;
+    text-align: center;
+    padding: 20px;
+    box-sizing: border-box;
+  }
+
+  .loading-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .loading-content.error {
+    color: #ffaa00;
+    font-family: 'Roboto Mono Variable', 'Roboto Mono', monospace;
+    font-weight: 500;
+  }
+
+  .spinner {
+    width: 20px;
+    height: 20px;
+    border: 2px solid transparent;
+    border-top: 2px solid #ccc;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+
+  .error-icon {
+    font-size: 24px;
+    color: #ffaa00;
+  }
+
+  .retry-info {
+    font-size: 0.8em;
+    color: #888;
+    margin-top: 8px;
+    font-family: 'Roboto Mono Variable', 'Roboto Mono', monospace;
+    font-weight: 300;
+    letter-spacing: 0.5px;
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
   }
 
   .logo {
