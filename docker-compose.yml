@@ -1,0 +1,28 @@
+version: '3.8' # https://docs.docker.com/compose/compose-file/compose-versioning/#version-3
+
+services:
+  # Webapp Service (Astro App)
+  webapp:
+    image: node:current-alpine
+    user: ${UID}:${UID}
+    working_dir: /app
+    ports:
+      - ${WEBAPP_EXTERNAL_PORT}:${WEBAPP_INTERNAL_PORT}
+    volumes:
+      - ../${PROJECT_NAME}:/app
+    environment:
+      NODE_ENV: development
+    command: /bin/sh -c "npm run dev -- --port ${WEBAPP_INTERNAL_PORT} --host"
+    container_name: ${PROJECT_NAME}
+    networks:
+      - project_network
+
+networks:
+  project_network:
+    name: ${PROJECT_NAME}_network
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: "172.25.0.0/16"
+          gateway: "172.25.0.1"
