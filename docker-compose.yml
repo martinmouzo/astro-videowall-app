@@ -9,7 +9,7 @@ services:
     ports:
       - ${WEBAPP_EXTERNAL_PORT}:${WEBAPP_INTERNAL_PORT}
     volumes:
-      - ../${PROJECT_NAME}:/app
+      - .:/app
     environment:
       NODE_ENV: development
     command: /bin/sh -c "npm run dev -- --port ${WEBAPP_INTERNAL_PORT} --host"
