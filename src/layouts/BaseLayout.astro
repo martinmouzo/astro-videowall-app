@@ -84,5 +84,52 @@ const baseHeight = 2160;
         /* This is where page content will be injected, similar to <router-view> */
       }
     </div>
+
+    <script>
+      // Global Lenis initialization for smooth animations
+      import {
+        initializeGlobalLenis,
+        optimizeAnimations,
+        adjustAnimationsForViewport
+      } from '../utils/globalLenis.ts';
+
+      // Initialize global smooth animations when DOM is ready
+      function initializeApp() {
+        // Initialize Lenis animations
+        initializeGlobalLenis();
+
+        // Optimize performance
+        optimizeAnimations();
+
+        // Adjust for current viewport
+        adjustAnimationsForViewport();
+
+        console.log('Lenis-powered videowall application initialized');
+      }
+
+      // Initialize when DOM is ready
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initializeApp);
+      } else {
+        initializeApp();
+      }
+
+      // Re-initialize on page transitions (Astro)
+      document.addEventListener('astro:page-load', initializeApp);
+
+      // Adjust animations on viewport changes
+      window.addEventListener('resize', () => {
+        setTimeout(adjustAnimationsForViewport, 100);
+      });
+
+      // Performance monitoring (optional)
+      if (typeof performance !== 'undefined' && performance.mark) {
+        performance.mark('lenis-init-start');
+        setTimeout(() => {
+          performance.mark('lenis-init-end');
+          performance.measure('lenis-initialization', 'lenis-init-start', 'lenis-init-end');
+        }, 1000);
+      }
+    </script>
   </body>
 </html>
