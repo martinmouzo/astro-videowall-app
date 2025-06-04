@@ -235,27 +235,35 @@ console.log(`[IndicatorList] Region: ${region}, Found ${totalIndicators} indicat
     align-items: center;
     justify-content: center;
     gap: 4px;
-    font-size: clamp(0.55em, 1.1vmin, 0.7em);
-    line-height: 1.1;
-    padding: 6px 4px;
-    background: rgba(0, 0, 0, 0.3);
+    font-size: clamp(0.65em, 1.2vmin, 0.8em); /* Aumentado para mejor legibilidad */
+    line-height: 1.2; /* Mejorado para mejor espaciado */
+    padding: 8px 6px; /* Aumentado padding para mejor presentación */
+    background: rgba(0, 0, 0, 0.7); /* Más opaco para mejor contraste */
     border-radius: 6px;
     border-left: 3px solid #00ff00;
-    min-height: 40px;
-    max-height: 60px;
-    backdrop-filter: blur(3px);
-    transition: all 0.3s ease;
+    min-height: 45px; /* Aumentado para mejor legibilidad */
+    max-height: 65px; /* Aumentado proporcionalmente */
+    transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     box-sizing: border-box;
     width: 100%;
     text-align: center;
     overflow: hidden;
     position: relative;
+    transform-origin: center;
+    /* will-change: transform, opacity; */ /* Comentado para mejorar la nitidez constante */
+    -webkit-font-smoothing: antialiased; /* Añadido para mejorar la nitidez en WebKit */
+    -moz-osx-font-smoothing: grayscale; /* Añadido para mejorar la nitidez en Firefox */
+    text-rendering: optimizeLegibility; /* Añadido para priorizar legibilidad */
   }
 
   .indicator-item:hover {
-    background: rgba(255, 255, 255, 0.2);
-    transform: scale(1.02);
+    background: rgba(255, 255, 255, 0.15); /* Ligeramente reducido para mejor contraste */
+    transform: scale(1.02); /* Reducido de 1.03 a 1.02 para menos distorsión y eliminado translateZ(0) */
     z-index: 2;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25); /* Sombra más sutil */
+    /* Mantener nitidez durante hover */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
   /* Animación de entrada para los elementos */
@@ -263,6 +271,15 @@ console.log(`[IndicatorList] Region: ${region}, Found ${totalIndicators} indicat
     animation: slideInFromLeft 0.4s ease-out forwards;
     opacity: 0;
     transform: translateX(-20px);
+    /* Prevenir blur durante animaciones */
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    -webkit-perspective: 1000px;
+    perspective: 1000px;
+    /* Mantener nitidez del texto durante animaciones */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
   }
 
   @keyframes slideInFromLeft {
@@ -290,30 +307,38 @@ console.log(`[IndicatorList] Region: ${region}, Found ${totalIndicators} indicat
     font-weight: bold;
     color: #ffffff;
     text-align: center;
-    font-size: 1.2em;
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+    font-size: 1.3em; /* Aumentado para mejor legibilidad */
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.9); /* Sombra más pronunciada para claridad */
     font-family: 'Roboto Mono Variable', 'Roboto Mono', monospace;
     font-weight: 700;
     font-variant-numeric: tabular-nums;
     letter-spacing: 0.5px;
     order: 1;
     white-space: nowrap;
+    /* Mejorar nitidez del texto */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
   }
 
   .indicator-label {
-    color: #e0e0e0;
-    font-size: 0.85em; /* Aumentado de 0.7em a 0.85em */
+    color: #f0f0f0; /* Más claro para mejor contraste */
+    font-size: 0.9em; /* Aumentado para mejor legibilidad */
     font-weight: 600;
     text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;
     text-align: center;
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.9); /* Sombra más pronunciada */
     width: 100%;
     order: 2;
-    line-height: 1.2; /* Mejorando el line-height */
+    line-height: 1.3; /* Mejorado para mejor espaciado */
     max-width: 100%;
     display: block;
+    /* Mejorar nitidez del texto */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
   }
 
   /* Page indicators */
@@ -414,7 +439,36 @@ console.log(`[IndicatorList] Region: ${region}, Found ${totalIndicators} indicat
 </style>
 
 <script>
-  // Inicializar paginación para indicadores sin scroll
+  import { LenisAnimator, lenisUtils } from '../utils/lenisAnimations.ts';
+
+  // Initialize Lenis animator for enhanced animations
+  const lenisAnimator = new LenisAnimator({
+    duration: 0.8,
+    easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)'
+  });
+
+  // Lenis-inspired animations directly implemented
+  // Funciones de animación suave tipo Lenis
+  function lenisStyleAnimate(element: HTMLElement, properties: any, duration: number = 0.8) {
+    const easing = 'cubic-bezier(0.25, 0.46, 0.45, 0.94)'; // Lenis easing
+    element.style.transition = `all ${duration}s ${easing}`;
+
+    Object.keys(properties).forEach(key => {
+      if (key === 'transform' || key === 'opacity') {
+        element.style[key] = properties[key];
+      }
+    });
+  }
+
+  function lenisStyleStagger(elements: NodeListOf<Element>, properties: any, staggerDelay: number = 0.08) {
+    elements.forEach((element, index) => {
+      setTimeout(() => {
+        lenisStyleAnimate(element as HTMLElement, properties);
+      }, index * staggerDelay * 1000);
+    });
+  }
+
+  // Inicializar paginación para indicadores sin scroll con animaciones Lenis
   function initializeIndicatorPagination() {
     const containers = document.querySelectorAll('.indicators-container');
 
@@ -422,7 +476,15 @@ console.log(`[IndicatorList] Region: ${region}, Found ${totalIndicators} indicat
       const htmlContainer = container as HTMLElement;
       const shouldAnimate = htmlContainer.dataset.shouldAnimate === 'true';
 
-      if (!shouldAnimate) return;
+      if (!shouldAnimate) {
+        // Aplicar animación de entrada inicial incluso sin paginación
+        const items = document.querySelectorAll('.indicator-item');
+        lenisStyleStagger(items, {
+          opacity: '1',
+          transform: 'translateY(0) scale(1)'
+        }, 0.08);
+        return;
+      }
 
       const pages = htmlContainer.querySelectorAll('.indicators-page');
       const dots = htmlContainer.querySelectorAll('.page-dot');
@@ -431,46 +493,92 @@ console.log(`[IndicatorList] Region: ${region}, Found ${totalIndicators} indicat
 
       if (totalPages <= 1) return;
 
-      // Función para actualizar la visualización de páginas
+      // Función para actualizar la visualización de páginas con animaciones suaves tipo Lenis
       function updatePageDisplay() {
         pages.forEach((page, index) => {
           const pageElement = page as HTMLElement;
+
           if (index === currentPage) {
-            pageElement.style.opacity = '1';
-            pageElement.style.transform = 'translateX(0)';
+            // Página actual - animación de entrada suave
+            lenisStyleAnimate(pageElement, {
+              opacity: '1',
+              transform: 'translateX(0) scale(1)'
+            }, 0.8);
             pageElement.style.zIndex = '2';
+
+            // Animar elementos individuales con efecto Lenis
+            setTimeout(() => {
+              const items = pageElement.querySelectorAll('.indicator-item');
+              items.forEach((item, itemIndex) => {
+                const itemElement = item as HTMLElement;
+                itemElement.style.opacity = '0';
+                itemElement.style.transform = 'translateY(20px) scale(0.95)';
+
+                setTimeout(() => {
+                  lenisStyleAnimate(itemElement, {
+                    opacity: '1',
+                    transform: 'translateY(0) scale(1)'
+                  }, 0.6);
+                }, itemIndex * 80); // Stagger de 80ms estilo Lenis
+              });
+            }, 100);
+
           } else {
-            pageElement.style.opacity = '0';
-            pageElement.style.transform = index < currentPage ? 'translateX(-100%)' : 'translateX(100%)';
+            // Páginas ocultas - animación de salida suave
+            const direction = index < currentPage ? '-100%' : '100%';
+            lenisStyleAnimate(pageElement, {
+              opacity: '0',
+              transform: `translateX(${direction}) scale(0.98)`
+            }, 0.8);
             pageElement.style.zIndex = '1';
           }
         });
 
-        // Actualizar indicadores de página
+        // Actualizar indicadores de página con animación suave
         dots.forEach((dot, index) => {
-          dot.classList.toggle('active', index === currentPage);
+          const dotElement = dot as HTMLElement;
+
+          if (index === currentPage) {
+            dotElement.classList.add('active');
+            lenisStyleAnimate(dotElement, {
+              transform: 'scale(1.3)'
+            }, 0.4);
+            dotElement.style.background = 'rgba(255, 255, 255, 0.9)';
+          } else {
+            dotElement.classList.remove('active');
+            lenisStyleAnimate(dotElement, {
+              transform: 'scale(1)'
+            }, 0.4);
+            dotElement.style.background = 'rgba(255, 255, 255, 0.4)';
+          }
         });
       }
 
-      // Función para ir a la siguiente página
+      // Función para ir a la siguiente página con transición suave
       function nextPage() {
+        const previousPage = currentPage;
         currentPage = (currentPage + 1) % totalPages;
-        updatePageDisplay();
 
-        // Re-animar elementos de la página actual
-        const currentPageElement = pages[currentPage] as HTMLElement;
+        // Pre-animación de salida de la página actual
+        const currentPageElement = pages[previousPage] as HTMLElement;
         const items = currentPageElement.querySelectorAll('.indicator-item');
+
         items.forEach((item, index) => {
-          const itemElement = item as HTMLElement;
-          itemElement.style.animation = 'none';
-          requestAnimationFrame(() => {
-            itemElement.style.animation = `slideInFromLeft 0.4s ease-out forwards`;
-            itemElement.style.animationDelay = `${index * 0.1}s`;
-          });
+          setTimeout(() => {
+            lenisStyleAnimate(item as HTMLElement, {
+              opacity: '0.7',
+              transform: 'translateY(-10px) scale(0.98)'
+            }, 0.4);
+          }, index * 40);
         });
+
+        // Actualizar display después de la pre-animación
+        setTimeout(() => {
+          updatePageDisplay();
+        }, 200);
       }
 
-      // Configurar rotación automática
+      // Configurar rotación automática con timing suave tipo Lenis
       let rotationInterval: number | null = null;
       const rotationDelay = 6000; // 6 segundos por página
 
@@ -486,25 +594,79 @@ console.log(`[IndicatorList] Region: ${region}, Found ${totalIndicators} indicat
         }
       }
 
-      // Configurar estado inicial
-      updatePageDisplay();
+      // Configurar estado inicial con animación de entrada
+      setTimeout(() => {
+        updatePageDisplay();
 
-      // Iniciar rotación
-      startRotation();
+        // Aplicar efectos hover tipo Lenis a todos los items
+        const allItems = htmlContainer.querySelectorAll('.indicator-item');
+        allItems.forEach(item => {
+          const itemElement = item as HTMLElement;
+          itemElement.addEventListener('mouseenter', () => {
+            lenisStyleAnimate(itemElement, {
+              transform: 'scale(1.03)'
+            }, 0.3);
+          });
 
-      // Pausar/reanudar en hover
-      htmlContainer.addEventListener('mouseenter', stopRotation);
-      htmlContainer.addEventListener('mouseleave', startRotation);
+          itemElement.addEventListener('mouseleave', () => {
+            lenisStyleAnimate(itemElement, {
+              transform: 'scale(1)'
+            }, 0.3);
+          });
+        });
+      }, 100);
+
+      // Iniciar rotación con delay para permitir animación inicial
+      setTimeout(startRotation, 1000);
+
+      // Pausar/reanudar en hover con transiciones suaves
+      htmlContainer.addEventListener('mouseenter', () => {
+        stopRotation();
+        lenisStyleAnimate(htmlContainer, {
+          transform: 'scale(1.01)'
+        }, 0.3);
+      });
+
+      htmlContainer.addEventListener('mouseleave', () => {
+        lenisStyleAnimate(htmlContainer, {
+          transform: 'scale(1)'
+        }, 0.3);
+        setTimeout(startRotation, 500); // Delay antes de reanudar
+      });
     });
+  }
+
+  // Inicializar con múltiples intentos para garantizar carga completa
+  function initWithLenisRetry() {
+    setTimeout(initializeIndicatorPagination, 100);
+    setTimeout(initializeIndicatorPagination, 300);
+    setTimeout(initializeIndicatorPagination, 600);
   }
 
   // Inicializar cuando el DOM esté listo
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initializeIndicatorPagination);
+    document.addEventListener('DOMContentLoaded', initWithLenisRetry);
   } else {
-    initializeIndicatorPagination();
+    initWithLenisRetry();
   }
 
-  // Reinicializar después de que Astro termine de hidrar
-  setTimeout(initializeIndicatorPagination, 500);
+  // Reinicializar después de que Astro termine de hidrar con suavidad
+  setTimeout(() => {
+    initWithLenisRetry();
+
+    // Aplicar animaciones de entrada globales tipo Lenis
+    const allItems = document.querySelectorAll('.indicator-item');
+    allItems.forEach((item, index) => {
+      const itemElement = item as HTMLElement;
+      itemElement.style.opacity = '0';
+      itemElement.style.transform = 'translateY(20px) scale(0.95)';
+
+      setTimeout(() => {
+        lenisStyleAnimate(itemElement, {
+          opacity: '1',
+          transform: 'translateY(0) scale(1)'
+        }, 0.8);
+      }, index * 50 + 200);
+    });
+  }, 800);
 </script>
