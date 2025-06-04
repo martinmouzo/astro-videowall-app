@@ -75,15 +75,21 @@ async function fetchSemaforosData(): Promise<{ items: SemaforoItem[], source: st
     console.error('Error fetching semaforos data:', error);
     console.log('Usando datos de fallback local');
 
-    // Datos de fallback (mock data)
+    // Datos de fallback (mock data) - más variados para mejor visualización
     return {
       items: [
         { id: 29, title: 'BBDD Oracle', priority: 10, isDeviceSubscribed: null, isStatic: true, isActive: false, sound: true, severity: 0, status: 0, items: [], timestamp: '2025-04-03 06:08:43', secondsFirstAlert: 0, demoMode: false },
         { id: 32, title: 'Comunicaciones', priority: 30, isDeviceSubscribed: null, isStatic: true, isActive: false, sound: true, severity: 0, status: 0, items: [], timestamp: '2025-04-03 06:08:43', secondsFirstAlert: 0, demoMode: false },
-        { id: 30, title: 'Logistica', priority: 40, isDeviceSubscribed: null, isStatic: true, isActive: false, sound: true, severity: 0, status: 0, items: [], timestamp: '2025-04-03 06:08:43', secondsFirstAlert: 0, demoMode: false },
-        { id: 28, title: 'E-Commerce', priority: 50, isDeviceSubscribed: null, isStatic: true, isActive: false, sound: true, severity: 0, status: 0, items: [], timestamp: '2025-04-03 06:08:43', secondsFirstAlert: 0, demoMode: false },
+        { id: 30, title: 'Logística', priority: 40, isDeviceSubscribed: null, isStatic: true, isActive: false, sound: true, severity: 0, status: 0, items: [], timestamp: '2025-04-03 06:08:43', secondsFirstAlert: 0, demoMode: false },
+        { id: 28, title: 'E-Commerce', priority: 50, isDeviceSubscribed: null, isStatic: true, isActive: true, sound: true, severity: 2, status: 0, items: [{ severity: 2, description: 'ecom_srv01', status: 0, pais: 'ESPAÑA', ciudad: 'MADRID', cpd: 'CPD1' }], timestamp: '2025-06-03 14:14:48', secondsFirstAlert: 3600, demoMode: false },
         { id: 69, title: 'Meccano', priority: 50, isDeviceSubscribed: null, isStatic: true, isActive: false, sound: true, severity: 0, status: 0, items: [], timestamp: '2025-04-03 06:08:43', secondsFirstAlert: 0, demoMode: false },
-        { id: 27, title: 'DB21', priority: 60, isDeviceSubscribed: null, isStatic: true, isActive: true, sound: true, severity: 5, status: 0, items: [{ severity: 5, description: 'pro_axnadb22', status: 0, pais: 'NOPAIS', ciudad: 'NOCIUDAD', cpd: 'NOCPD' }], timestamp: '2025-06-03 14:14:48', secondsFirstAlert: 16723036, demoMode: false }
+        { id: 27, title: 'DB21', priority: 60, isDeviceSubscribed: null, isStatic: true, isActive: true, sound: true, severity: 5, status: 0, items: [{ severity: 5, description: 'pro_axnadb22', status: 0, pais: 'NOPAIS', ciudad: 'NOCIUDAD', cpd: 'NOCPD' }], timestamp: '2025-06-03 14:14:48', secondsFirstAlert: 16723036, demoMode: false },
+        { id: 35, title: 'Red Corporativa', priority: 20, isDeviceSubscribed: null, isStatic: true, isActive: true, sound: true, severity: 4, status: 0, items: [{ severity: 4, description: 'network_core01', status: 0, pais: 'ESPAÑA', ciudad: 'BARCELONA', cpd: 'CPD2' }, { severity: 4, description: 'network_core02', status: 0, pais: 'ESPAÑA', ciudad: 'VALENCIA', cpd: 'CPD3' }], timestamp: '2025-06-03 13:45:12', secondsFirstAlert: 7200, demoMode: false },
+        { id: 45, title: 'Medios de Pago', priority: 35, isDeviceSubscribed: null, isStatic: true, isActive: false, sound: true, severity: 0, status: 0, items: [], timestamp: '2025-04-03 06:08:43', secondsFirstAlert: 0, demoMode: false },
+        { id: 50, title: 'Aplicaciones Web', priority: 25, isDeviceSubscribed: null, isStatic: true, isActive: true, sound: true, severity: 3, status: 0, items: [{ severity: 3, description: 'webapp_srv01', status: 0, pais: 'FRANCIA', ciudad: 'PARIS', cpd: 'CPD4' }], timestamp: '2025-06-03 15:20:33', secondsFirstAlert: 1800, demoMode: false },
+        { id: 55, title: 'Sistema Linux', priority: 15, isDeviceSubscribed: null, isStatic: true, isActive: false, sound: true, severity: 0, status: 0, items: [], timestamp: '2025-04-03 06:08:43', secondsFirstAlert: 0, demoMode: false },
+        { id: 60, title: 'Storage', priority: 45, isDeviceSubscribed: null, isStatic: true, isActive: false, sound: true, severity: 0, status: 0, items: [], timestamp: '2025-04-03 06:08:43', secondsFirstAlert: 0, demoMode: false },
+        { id: 65, title: 'Backup System', priority: 55, isDeviceSubscribed: null, isStatic: true, isActive: false, sound: true, severity: 0, status: 0, items: [], timestamp: '2025-04-03 06:08:43', secondsFirstAlert: 0, demoMode: false }
       ],
       source: 'component-fallback'
     };
@@ -92,6 +98,10 @@ async function fetchSemaforosData(): Promise<{ items: SemaforoItem[], source: st
 
 // Obtener datos del servidor
 const { items: systemIndicators, source: dataSource } = await fetchSemaforosData();
+
+// Debug logging
+console.log(`[Panel3] Data source: ${dataSource}, Found ${systemIndicators.length} indicators`);
+console.log('[Panel3] Indicators:', systemIndicators.map(i => `${i.title}: severity=${i.severity}, active=${i.isActive}`));
 
 // Mapear severidad a estado de color
 const mapSeverityToStatus = (severity: number, isActive: boolean): string => {
@@ -266,13 +276,14 @@ const getCategoryIcon = (category: string) => {
     width: 100%;
     height: 100vh;
     max-height: 100vh;
-    padding: 8px;
+    padding: 6px; /* Reduced from 8px to 6px for more content space */
     box-sizing: border-box;
     font-family: 'Quicksand Variable', sans-serif;
     color: #e0e0e0;
     overflow: hidden;
     min-width: 0; /* Important for flex children */
     container-type: inline-size;
+    background-color: #1E1E1E; /* Match the main background */
   }
 
   .panel-header {
@@ -417,10 +428,11 @@ const getCategoryIcon = (category: string) => {
   .carousel-track {
     display: flex;
     gap: 12px;
-    animation: smoothScroll linear infinite;
     width: fit-content;
     padding: 4px 0;
     will-change: transform;
+    animation: smoothScroll linear infinite;
+    animation-play-state: running;
   }
 
   @keyframes smoothScroll {
@@ -428,7 +440,7 @@ const getCategoryIcon = (category: string) => {
       transform: translateX(0);
     }
     100% {
-      transform: translateX(-100%);
+      transform: translateX(-50%);
     }
   }
 
@@ -734,29 +746,75 @@ const getCategoryIcon = (category: string) => {
 </style>
 
 <script>
-  document.addEventListener('DOMContentLoaded', () => {
+  function initializeCarousel() {
     const carousel = document.querySelector('.carousel-track') as HTMLElement;
 
-    if (!carousel) return;
+    if (!carousel) {
+      console.warn('Carousel track not found');
+      return;
+    }
 
     const slides = carousel.querySelectorAll('.carousel-slide');
 
-    if (slides.length === 0) return;
+    if (slides.length === 0) {
+      console.warn('No slides found in carousel');
+      return;
+    }
 
-    // Duplicate slides for infinite scroll
-    const slidesArray = Array.from(slides);
-    slidesArray.forEach(slide => {
-      const clone = slide.cloneNode(true) as HTMLElement;
-      carousel.appendChild(clone);
-    });
+    console.log(`Initializing carousel with ${slides.length} slides`);
+
+    // Clear any existing duplicates first
+    const originalSlides = Array.from(slides);
+
+    // Only duplicate if we haven't already and have enough slides to warrant scrolling
+    if (!carousel.dataset.initialized && originalSlides.length >= 2) {
+      // Duplicate slides for seamless loop
+      originalSlides.forEach(slide => {
+        const clone = slide.cloneNode(true) as HTMLElement;
+        carousel.appendChild(clone);
+      });
+      carousel.dataset.initialized = 'true';
+      console.log(`Duplicated slides, now have ${carousel.querySelectorAll('.carousel-slide').length} slides`);
+    }
 
     // Calculate animation duration based on number of slides
-    // Approximately 8-9 seconds per slide for comfortable reading
     const slideWidth = 212; // 200px + 12px gap
-    const totalWidth = slidesArray.length * slideWidth;
-    const animationDuration = slidesArray.length * 8.5; // 8.5 seconds per slide for optimal readability
+    const animationDuration = Math.max(originalSlides.length * 3.5, 10); // Minimum 10 seconds, 3.5 seconds per slide
 
-    carousel.style.animationDuration = `${animationDuration}s`;
-    carousel.style.width = `${totalWidth * 2}px`; // Double width for duplicated content
+    // Set the animation duration dynamically
+    carousel.style.setProperty('animation-duration', `${animationDuration}s`);
+
+    // Force restart animation to ensure it's running
+    carousel.style.animationPlayState = 'paused';
+    requestAnimationFrame(() => {
+      carousel.style.animationPlayState = 'running';
+    });
+
+    console.log(`Carousel animation set to ${animationDuration}s duration`);
+  }
+
+  // Multiple initialization attempts to ensure it works
+  function initCarouselWithRetry() {
+    initializeCarousel();
+
+    // Retry after a short delay in case elements weren't ready
+    setTimeout(initializeCarousel, 200);
+    setTimeout(initializeCarousel, 500);
+    setTimeout(initializeCarousel, 1000);
+  }
+
+  // Initialize when DOM is ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initCarouselWithRetry);
+  } else {
+    initCarouselWithRetry();
+  }
+
+  // Re-initialize on any layout changes
+  window.addEventListener('resize', () => {
+    setTimeout(initializeCarousel, 300);
   });
+
+  // Additional check for Astro component hydration
+  setTimeout(initCarouselWithRetry, 2000);
 </script>

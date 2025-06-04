@@ -75,26 +75,26 @@ const overlayContainerStyle = `
   }
 
   .overlay-content {
-    width: 85%; /* Reducido de 100% a 85% para crear margen interno en el círculo */
-    height: 85%; /* Reducido de 100% a 85% para crear margen interno en el círculo */
+    width: 90%; /* Mantener buen uso del espacio */
+    height: 90%; /* Mantener buen uso del espacio */
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: space-between; /* Vuelto a space-between para mejor control */
-    padding: 8%; /* Aumentado a 8% para compensar el tamaño reducido */
+    justify-content: center; /* Cambiado a center para mejor centrado */
+    padding: 4%; /* Mantener padding optimizado */
     box-sizing: border-box;
     pointer-events: auto; /* Permite interacción con el contenido */
     color: white;
     text-align: center;
-    font-size: clamp(0.5em, 1.8vmin, 0.9em); /* Reducido ligeramente para mejor ajuste */
+    font-size: clamp(0.6em, 1.8vmin, 0.9em); /* Aumentado para mejor legibilidad */
     overflow: hidden; /* Evita que el contenido desborde el círculo */
-    gap: 0.4em; /* Reducido gap para evitar desbordamiento */
+    gap: 0.5em; /* Aumentado gap para mejor separación */
   }
 
   .overlay-header {
-    padding: 0.2em 0.4em; /* Reducido padding para optimizar espacio */
+    padding: 0.3em 0.4em; /* Aumentado padding para mejor visualización */
     border-radius: 0.25em;
-    margin-bottom: .5em; /* Eliminado margen ya que usamos gap */
+    margin-bottom: 0.4em; /* Aumentado margen */
     width: auto; /* Ajusta al contenido */
     max-width: 100%; /* Ajustado para usar todo el ancho disponible */
     flex-shrink: 0; /* Evita compresión */
@@ -102,23 +102,24 @@ const overlayContainerStyle = `
 
   .overlay-header h4 {
     margin: 0;
-    font-size: 1.5em; /* Aumentado de 1.2em para mejor visibilidad */
+    font-size: 1.4em; /* Aumentado de 1.3em para mejor visibilidad */
     white-space: pre-wrap; /* Para manejar nombres multilínea */
     font-weight: 700;
-    letter-spacing: .12em; /* Ligeramente aumentado */
+    letter-spacing: .1em;
     text-shadow: 1px 1px 2px black;
     font-family: 'Quicksand Variable', sans-serif;
-    margin-bottom: 0.4em;
+    margin-bottom: 0.3em; /* Aumentado margen inferior */
   }
 
   .overlay-body {
     flex-grow: 1; /* Permite que el cuerpo ocupe el espacio restante */
     display: flex;
-    align-items: center; /* Centrado vertical para mejor distribución */
+    align-items: center; /* Centrado vertical */
     justify-content: center;
     width: 100%;
     overflow: hidden;
-    padding: 0; /* Eliminado padding ya que usamos gap */
+    padding: 0;
+    max-height: calc(100% - 4em); /* Ajustado para el nuevo spacing */
   }
 
   .overlay-footer {
@@ -126,9 +127,44 @@ const overlayContainerStyle = `
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-top: 1.2em; /* Aumentado margen superior para mover más abajo */
-    padding-top: 0; /* Eliminado padding superior */
+    margin-top: 0.4em; /* Aumentado margen superior */
+    padding-top: 0;
     position: relative;
     flex-shrink: 0; /* Evita compresión */
+  }
+
+  /* Media queries para diferentes resoluciones de videowall */
+  @container (max-width: 400px) {
+    .overlay-content {
+      font-size: clamp(0.4em, 1.4vmin, 0.7em);
+      padding: 3%;
+      gap: 0.2em;
+    }
+
+    .overlay-header h4 {
+      font-size: 1.1em;
+      margin-bottom: 0.1em;
+    }
+
+    .overlay-body {
+      max-height: calc(100% - 3em);
+    }
+
+    .overlay-footer {
+      margin-top: 0.1em;
+    }
+  }
+
+  @container (max-width: 300px) {
+    .overlay-content {
+      font-size: clamp(0.35em, 1.2vmin, 0.6em);
+      padding: 2%;
+      gap: 0.1em;
+    }
+
+    .overlay-header h4 {
+      font-size: 1.0em;
+      margin-bottom: 0.05em;
+    }
   }
 </style>

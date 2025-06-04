@@ -63,19 +63,19 @@ const getStatusColor = () => {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 8px; /* Reducido de 12px a 8px para mejor ajuste */
-    margin: 0.3em auto; /* Reducido margen */
-    padding: 0.3em 0.6em; /* Reducido padding para ahorrar espacio */
+    gap: 8px; /* Aumentado de 6px a 8px */
+    margin: 0.3em auto; /* Aumentado margen */
+    padding: 0.4em 0.6em; /* Aumentado padding */
     background: rgba(0, 0, 0, 0.3);
-    border-radius: 12px; /* Reducido de 15px */
+    border-radius: 12px; /* Aumentado radio */
     backdrop-filter: blur(4px);
     width: fit-content;
-    max-width: 100%; /* Ajustado para usar todo el ancho disponible */
+    max-width: 100%;
   }
 
   .status-indicator {
-    width: 10px; /* Reducido de 12px a 10px */
-    height: 10px; /* Reducido de 12px a 10px */
+    width: 12px; /* Aumentado de 10px */
+    height: 12px; /* Aumentado de 10px */
     border-radius: 50%;
     box-shadow: 0 0 10px currentColor;
     animation: pulse 2s ease-in-out infinite;
@@ -84,8 +84,8 @@ const getStatusColor = () => {
 
   .summary-stats {
     display: flex;
-    gap: 12px; /* Incrementado de 6px a 12px para mejor separación visual */
-    font-size: 0.80em; /* Reducido de 0.90em */
+    gap: 10px; /* Aumentado gap */
+    font-size: 0.85em; /* Aumentado de 0.75em */
     align-items: center;
   }
 
@@ -106,19 +106,19 @@ const getStatusColor = () => {
 
   .stat-value {
     font-weight: bold;
-    font-size: 1.1em;
+    font-size: 1.1em; /* Aumentado de 1.0em */
     line-height: 1;
     font-family: 'Roboto Mono Variable', 'Roboto Mono', monospace;
     font-weight: 600;
     font-variant-numeric: tabular-nums;
-    letter-spacing: 0.3px;
+    letter-spacing: 0.3px; /* Aumentado espaciado */
   }
 
   .stat-label {
-    font-size: 0.75em;
+    font-size: 0.8em; /* Aumentado de 0.7em */
     opacity: 0.8;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.4px; /* Aumentado espaciado */
   }
 
   @keyframes pulse {
@@ -128,19 +128,19 @@ const getStatusColor = () => {
 
   @media (max-width: 1400px) {
     .region-summary {
-      margin: 0.6em auto 0.5em auto;
-      padding: 0.3em 0.6em;
-      gap: 8px;
+      margin: 0.1em auto; /* Reducido margen para pantallas pequeñas */
+      padding: 0.1em 0.3em; /* Reducido padding */
+      gap: 5px; /* Reducido gap */
     }
 
     .summary-stats {
-      font-size: 0.75em;
-      gap: 10px; /* Incrementado de 8px a 10px para mantener proporción */
+      font-size: 0.7em; /* Reducido de 0.75em */
+      gap: 6px; /* Reducido gap */
     }
 
     .status-indicator {
-      width: 8px;
-      height: 8px;
+      width: 7px; /* Reducido de 8px */
+      height: 7px; /* Reducido de 8px */
     }
   }
 </style>

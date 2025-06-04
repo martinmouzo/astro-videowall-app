@@ -54,52 +54,57 @@ const getNextUpdateTime = () => {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 2px;
-    font-size: 0.65em;
-    opacity: 0.9;
-    background: rgba(0, 0, 0, 0.5);
-    padding: 4px 8px;
-    border-radius: 8px;
-    backdrop-filter: blur(4px);
+    gap: 3px; /* Aumentado de 2px a 3px para mejor separación */
+    font-size: clamp(0.65em, 1.2vmin, 0.85em); /* Responsive font-size */
+    opacity: 0.95;
+    background: rgba(0, 0, 0, 0.65); /* Más opaco para mejor legibilidad */
+    padding: 6px 12px; /* Mayor padding para mejor visualización */
+    border-radius: 10px; /* Radio aumentado */
+    backdrop-filter: blur(6px); /* Más blur para mejor contraste */
     width: fit-content;
     max-width: 100%;
+    border: 1px solid rgba(255, 255, 255, 0.1); /* Sutil borde para definición */
   }
 
   .last-update, .next-update {
     display: flex;
     align-items: center;
-    gap: 4px;
+    gap: 6px; /* Aumentado de 4px a 6px para mejor espaciado */
   }
 
   .update-label, .next-label {
-    color: #ccc;
-    font-size: 0.85em;
+    color: #ddd; /* Más claro para mejor legibilidad */
+    font-size: 0.9em; /* Ligeramente más grande */
+    font-weight: 500; /* Añadido peso para mejor legibilidad */
   }
 
   .update-time {
-    color: #00ff00;
+    color: #00ff88; /* Verde ligeramente más vibrante */
     font-weight: bold;
     font-family: 'Roboto Mono Variable', monospace;
+    font-size: 1.05em; /* Ligeramente más grande */
   }
 
   .next-time {
-    color: #ffaa00;
+    color: #ffbb33; /* Naranja más vibrante */
     font-weight: bold;
     font-family: 'Roboto Mono Variable', monospace;
+    font-size: 1.05em; /* Ligeramente más grande */
   }
 
   .update-indicator {
     position: absolute;
-    top: -2px;
-    right: -2px;
+    top: -3px;
+    right: -3px;
   }
 
   .pulse-dot {
-    width: 6px;
-    height: 6px;
-    background: #00ff00;
+    width: 8px; /* Aumentado de 6px a 8px para mejor visibilidad */
+    height: 8px; /* Aumentado de 6px a 8px */
+    background: #00ff88; /* Consistente con update-time color */
     border-radius: 50%;
     animation: pulse 2s ease-in-out infinite;
+    box-shadow: 0 0 4px rgba(0, 255, 136, 0.6); /* Glow effect */
   }
 
   @keyframes pulse {
@@ -109,19 +114,45 @@ const getNextUpdateTime = () => {
     }
     50% {
       opacity: 0.6;
-      transform: scale(1.2);
+      transform: scale(1.3); /* Mayor escala para mejor visibilidad */
     }
   }
 
-  @media (max-width: 1400px) {
+  /* Container queries para mejor responsive design */
+  @container (max-width: 400px) {
     .update-info {
-      font-size: 0.55em;
-      padding: 3px 6px;
+      font-size: clamp(0.6em, 1.1vmin, 0.75em);
+      padding: 5px 10px;
     }
 
     .pulse-dot {
-      width: 4px;
-      height: 4px;
+      width: 6px;
+      height: 6px;
+    }
+  }
+
+  @container (max-width: 300px) {
+    .update-info {
+      font-size: clamp(0.55em, 1.0vmin, 0.65em);
+      padding: 4px 8px;
+    }
+
+    .pulse-dot {
+      width: 5px;
+      height: 5px;
+    }
+  }
+
+  /* Fallback para pantallas pequeñas */
+  @media (max-width: 1400px) {
+    .update-info {
+      font-size: clamp(0.5em, 1.0vmin, 0.65em);
+      padding: 4px 8px;
+    }
+
+    .pulse-dot {
+      width: 5px;
+      height: 5px;
     }
   }
 </style>
