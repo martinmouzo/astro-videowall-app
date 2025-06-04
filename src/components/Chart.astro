@@ -1,7 +1,7 @@
 ---
 // Define las propiedades que acepta el componente
 export interface Props {
-  /** ID único de la gráfica de Grafana */
+  /** ID único de la gráfica de Axinstats */
   graphId: string;
   /** Tiempo de inicio para el rango de la gráfica (ej: 'end-30m', 'now-1h') */
   startTime?: string;
@@ -21,13 +21,13 @@ export interface Props {
   loadingText?: string;
   /** ID único para el componente (opcional, se genera automáticamente) */
   uniqueId?: string;
-  /** Parámetros adicionales para la URL de Grafana */
+  /** Parámetros adicionales para la URL de Axinstats */
   extraParams?: Record<string, string>;
   /** Aspect ratio for the chart image itself, e.g., "1430 / 300" */
   imageAspectRatio?: string;
 }
 
-// Default aspect ratio if not provided, matching common Grafana chart proportions
+// Default aspect ratio if not provided, matching common Axinstats chart proportions
 const DEFAULT_IMAGE_ASPECT_RATIO = "1430 / 300";
 
 // Establece valores predeterminados para props opcionales
@@ -41,7 +41,7 @@ const {
   logoUrl = "",
   logoHeight = "0px",
   loadingText = "Cargando...",
-  uniqueId = `grafana-${Math.random().toString(36).substring(2, 11)}`,
+  uniqueId = `axinstats-${Math.random().toString(36).substring(2, 11)}`,
   extraParams = {},
   imageAspectRatio = DEFAULT_IMAGE_ASPECT_RATIO,
 } = Astro.props;
@@ -53,18 +53,18 @@ const imageBackId = `image-back-${uniqueId}`;
 const loadingId = `loading-${uniqueId}`;
 ---
 
-<div class="grafana-chart-host" id={containerId} style={`width: ${width}; height: ${height};`}>
+<div class="axinstats-chart-host" id={containerId} style={`width: ${width}; height: ${height};`}>
   {logoUrl && logoHeight !== "0px" && <img src={logoUrl} class="logo" alt="Logo" />}
   <!-- Imagen principal -->
   <img
     id={imageId}
-    alt={`Grafana Chart ${graphId}`}
+    alt={`Axinstats Chart ${graphId}`}
     class="chart-image"
   />
   <!-- Imagen de respaldo para transiciones suaves -->
   <img
     id={imageBackId}
-    alt={`Grafana Chart ${graphId} Background`}
+    alt={`Axinstats Chart ${graphId} Background`}
     class="chart-image-back"
   />
   <div id={loadingId} class="loading">
@@ -128,7 +128,7 @@ const loadingId = `loading-${uniqueId}`;
         params.append(key, value);
       }
 
-      const newImageUrl = `/api/grafana-proxy?${params.toString()}`;
+      const newImageUrl = `/api/axinstats-proxy?${params.toString()}`;
 
       // Determine which image to load into (the one that's currently not visible)
       const targetImage = currentImageIsBack ? imageElement : imageBackElement;
@@ -155,11 +155,11 @@ const loadingId = `loading-${uniqueId}`;
         // Check if this is actually a placeholder image (error response)
         fetch(newImageUrl, { method: 'HEAD' })
           .then(response => {
-            if (response.headers.get('X-Grafana-Error')) {
-              const errorType = response.headers.get('X-Grafana-Error');
+            if (response.headers.get('X-Axinstats-Error')) {
+              const errorType = response.headers.get('X-Axinstats-Error');
               const retryDelay = errorType === 'service-error' ? 30000 : 45000; // 30s for service errors, 45s for network errors
 
-              console.warn(`Grafana ${errorType} detected for ${graphId}, will retry in ${retryDelay/1000} seconds`);
+              console.warn(`Axinstats ${errorType} detected for ${graphId}, will retry in ${retryDelay/1000} seconds`);
 
               // Update loading message to show error state
               loadingElement.innerHTML = `
@@ -206,7 +206,7 @@ const loadingId = `loading-${uniqueId}`;
         targetImage.src = newImageUrl;
       }
     } else {
-      console.error("GrafanaChart: Elementos DOM no encontrados.");
+      console.error("AxinstatsChart: Elementos DOM no encontrados.");
     }
   };
 
@@ -300,7 +300,7 @@ const loadingId = `loading-${uniqueId}`;
 </script>
 
 <style define:vars={{ logoHeight, imageAspectRatio }}>
-  .grafana-chart-host {
+  .axinstats-chart-host {
     position: relative;
     overflow: hidden;
     box-sizing: border-box;

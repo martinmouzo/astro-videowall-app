@@ -42,13 +42,13 @@
 }
 
 /* Chart loading and error states */
-.grafana-chart .loading {
+.axinstats-chart .loading {
   font-family: 'Roboto Mono Variable', 'Roboto Mono', monospace;
   font-weight: 400;
   letter-spacing: 0.3px;
 }
 
-.grafana-chart .loading-content.error {
+.axinstats-chart .loading-content.error {
   font-family: 'Roboto Mono Variable', 'Roboto Mono', monospace;
   font-weight: 500;
   letter-spacing: 0.2px;

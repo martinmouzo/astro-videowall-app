@@ -14,16 +14,16 @@ export interface Props {
 }
 const { title } = Astro.props;
 
-// Base dimensions from App.vue
+
 const baseWidth = 3840;
 const baseHeight = 2160;
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="en" style="overflow-x: auto;">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
@@ -38,6 +38,8 @@ const baseHeight = 2160;
         background-color: #1E1E1E;
         color: #fff;
         font-family: 'Inter', sans-serif;
+        overflow-x: auto;
+        min-width: 100vw;
       }
 
       :root {
@@ -54,9 +56,11 @@ const baseHeight = 2160;
       }
 
       .videowall-container {
-        width: var(--baseWidth);
+        min-width: var(--baseWidth);
+        width: 100vw;
         height: var(--baseHeight);
-        overflow: hidden;
+        overflow-x: auto;
+        overflow-y: hidden;
         position: relative;
       }
 

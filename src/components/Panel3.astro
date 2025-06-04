@@ -1,0 +1,762 @@
+---
+import "@fontsource-variable/quicksand";
+import Panel3Card from "./Panel3Card.astro";
+
+// Tipos para la API de semáforos
+interface SemaforoItem {
+  id: number;
+  title: string;
+  priority: number;
+  isDeviceSubscribed: boolean | null;
+  isStatic: boolean;
+  isActive: boolean;
+  sound: boolean;
+  severity: number;
+  status: number;
+  items: Array<{
+    severity: number;
+    description: string;
+    status: number;
+    pais: string;
+    ciudad: string;
+    cpd: string;
+  }>;
+  timestamp: string;
+  secondsFirstAlert: number;
+  demoMode: boolean;
+}
+
+interface SemaforoGroup {
+  idGrupo: number;
+  items: SemaforoItem[];
+  limiteDinamicosActivos: number;
+  limiteDinamicosNoActivos: number;
+}
+
+// Función para obtener datos de la API
+async function fetchSemaforosData(): Promise<{ items: SemaforoItem[], source: string }> {
+  try {
+    console.log("Intentando obtener datos de semáforos del servidor...");
+    // Usar el proxy local en lugar del endpoint directo
+    // Usar URL completa para evitar errores durante la compilación SSR
+    const baseUrl = import.meta.env.PROD
+      ? new URL(Astro.request.url).origin
+      : "http://localhost:4321";
+
+    const response = await fetch(`${baseUrl}/api/semaforos-data?idPanel=3`, {
+      headers: {
+        "accept": "application/json, text/plain, */*",
+      },
+      method: "GET"
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    // Verificar si los datos vienen del mock
+    const dataSource = response.headers.get('X-Data-Source') || 'live-api';
+    console.log(`Datos obtenidos de: ${dataSource}`);
+
+    const data: SemaforoGroup[] = await response.json();
+
+    // Extraer todos los items de todos los grupos
+    const allItems: SemaforoItem[] = [];
+    data.forEach(group => {
+      allItems.push(...group.items);
+    });
+
+    // Ordenar por prioridad para mantener un orden consistente
+    return {
+      items: allItems.sort((a, b) => a.priority - b.priority),
+      source: dataSource
+    };
+  } catch (error) {
+    console.error('Error fetching semaforos data:', error);
+    console.log('Usando datos de fallback local');
+
+    // Datos de fallback (mock data)
+    return {
+      items: [
+        { id: 29, title: 'BBDD Oracle', priority: 10, isDeviceSubscribed: null, isStatic: true, isActive: false, sound: true, severity: 0, status: 0, items: [], timestamp: '2025-04-03 06:08:43', secondsFirstAlert: 0, demoMode: false },
+        { id: 32, title: 'Comunicaciones', priority: 30, isDeviceSubscribed: null, isStatic: true, isActive: false, sound: true, severity: 0, status: 0, items: [], timestamp: '2025-04-03 06:08:43', secondsFirstAlert: 0, demoMode: false },
+        { id: 30, title: 'Logistica', priority: 40, isDeviceSubscribed: null, isStatic: true, isActive: false, sound: true, severity: 0, status: 0, items: [], timestamp: '2025-04-03 06:08:43', secondsFirstAlert: 0, demoMode: false },
+        { id: 28, title: 'E-Commerce', priority: 50, isDeviceSubscribed: null, isStatic: true, isActive: false, sound: true, severity: 0, status: 0, items: [], timestamp: '2025-04-03 06:08:43', secondsFirstAlert: 0, demoMode: false },
+        { id: 69, title: 'Meccano', priority: 50, isDeviceSubscribed: null, isStatic: true, isActive: false, sound: true, severity: 0, status: 0, items: [], timestamp: '2025-04-03 06:08:43', secondsFirstAlert: 0, demoMode: false },
+        { id: 27, title: 'DB21', priority: 60, isDeviceSubscribed: null, isStatic: true, isActive: true, sound: true, severity: 5, status: 0, items: [{ severity: 5, description: 'pro_axnadb22', status: 0, pais: 'NOPAIS', ciudad: 'NOCIUDAD', cpd: 'NOCPD' }], timestamp: '2025-06-03 14:14:48', secondsFirstAlert: 16723036, demoMode: false }
+      ],
+      source: 'component-fallback'
+    };
+  }
+}
+
+// Obtener datos del servidor
+const { items: systemIndicators, source: dataSource } = await fetchSemaforosData();
+
+// Mapear severidad a estado de color
+const mapSeverityToStatus = (severity: number, isActive: boolean): string => {
+  if (!isActive) return 'green'; // Sin problemas activos
+
+  switch (severity) {
+    case 0: return 'green';     // Sin severidad
+    case 1: return 'green';     // Info
+    case 2: return 'yellow';    // Warning
+    case 3: return 'yellow';    // Minor
+    case 4: return 'orange';    // Major
+    case 5: return 'red';       // Critical
+    default: return 'green';
+  }
+};
+
+// Mapear títulos a categorías de iconos
+const mapTitleToCategory = (title: string): string => {
+  const lowerTitle = title.toLowerCase();
+
+  if (lowerTitle.includes('bbdd') || lowerTitle.includes('db')) return 'database';
+  if (lowerTitle.includes('red') || lowerTitle.includes('comunicaciones')) return 'network';
+  if (lowerTitle.includes('logistica')) return 'logistics';
+  if (lowerTitle.includes('commerce') || lowerTitle.includes('ventas')) return 'business';
+  if (lowerTitle.includes('linux') || lowerTitle.includes('aix') || lowerTitle.includes('sistema')) return 'system';
+  if (lowerTitle.includes('aplicaciones') || lowerTitle.includes('app')) return 'application';
+  if (lowerTitle.includes('pago') || lowerTitle.includes('medios')) return 'payment';
+  if (lowerTitle.includes('exchange') || lowerTitle.includes('comunicacion')) return 'communication';
+  if (lowerTitle.includes('meccano') || lowerTitle.includes('was')) return 'system';
+  if (lowerTitle.includes('seguridad')) return 'security';
+
+  return 'system'; // default
+};
+
+// Formatear tiempo de alerta
+const formatAlertTime = (secondsFirstAlert: number): string => {
+  if (secondsFirstAlert === 0) return '';
+
+  const hours = Math.floor(secondsFirstAlert / 3600);
+  const minutes = Math.floor((secondsFirstAlert % 3600) / 60);
+  const seconds = secondsFirstAlert % 60;
+
+  return `${hours}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+};
+
+// Obtener color del estado
+const getStatusColor = (status: string) => {
+  switch (status) {
+    case 'green': return '#4ade80';
+    case 'yellow': return '#fbbf24';
+    case 'orange': return '#fb923c';
+    case 'red': return '#ef4444';
+    default: return '#6b7280';
+  }
+};
+
+// Obtener categoría del ícono
+const getCategoryIcon = (category: string) => {
+  switch (category) {
+    case 'database': return '🗄️';
+    case 'network': return '🌐';
+    case 'logistics': return '📦';
+    case 'business': return '💼';
+    case 'system': return '⚙️';
+    case 'critical': return '🚨';
+    case 'application': return '📱';
+    case 'payment': return '💳';
+    case 'communication': return '📧';
+    case 'security': return '🔒';
+    default: return '📊';
+  }
+};
+---
+
+<div class="system-monitor-panel">
+  <div class="panel-header">
+    <div class="status-summary">
+      <div class="summary-item operational">
+        <span class="summary-value">{systemIndicators.filter(i => mapSeverityToStatus(i.severity, i.isActive) === 'green').length}</span>
+        <span class="summary-label">OPERATIVOS</span>
+      </div>
+      <div class="summary-item warnings">
+        <span class="summary-value">{systemIndicators.filter(i => mapSeverityToStatus(i.severity, i.isActive) === 'yellow').length}</span>
+        <span class="summary-label">ADVERTENCIAS</span>
+      </div>
+      <div class="summary-item critical">
+        <span class="summary-value">{systemIndicators.filter(i => mapSeverityToStatus(i.severity, i.isActive) === 'red').length}</span>
+        <span class="summary-label">CRÍTICOS</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="indicators-grid">
+    <!-- Operational Systems Section -->
+    <div class="operational-section">
+      <div class="section-header">
+        <h3 class="section-title">Operativos</h3>
+        <div class="section-count">{systemIndicators.filter(i => mapSeverityToStatus(i.severity, i.isActive) === 'green').length}</div>
+      </div>
+      <div class="carousel-container">
+        <div class="carousel-track">
+          {systemIndicators.filter(i => mapSeverityToStatus(i.severity, i.isActive) === 'green').map((indicator, index) => {
+            const status = mapSeverityToStatus(indicator.severity, indicator.isActive);
+            const category = mapTitleToCategory(indicator.title);
+            const alertTime = formatAlertTime(indicator.secondsFirstAlert);
+            const hasAlert = indicator.isActive && indicator.secondsFirstAlert > 0;
+            return (
+              <div class="carousel-slide">
+                <Panel3Card
+                  title={indicator.title}
+                  status={status}
+                  icon={getCategoryIcon(category)}
+                  hasAlert={hasAlert}
+                  alertTime={hasAlert ? alertTime : undefined}
+                  size="compact"
+                  style={`animation-delay: ${index * 0.05}s`}
+                />
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+
+    <!-- Issues Section -->
+    <div class="issues-section">
+      <div class="section-header">
+        <h3 class="section-title">Sistemas con Incidencias</h3>
+        <div class="section-count">{systemIndicators.filter(i => mapSeverityToStatus(i.severity, i.isActive) !== 'green').length}</div>
+      </div>
+      <div class="issues-grid">
+        {systemIndicators.filter(i => mapSeverityToStatus(i.severity, i.isActive) !== 'green').map((indicator, index) => {
+          const status = mapSeverityToStatus(indicator.severity, indicator.isActive);
+          const category = mapTitleToCategory(indicator.title);
+          const alertTime = formatAlertTime(indicator.secondsFirstAlert);
+          const hasAlert = indicator.isActive && indicator.secondsFirstAlert > 0;
+          // Simulate affected servers for demo
+          const affectedServers = indicator.items && indicator.items.length > 0
+            ? indicator.items.map(item => item.description || `${item.pais}-${item.ciudad}`)
+            : status !== 'green' ? [`${indicator.title.toLowerCase().replace(/\s+/g, '')}_srv01`, `${indicator.title.toLowerCase().replace(/\s+/g, '')}_srv02`] : [];
+          return (
+            <Panel3Card
+              title={indicator.title}
+              status={status}
+              icon={getCategoryIcon(category)}
+              hasAlert={hasAlert}
+              alertTime={hasAlert ? alertTime : undefined}
+              affectedServers={affectedServers}
+              size="full"
+              style={`animation-delay: ${(systemIndicators.filter(i => mapSeverityToStatus(i.severity, i.isActive) === 'green').length + index) * 0.05}s`}
+            />
+          );
+        })}
+      </div>
+    </div>
+  </div>
+
+  <div class="data-source-indicator">
+    <span class="source-label">Fuente de datos:</span>
+    <span class="source-value">{dataSource}</span>
+    <span class="update-indicator" title="Actualización de datos">
+      <span class="update-icon">⟳</span>
+      <span class="update-text"></span>
+    </span>
+  </div>
+</div>
+
+<style>
+  .system-monitor-panel {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100vh;
+    max-height: 100vh;
+    padding: 8px;
+    box-sizing: border-box;
+    font-family: 'Quicksand Variable', sans-serif;
+    color: #e0e0e0;
+    overflow: hidden;
+    min-width: 0; /* Important for flex children */
+    container-type: inline-size;
+  }
+
+  .panel-header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 8px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+    flex-shrink: 0;
+  }
+
+  .status-summary {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .summary-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    padding: 6px 12px;
+    border-radius: 8px;
+    background: rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  }
+
+  .summary-item.operational {
+    border: 2px solid rgba(74, 222, 128, 0.4);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2), 0 0 15px rgba(74, 222, 128, 0.2);
+  }
+
+  .summary-item.warnings {
+    border: 2px solid rgba(251, 191, 36, 0.4);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2), 0 0 15px rgba(251, 191, 36, 0.2);
+  }
+
+  .summary-item.critical {
+    border: 2px solid rgba(239, 68, 68, 0.4);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2), 0 0 15px rgba(239, 68, 68, 0.2);
+  }
+
+  .summary-value {
+    font-size: 1.1em;
+    font-weight: 700;
+    font-family: 'Roboto Mono Variable', 'Roboto Mono', monospace;
+  }
+
+  .summary-item.operational .summary-value {
+    color: #4ade80;
+    text-shadow: 0 0 10px rgba(74, 222, 128, 0.3);
+  }
+
+  .summary-item.warnings .summary-value {
+    color: #fbbf24;
+    text-shadow: 0 0 10px rgba(251, 191, 36, 0.3);
+  }
+
+  .summary-item.critical .summary-value {
+    color: #ef4444;
+    text-shadow: 0 0 10px rgba(239, 68, 68, 0.3);
+  }
+
+  .summary-label {
+    font-size: 0.5em;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .indicators-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    flex: 1;
+    overflow: hidden;
+    height: 100%;
+    min-height: 0;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 12px;
+    margin-top: 4px;
+    margin-bottom: 4px;
+  }
+
+  .operational-section,
+  .issues-section {
+    background: rgba(255,255,255,0.02);
+    border-radius: 12px;
+    padding: 16px;
+    border: 1px solid rgba(255,255,255,0.05);
+    backdrop-filter: blur(10px);
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+  }
+
+  .section-title {
+    font-size: 0.9em;
+    font-weight: 700;
+    color: #fff;
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+  }
+
+  .section-count {
+    background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
+    color: #fff;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.85em;
+    font-weight: 600;
+    min-width: 24px;
+    text-align: center;
+    border: 1px solid rgba(255,255,255,0.2);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  }
+
+  .carousel-container {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    border-radius: 12px;
+  }
+
+  .carousel-track {
+    display: flex;
+    gap: 12px;
+    animation: smoothScroll linear infinite;
+    width: fit-content;
+    padding: 4px 0;
+    will-change: transform;
+  }
+
+  @keyframes smoothScroll {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(-100%);
+    }
+  }
+
+  .carousel-slide {
+    flex: 0 0 200px;
+    min-width: 200px;
+  }
+
+  .issues-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 12px;
+    max-height: none;
+    overflow-y: visible;
+  }
+
+  .carousel-container::-webkit-scrollbar,
+  .issues-grid::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  .carousel-container::-webkit-scrollbar-track,
+  .issues-grid::-webkit-scrollbar-track {
+    background: rgba(30, 30, 30, 0.5);
+    border-radius: 2px;
+  }
+
+  .carousel-container::-webkit-scrollbar-thumb,
+  .issues-grid::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 2px;
+  }
+
+  .data-source-indicator {
+    margin-top: 2px;
+    padding: 2px 4px;
+    border-radius: 2px;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.55em;
+    color: #ccc;
+    flex-shrink: 0;
+  }
+
+  .source-label {
+    font-weight: 600;
+  }
+
+  .source-value {
+    font-family: 'Roboto Mono Variable', 'Roboto Mono', monospace;
+    font-weight: 500;
+  }
+
+  .update-indicator {
+    display: flex;
+    align-items: center;
+    margin-left: 8px;
+    position: relative;
+  }
+
+  .update-icon {
+    transition: transform 0.3s ease;
+    display: inline-block;
+    font-size: 0.85em;
+  }
+
+  .update-indicator.updating .update-icon {
+    animation: spin 1s linear infinite;
+    color: #64b5f6;
+  }
+
+  @keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  .update-indicator.updated .update-icon {
+    color: #4ade80;
+  }
+
+  .update-indicator.error .update-icon {
+    color: #ef4444;
+  }
+
+  .update-indicator.updated:after {
+    content: "✓";
+    position: absolute;
+    font-size: 0.7em;
+    right: -0.8em;
+    top: -0.5em;
+    color: #4ade80;
+  }
+
+  .update-indicator.error:after {
+    content: "✗";
+    position: absolute;
+    font-size: 0.7em;
+    right: -0.8em;
+    top: -0.5em;
+    color: #ef4444;
+  }
+
+  /* Responsive para diferentes tamaños de panel usando container queries */
+  @container (max-width: 450px) {
+    .panel-title {
+      font-size: 0.7em;
+    }
+
+    .status-summary {
+      gap: 4px;
+    }
+
+    .summary-item {
+      padding: 3px 6px;
+    }
+
+    .summary-value {
+      font-size: 1.0em;
+    }
+
+    .summary-label {
+      font-size: 0.5em;
+    }
+
+    .indicators-grid {
+      gap: 12px;
+      padding: 8px;
+    }
+
+    .operational-section,
+    .issues-section {
+      padding: 12px;
+    }
+
+    .carousel-container {
+      margin: 0 12px;
+    }
+
+    .carousel-slide {
+      flex: 0 0 160px;
+      min-width: 160px;
+    }
+
+    .issues-grid {
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+
+    .section-title {
+      font-size: 0.8em;
+    }
+  }
+
+  @container (max-width: 380px) {
+    .system-monitor-panel {
+      padding: 6px;
+    }
+
+    .panel-header {
+      margin-bottom: 6px;
+      flex-direction: column;
+      gap: 4px;
+      align-items: stretch;
+    }
+
+    .status-summary {
+      justify-content: center;
+      gap: 3px;
+    }
+
+    .carousel-container {
+      margin: 0 8px;
+    }
+
+    .carousel-slide {
+      flex: 0 0 160px;
+      min-width: 160px;
+    }
+
+    .carousel-nav {
+      width: 32px;
+      height: 32px;
+      font-size: 16px;
+    }
+
+    .carousel-nav.prev {
+      left: -16px;
+    }
+
+    .carousel-nav.next {
+      right: -16px;
+    }
+
+    .issues-grid {
+      grid-template-columns: 1fr;
+      gap: 10px;
+    }
+  }
+
+  @container (max-width: 320px) {
+    .system-monitor-panel {
+      padding: 3px;
+    }
+
+    .panel-header {
+      margin-bottom: 3px;
+      padding-bottom: 3px;
+    }
+
+    .indicators-grid {
+      gap: 8px;
+      padding: 4px;
+    }
+
+    .operational-section,
+    .issues-section {
+      padding: 8px;
+    }
+
+    .carousel-container {
+      margin: 0 4px;
+    }
+
+    .carousel-slide {
+      flex: 0 0 140px;
+      min-width: 140px;
+    }
+
+    .section-title {
+      font-size: 0.75em;
+    }
+  }
+
+  /* Ajustes para alturas reducidas */
+  @media (max-height: 900px) {
+    .system-monitor-panel {
+      padding: 6px;
+    }
+
+    .panel-header {
+      margin-bottom: 6px;
+      padding-bottom: 6px;
+    }
+
+    .indicators-grid {
+      gap: 16px;
+      padding: 8px;
+    }
+
+    .operational-section,
+    .issues-section {
+      padding: 12px;
+    }
+
+    .carousel-container {
+      margin: 0 8px;
+    }
+
+    .issues-grid {
+      max-height: 400px;
+    }
+  }
+
+  @media (max-height: 750px) {
+    .system-monitor-panel {
+      padding: 4px;
+    }
+
+    .summary-value {
+      font-size: 1.0em;
+    }
+
+    .summary-label {
+      font-size: 0.55em;
+    }
+
+    .indicators-grid {
+      gap: 12px;
+      padding: 6px;
+    }
+
+    .operational-section,
+    .issues-section {
+      padding: 10px;
+    }
+
+    .carousel-container {
+      margin: 0 6px;
+    }
+
+    .issues-grid {
+      gap: 12px;
+      /* Removed max-height restriction to allow full content display */
+    }
+
+    .section-title {
+      font-size: 0.8em;
+    }
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const carousel = document.querySelector('.carousel-track') as HTMLElement;
+
+    if (!carousel) return;
+
+    const slides = carousel.querySelectorAll('.carousel-slide');
+
+    if (slides.length === 0) return;
+
+    // Duplicate slides for infinite scroll
+    const slidesArray = Array.from(slides);
+    slidesArray.forEach(slide => {
+      const clone = slide.cloneNode(true) as HTMLElement;
+      carousel.appendChild(clone);
+    });
+
+    // Calculate animation duration based on number of slides
+    // Approximately 8-9 seconds per slide for comfortable reading
+    const slideWidth = 212; // 200px + 12px gap
+    const totalWidth = slidesArray.length * slideWidth;
+    const animationDuration = slidesArray.length * 8.5; // 8.5 seconds per slide for optimal readability
+
+    carousel.style.animationDuration = `${animationDuration}s`;
+    carousel.style.width = `${totalWidth * 2}px`; // Double width for duplicated content
+  });
+</script>

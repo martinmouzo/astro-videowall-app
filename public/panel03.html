@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!-->
+<html class="no-js" style="  width: 3840px;   height: 2160px;overflow: hidden;"  ng-app="videowallApp">
+ <!--<![endif]-->
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>Video wall</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+
+        <link rel="stylesheet" href="static/css/normalize.css">
+        <link rel="stylesheet" href="static/css/main.css">0
+        <link rel="stylesheet" href="static/css/animate.css">
+        <link rel="stylesheet" href="static/css/custom.css">
+        <script src="static/js/lib/modernizr-2.6.2.min.js"></script>
+
+
+        <link rel="stylesheet" href="static/css/odometer-theme-default.css">
+
+    </head>
+    <body class="opcion2 semaforos" ng-controller="panel3Controller">
+        <!--[if lt IE 7]>
+            <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+        <![endif]-->
+        <div class="grid one" style="">
+            <div class="screen">
+            	<!-- Actualmente solo 1 grupo -->
+                <div class="containerCounters" ng-repeat="grupo in grupos">
+                    <div class="counters">
+                    	<!-- Semaforos estáticos -->
+                    	<div ng-repeat="indicador in grupo.items | filter: {'isStatic': true} | orderBy: ['priority']" ng-include="'static/tmpl/semaforo-template.html'">
+                    	</div>
+
+						<!-- Semaforos dinámicos activos -->
+                        <div ng-repeat="indicador in grupo.items | filter: {'isStatic': false,'isActive':true} | orderBy: ['priority'] | limitTo: grupo.limiteDinamicosActivos" ng-include="'static/tmpl/semaforo-template.html'">
+						</div>
+
+						<!-- Semaforos dinámicos no activos-->
+                        <div ng-repeat="indicador in grupo.items | filter: {'isStatic': false,'isActive':false} | orderBy: ['-timestamp','priority'] | limitTo: grupo.limiteDinamicosNoActivos" ng-include="'static/tmpl/semaforo-template.html'">
+						</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="light yellow" style="position: absolute;left: -10000000px;top: -10000000px;visibility: hidden; width: 0;height: 0;">
+        	<svg version="1.1" id="Capa_2" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"  width="214.166px" height="206px" viewBox="-54.833 -58 214.166 206" enable-background="new -54.833 -58 214.166 206" xml:space="preserve">
+	         <defs>
+	             <linearGradient id="verde1" x1="0%" y1="0%" x2="0%" y2="100%">
+	               <stop offset="0%" style="stop-color:rgb(50,55,35);stop-opacity:1" />
+	               <stop offset="50%" style="stop-color:rgb(31,31,31);stop-opacity:1" />
+	             </linearGradient>
+	             <linearGradient id="verde2" x1="0%" y1="0%" x2="0%" y2="100%">
+	               <stop offset="0%" style="stop-color:rgb(46,50,34);stop-opacity:1" />
+	               <stop offset="40%" style="stop-color:rgb(31,31,31);stop-opacity:1" />
+	             </linearGradient>
+	             <linearGradient id="naranja1" x1="0%" y1="0%" x2="0%" y2="100%">
+	               <stop offset="0%" style="stop-color:rgb(48,39,29);stop-opacity:1" />
+	               <stop offset="50%" style="stop-color:rgb(31,31,31);stop-opacity:1" />
+	             </linearGradient>
+	             <linearGradient id="naranja2" x1="0%" y1="0%" x2="0%" y2="100%">
+	               <stop offset="0%" style="stop-color:rgb(56,44,30);stop-opacity:1" />
+	               <stop offset="40%" style="stop-color:rgb(31,31,31);stop-opacity:1" />
+	             </linearGradient>
+	             <linearGradient id="rojo1" x1="0%" y1="0%" x2="0%" y2="100%">
+	               <stop offset="0%" style="stop-color:rgb(52,34,32);stop-opacity:1" />
+	               <stop offset="50%" style="stop-color:rgb(31,31,31);stop-opacity:1" />
+	             </linearGradient>
+	             <linearGradient id="rojo2" x1="0%" y1="0%" x2="0%" y2="100%">
+	               <stop offset="0%" style="stop-color:rgb(47,33,31);stop-opacity:1" />
+	               <stop offset="40%" style="stop-color:rgb(31,31,31);stop-opacity:1" />
+	             </linearGradient>
+	             <linearGradient id="amarillo1" x1="0%" y1="0%" x2="0%" y2="100%">
+	               <stop offset="0%" style="stop-color:rgb(98,98,21);stop-opacity:1" />
+	               <stop offset="50%" style="stop-color:rgb(31,31,31);stop-opacity:1" />
+	             </linearGradient>
+	             <linearGradient id="amarillo2" x1="0%" y1="0%" x2="0%" y2="100%">
+	               <stop offset="0%" style="stop-color:rgb(86,86,21);stop-opacity:1" />
+	               <stop offset="40%" style="stop-color:rgb(31,31,31);stop-opacity:1" />
+	             </linearGradient>
+	         </defs>
+	         <path id="circulo_1_" class="refle" fill="#B5D450" stroke="#77903A" stroke-width="8" stroke-miterlimit="10" d="M55.582-4.833 c29.363,0,53.169,23.806,53.169,53.168c0,29.361-23.806,53.165-53.169,53.165c-29.361,0-53.166-23.804-53.166-53.165 C2.416,18.973,26.221-4.833,55.582-4.833z"/>
+	     </svg>
+        </div>
+
+
+        <script type="text/javascript" src="static/js/lib/jquery-1.10.2.min.js"></script>
+  		<script type="text/javascript" src="static/js/lib/jquery-ui.min.js"></script>
+
+        <script type="text/javascript" src="static/js/lib/odometer-0.4.6.min.js"></script>
+        <script type="text/javascript" src="static/js/lib/buzz.min.js"></script>
+
+        <script type="text/javascript" src="static/js/lib/angular/angular.min.js"></script>
+        <script type="text/javascript" src="static/js/lib/angular/angular-resource.min.js"></script>
+        <script type="text/javascript" src="static/js/lib/angular/angular-animate.min.js"></script>
+        <script type="text/javascript" src="static/js/lib/angular/angular-odometer.min.js"></script>
+        <script type="text/javascript" src="static/js/lib/angular/angular-stopwatch.js"></script>
+
+        <script type="text/javascript" src="static/js/videowallcpd.stopwatch.js"></script>
+        <script type="text/javascript" src="static/js/videowallcpd.common.js"></script>
+        <script type="text/javascript" src="static/js/panel03.js"></script>
+
+    </body>
+</html>

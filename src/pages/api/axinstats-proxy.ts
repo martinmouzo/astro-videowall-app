@@ -1,6 +1,9 @@
 import type { APIRoute } from 'astro';
 import { Buffer } from 'buffer';
 
+// Desactivar la verificación de certificados SSL (no recomendado para producción)
+ process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+
 // Function to create a placeholder SVG image
 function createPlaceholderImage(width: string, height: string, message: string, errorType: 'service' | 'network' = 'service'): string {
     const w = parseInt(width) || 800;
@@ -41,11 +44,11 @@ export const GET: APIRoute = async ({ request }) => {
     const width = searchParams.get('Width') || '800';
     const height = searchParams.get('Height') || '600';
 
-    const username = import.meta.env.GRAFANA_USERNAME;
-    const password = import.meta.env.GRAFANA_PASSWORD;
+    const username = import.meta.env.AXINSTATS_USERNAME;
+    const password = import.meta.env.AXINSTATS_PASSWORD;
 
     if (!username || !password) {
-        console.error("Credenciales de Grafana no configuradas en las variables de entorno.");
+        console.error("Credenciales de Axinstats no configuradas en las variables de entorno.");
 
         // Return a placeholder for configuration errors
         const placeholderSvg = createPlaceholderImage(
@@ -62,8 +65,8 @@ export const GET: APIRoute = async ({ request }) => {
                 'Cache-Control': 'no-cache, no-store, must-revalidate',
                 'Pragma': 'no-cache',
                 'Expires': '0',
-                'X-Grafana-Error': 'config-error',
-                'X-Error-Message': 'Missing Grafana credentials'
+                'X-Axinstats-Error': 'config-error',
+                'X-Error-Message': 'Missing Axinstats credentials'
             }
         });
     }
@@ -88,7 +91,7 @@ export const GET: APIRoute = async ({ request }) => {
 
         if (!response.ok) {
             const errorText = await response.text();
-            console.error(`Error desde Grafana (${response.status}): ${errorText}`);
+            console.error(`Error desde Axinstats (${response.status}): ${errorText}`);
 
             // Return a placeholder image for service errors (500, 401, etc.)
             const placeholderSvg = createPlaceholderImage(
@@ -105,7 +108,7 @@ export const GET: APIRoute = async ({ request }) => {
                     'Cache-Control': 'no-cache, no-store, must-revalidate',
                     'Pragma': 'no-cache',
                     'Expires': '0',
-                    'X-Grafana-Error': 'service-error', // Custom header to indicate this is an error placeholder
+                    'X-Axinstats-Error': 'service-error', // Custom header to indicate this is an error placeholder
                     'X-Original-Status': response.status.toString()
                 }
             });
@@ -125,7 +128,7 @@ export const GET: APIRoute = async ({ request }) => {
         });
 
     } catch (error) {
-        console.error("Error al hacer proxy a Grafana:", error);
+        console.error("Error al hacer proxy a Axinstats:", error);
 
         // Determine error type for better messaging
         let errorMessage = 'Conexión no disponible';
@@ -156,7 +159,7 @@ export const GET: APIRoute = async ({ request }) => {
                 'Cache-Control': 'no-cache, no-store, must-revalidate',
                 'Pragma': 'no-cache',
                 'Expires': '0',
-                'X-Grafana-Error': 'network-error', // Custom header to indicate this is an error placeholder
+                'X-Axinstats-Error': 'network-error', // Custom header to indicate this is an error placeholder
                 'X-Error-Message': error instanceof Error ? error.message : String(error)
             }
         });

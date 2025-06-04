@@ -1,5 +1,5 @@
 ---
-import GrafanaChart from "./GrafanaChart.astro";
+import Chart from "./Chart.astro";
 import "@fontsource-variable/quicksand";
 
 const zaraConnectionsGraphId = "g1415104903.881";
@@ -45,7 +45,7 @@ const brandLogos = [
         <div class="chart-block">
           <div class="chart-block-title">CONNECTIONS</div>
           <div class="chart-wrapper">
-            <GrafanaChart
+            <Chart
               graphId={zaraConnectionsGraphId}
               startTime="end-30m"
               height="200px"
@@ -60,7 +60,7 @@ const brandLogos = [
         <div class="chart-block">
           <div class="chart-block-title">REQUESTS</div>
           <div class="chart-wrapper">
-            <GrafanaChart
+            <Chart
               graphId={zaraRequestsGraphId}
               startTime="end-30m"
               height="200px"
@@ -106,7 +106,7 @@ const brandLogos = [
           <div class="chart-block">
             <div class="chart-block-title">CONNECTIONS</div>
             <div class="chart-wrapper">
-              <GrafanaChart
+              <Chart
                 graphId={otherConnectionsGraphId}
                 startTime="end-30m"
                 height="200px"
@@ -121,7 +121,7 @@ const brandLogos = [
         <div class="chart-block">
           <div class="chart-block-title">REQUESTS</div>
           <div class="chart-wrapper">
-            <GrafanaChart
+            <Chart
               graphId={otherRequestsGraphId}
               startTime="end-30m"
               height="200px"
@@ -279,8 +279,8 @@ const brandLogos = [
     /* background-color: aliceblue; */
   }
 
-  /* Ensure GrafanaChart component has minimal spacing */
-  .chart-wrapper > :global(.grafana-chart-host) {
+  /* Ensure Chart component has minimal spacing */
+  .chart-wrapper > :global(.axinstats-chart-host) {
     display: block;
     margin: 0;
     padding: 0;
@@ -291,7 +291,7 @@ const brandLogos = [
   }
 
   /* Remove any spacing from the chart image itself */
-  .chart-wrapper > :global(.grafana-chart-host) img {
+  .chart-wrapper > :global(.axinstats-chart-host) img {
     display: block;
     margin: 0;
     padding: 0;

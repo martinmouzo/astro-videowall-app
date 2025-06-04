@@ -1,0 +1,302 @@
+[
+  {
+    "idGrupo": 1,
+    "items": [
+      {
+        "id": 29,
+        "title": "BBDD Oracle",
+        "priority": 10,
+        "isDeviceSubscribed": null,
+        "isStatic": true,
+        "isActive": false,
+        "sound": true,
+        "severity": 0,
+        "status": 0,
+        "items": [],
+        "timestamp": "2025-06-03 06:08:43",
+        "secondsFirstAlert": 0,
+        "demoMode": false
+      },
+      {
+        "id": 32,
+        "title": "Comunicaciones MPLS",
+        "priority": 30,
+        "isDeviceSubscribed": null,
+        "isStatic": true,
+        "isActive": false,
+        "sound": true,
+        "severity": 0,
+        "status": 0,
+        "items": [],
+        "timestamp": "2025-06-03 06:08:43",
+        "secondsFirstAlert": 0,
+        "demoMode": false
+      },
+      {
+        "id": 30,
+        "title": "Logistica Central",
+        "priority": 40,
+        "isDeviceSubscribed": null,
+        "isStatic": true,
+        "isActive": false,
+        "sound": true,
+        "severity": 0,
+        "status": 0,
+        "items": [],
+        "timestamp": "2025-06-03 06:08:43",
+        "secondsFirstAlert": 0,
+        "demoMode": false
+      },
+      {
+        "id": 28,
+        "title": "E-Commerce Web",
+        "priority": 50,
+        "isDeviceSubscribed": null,
+        "isStatic": true,
+        "isActive": true,
+        "sound": true,
+        "severity": 2,
+        "status": 0,
+        "items": [
+          {
+            "severity": 2,
+            "description": "web_server_23",
+            "status": 0,
+            "pais": "ESP",
+            "ciudad": "Madrid",
+            "cpd": "CPD1"
+          }
+        ],
+        "timestamp": "2025-06-03 12:48:23",
+        "secondsFirstAlert": 3600,
+        "demoMode": false
+      },
+      {
+        "id": 55,
+        "title": "Servicios AD-DNS",
+        "priority": 90,
+        "isDeviceSubscribed": null,
+        "isStatic": false,
+        "isActive": true,
+        "sound": true,
+        "severity": 3,
+        "status": 0,
+        "items": [
+          {
+            "severity": 3,
+            "description": "axinntp1",
+            "status": 0,
+            "pais": "ESP",
+            "ciudad": "Barcelona",
+            "cpd": "CPD2"
+          },
+          {
+            "severity": 2,
+            "description": "axindns2",
+            "status": 0,
+            "pais": "ESP",
+            "ciudad": "Barcelona",
+            "cpd": "CPD2"
+          }
+        ],
+        "timestamp": "2025-06-03 09:14:48",
+        "secondsFirstAlert": 18487,
+        "demoMode": false
+      },
+      {
+        "id": 27,
+        "title": "DB21",
+        "priority": 60,
+        "isDeviceSubscribed": null,
+        "isStatic": true,
+        "isActive": true,
+        "sound": true,
+        "severity": 5,
+        "status": 0,
+        "items": [
+          {
+            "severity": 5,
+            "description": "pro_axnadb22",
+            "status": 0,
+            "pais": "POR",
+            "ciudad": "Lisboa",
+            "cpd": "CPDLIS"
+          }
+        ],
+        "timestamp": "2025-06-03 08:14:48",
+        "secondsFirstAlert": 22036,
+        "demoMode": false
+      },
+      {
+        "id": 41,
+        "title": "Medios de Pago",
+        "priority": 45,
+        "isDeviceSubscribed": null,
+        "isStatic": true,
+        "isActive": true,
+        "sound": true,
+        "severity": 4,
+        "status": 0,
+        "items": [
+          {
+            "severity": 4,
+            "description": "payment_gateway",
+            "status": 0,
+            "pais": "ESP",
+            "ciudad": "Madrid",
+            "cpd": "CPD1"
+          }
+        ],
+        "timestamp": "2025-06-03 11:23:17",
+        "secondsFirstAlert": 9326,
+        "demoMode": false
+      },
+      {
+        "id": 38,
+        "title": "Sistemas Linux",
+        "priority": 70,
+        "isDeviceSubscribed": null,
+        "isStatic": true,
+        "isActive": false,
+        "sound": true,
+        "severity": 0,
+        "status": 0,
+        "items": [],
+        "timestamp": "2025-06-03 06:08:43",
+        "secondsFirstAlert": 0,
+        "demoMode": false
+      },
+      {
+        "id": 39,
+        "title": "Sistemas AIX",
+        "priority": 80,
+        "isDeviceSubscribed": null,
+        "isStatic": true,
+        "isActive": false,
+        "sound": true,
+        "severity": 0,
+        "status": 0,
+        "items": [],
+        "timestamp": "2025-06-03 06:08:43",
+        "secondsFirstAlert": 0,
+        "demoMode": false
+      },
+      {
+        "id": 42,
+        "title": "Seguridad",
+        "priority": 20,
+        "isDeviceSubscribed": null,
+        "isStatic": true,
+        "isActive": false,
+        "sound": true,
+        "severity": 0,
+        "status": 0,
+        "items": [],
+        "timestamp": "2025-06-03 06:08:43",
+        "secondsFirstAlert": 0,
+        "demoMode": false
+      },
+      {
+        "id": 43,
+        "title": "SAP HANA",
+        "priority": 25,
+        "isDeviceSubscribed": null,
+        "isStatic": true,
+        "isActive": false,
+        "sound": true,
+        "severity": 0,
+        "status": 0,
+        "items": [],
+        "timestamp": "2025-06-03 06:08:43",
+        "secondsFirstAlert": 0,
+        "demoMode": false
+      },
+      {
+        "id": 44,
+        "title": "Exchange",
+        "priority": 35,
+        "isDeviceSubscribed": null,
+        "isStatic": true,
+        "isActive": false,
+        "sound": true,
+        "severity": 0,
+        "status": 0,
+        "items": [],
+        "timestamp": "2025-06-03 06:08:43",
+        "secondsFirstAlert": 0,
+        "demoMode": false
+      },
+      {
+        "id": 45,
+        "title": "Meccano",
+        "priority": 65,
+        "isDeviceSubscribed": null,
+        "isStatic": true,
+        "isActive": true,
+        "sound": true,
+        "severity": 3,
+        "status": 0,
+        "items": [
+          {
+            "severity": 3,
+            "description": "meccano_service",
+            "status": 0,
+            "pais": "ESP",
+            "ciudad": "Madrid",
+            "cpd": "CPD1"
+          }
+        ],
+        "timestamp": "2025-06-03 10:38:12",
+        "secondsFirstAlert": 12031,
+        "demoMode": false
+      },
+      {
+        "id": 46,
+        "title": "Websphere",
+        "priority": 55,
+        "isDeviceSubscribed": null,
+        "isStatic": true,
+        "isActive": false,
+        "sound": true,
+        "severity": 0,
+        "status": 0,
+        "items": [],
+        "timestamp": "2025-06-03 06:08:43",
+        "secondsFirstAlert": 0,
+        "demoMode": false
+      },
+      {
+        "id": 47,
+        "title": "Aplicaciones Web",
+        "priority": 75,
+        "isDeviceSubscribed": null,
+        "isStatic": true,
+        "isActive": false,
+        "sound": true,
+        "severity": 0,
+        "status": 0,
+        "items": [],
+        "timestamp": "2025-06-03 06:08:43",
+        "secondsFirstAlert": 0,
+        "demoMode": false
+      },
+      {
+        "id": 48,
+        "title": "BBDD PostgreSQL",
+        "priority": 15,
+        "isDeviceSubscribed": null,
+        "isStatic": true,
+        "isActive": false,
+        "sound": true,
+        "severity": 0,
+        "status": 0,
+        "items": [],
+        "timestamp": "2025-06-03 06:08:43",
+        "secondsFirstAlert": 0,
+        "demoMode": false
+      }
+    ],
+    "limiteDinamicosActivos": 4,
+    "limiteDinamicosNoActivos": 12
+  }
+]

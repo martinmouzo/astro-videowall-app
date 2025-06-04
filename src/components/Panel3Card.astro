@@ -1,0 +1,384 @@
+---
+interface CardStatusProps {
+  title: string;
+  status: 'green' | 'yellow' | 'orange' | 'red';
+  icon: string;
+  hasAlert: boolean;
+  alertTime?: string;
+  affectedServers?: string[];
+  size?: 'compact' | 'full';
+}
+const { title, status, icon, hasAlert, alertTime, affectedServers = [], size = 'compact' } = Astro.props as CardStatusProps;
+
+const statusLabels: Record<CardStatusProps['status'], string> = {
+  green: 'OPERATIVO',
+  yellow: 'ADVERTENCIA',
+  orange: 'MAYOR',
+  red: 'CRÍTICO',
+};
+const statusColors: Record<CardStatusProps['status'], string> = {
+  green: '#4ade80',
+  yellow: '#fbbf24',
+  orange: '#fb923c',
+  red: '#ef4444',
+};
+const getStatusColor = (status: CardStatusProps['status']) => statusColors[status] || '#6b7280';
+const getStatusLabel = (status: CardStatusProps['status']) => statusLabels[status] || 'DESCONOCIDO';
+---
+<div class={`panel3-card ${status} ${hasAlert ? 'has-alert' : ''} ${size}`}
+     role="status"
+     aria-label={`${title} - Estado: ${getStatusLabel(status)}${hasAlert && alertTime ? ', Tiempo de alerta: ' + alertTime : ''}`}
+>
+  <div class="panel3-card-header">
+    <div class="panel3-status-indicator" style={`background-color: ${getStatusColor(status)}; color: ${getStatusColor(status)}`}>
+      {hasAlert && <div class="panel3-pulse-ring" style={`border-color: ${getStatusColor(status)}`}></div>}
+    </div>
+    <div class="panel3-card-icon" aria-hidden="true">{icon}</div>
+  </div>
+  <div class="panel3-card-body">
+    <div class="panel3-card-title">{title}</div>
+    <span class={`panel3-status-badge ${status}`}>{getStatusLabel(status)}</span>
+  </div>
+  {(hasAlert || affectedServers.length > 0 || size === 'full') && (
+    <div class="panel3-card-footer">
+      {hasAlert && alertTime && (
+        <div class="panel3-alert-badge">
+          <span class="panel3-alert-icon">⚠</span>
+          <span class="alert-time">{alertTime}</span>
+        </div>
+      )}
+      {affectedServers.length > 0 && (
+        <div class="panel3-servers-list">
+          <div class="servers-label">Servidores afectados:</div>
+          {affectedServers.slice(0, 3).map(server => (
+            <div class="server-item">{server}</div>
+          ))}
+          {affectedServers.length > 3 && (
+            <div class="server-item more">+{affectedServers.length - 3} más</div>
+          )}
+        </div>
+      )}
+    </div>
+  )}
+</div>
+
+<style>
+.panel3-card {
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(135deg, rgba(30,30,30,0.95) 0%, rgba(45,45,45,0.85) 100%);
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,0.1);
+  box-shadow:
+    0 8px 32px rgba(0,0,0,0.3),
+    0 0 20px rgba(255,255,255,0.02),
+    inset 0 1px 0 rgba(255,255,255,0.1);
+  overflow: hidden;
+  min-width: 0;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  animation: fadeInScale 0.6s cubic-bezier(.4,1.4,.6,1) backwards;
+  backdrop-filter: blur(20px);
+  position: relative;
+}
+
+.panel3-card:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 12px 48px rgba(0,0,0,0.4),
+    0 0 30px rgba(255,255,255,0.05),
+    inset 0 1px 0 rgba(255,255,255,0.15);
+}
+
+.panel3-card.compact {
+  min-height: 140px;
+  /* Removed max-height to allow content to expand */
+}
+
+.panel3-card.full {
+  min-height: 200px;
+  /* Removed max-height to allow content to expand */
+}
+
+.panel3-card.has-alert {
+  animation: cardPulse 2.5s infinite ease-in-out;
+}
+
+.panel3-card.green:not(.has-alert) {
+  border-color: rgba(74, 222, 128, 0.3);
+  box-shadow:
+    0 8px 32px rgba(0,0,0,0.3),
+    0 0 20px rgba(74, 222, 128, 0.1),
+    inset 0 1px 0 rgba(255,255,255,0.1);
+}
+
+.panel3-card.yellow {
+  border-color: rgba(251, 191, 36, 0.4);
+  box-shadow:
+    0 8px 32px rgba(0,0,0,0.3),
+    0 0 25px rgba(251, 191, 36, 0.15),
+    inset 0 1px 0 rgba(255,255,255,0.1);
+}
+
+.panel3-card.orange {
+  border-color: rgba(251, 146, 60, 0.4);
+  box-shadow:
+    0 8px 32px rgba(0,0,0,0.3),
+    0 0 25px rgba(251, 146, 60, 0.15),
+    inset 0 1px 0 rgba(255,255,255,0.1);
+}
+
+.panel3-card.red {
+  border-color: rgba(239, 68, 68, 0.5);
+  box-shadow:
+    0 8px 32px rgba(0,0,0,0.3),
+    0 0 30px rgba(239, 68, 68, 0.2),
+    inset 0 1px 0 rgba(255,255,255,0.1);
+}
+
+.panel3-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 12px 12px 6px 12px;
+  background: linear-gradient(90deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%);
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  flex-shrink: 0;
+}
+
+.panel3-status-indicator {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  position: relative;
+  box-shadow:
+    0 4px 12px rgba(0,0,0,0.4),
+    inset 0 2px 4px rgba(255,255,255,0.2),
+    0 0 20px currentColor;
+  flex-shrink: 0;
+  background: linear-gradient(135deg, currentColor 0%, currentColor 100%);
+}
+
+.panel3-pulse-ring {
+  position: absolute;
+  left: -4px;
+  top: -4px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid;
+  animation: pulseRing 3s infinite cubic-bezier(0.215,0.61,0.355,1);
+  z-index: 0;
+}
+
+.panel3-card-icon {
+  font-size: 24px;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+  opacity: 0.9;
+  flex-shrink: 0;
+}
+
+.panel3-card-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 16px 8px 16px;
+  flex: 1;
+  gap: 10px;
+  text-align: center;
+  min-height: 0; /* Allow flex shrinking */
+}
+
+.panel3-card-title {
+  font-size: 0.95em;
+  font-weight: 700;
+  color: #fff;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+  line-height: 1.2;
+  margin: 0;
+  word-break: break-word;
+  hyphens: auto;
+}
+
+.panel3-card.compact .panel3-card-title {
+  font-size: 0.85em;
+  line-height: 1.1;
+}
+
+.panel3-status-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 10px;
+  border-radius: 16px;
+  font-size: 0.75em;
+  font-weight: 600;
+  color: #fff;
+  letter-spacing: 0.3px;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.1);
+  min-width: 75px;
+}
+
+.panel3-status-badge.green {
+  background: linear-gradient(135deg, #10b981 0%, #059669 50%, #047857 100%);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.panel3-status-badge.yellow {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 50%, #b45309 100%);
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+}
+
+.panel3-status-badge.orange {
+  background: linear-gradient(135deg, #f97316 0%, #ea580c 50%, #c2410c 100%);
+  box-shadow: 0 4px 12px rgba(249, 115, 22, 0.3);
+}
+
+.panel3-status-badge.red {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 50%, #b91c1c 100%);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+}
+
+.panel3-card-footer {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px 16px 12px 16px;
+  flex-shrink: 0;
+  margin-top: auto; /* Push footer to bottom */
+  width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.panel3-alert-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: linear-gradient(135deg, rgba(239,68,68,0.2) 0%, rgba(220,38,38,0.3) 100%);
+  color: #fff;
+  border-radius: 8px;
+  font-size: 0.75em;
+  font-weight: 600;
+  padding: 4px 8px;
+  box-shadow:
+    0 4px 12px rgba(239,68,68,0.3),
+    inset 0 1px 0 rgba(255,255,255,0.1);
+  border: 1px solid rgba(239,68,68,0.4);
+  backdrop-filter: blur(10px);
+  width: fit-content;
+  align-self: center;
+  font-family: 'Roboto Mono Variable', 'Monaco', 'Courier New', monospace;
+}
+
+.panel3-alert-icon {
+  font-size: 12px;
+  animation: alertBlink 2s infinite ease-in-out;
+  line-height: 1;
+}
+
+.alert-time {
+  font-family: 'Roboto Mono Variable', 'Monaco', 'Courier New', monospace;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  font-size: 0.85em;
+  line-height: 1;
+}
+
+.panel3-servers-list {
+  background: rgba(15,15,15,0.6);
+  border-radius: 6px;
+  padding: 8px 10px;
+  border: 1px solid rgba(255,255,255,0.1);
+  min-height: fit-content;
+  overflow: hidden;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.servers-label {
+  font-size: 0.7em;
+  color: #ccc;
+  margin-bottom: 6px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  line-height: 1.2;
+}
+
+.server-item {
+  font-size: 0.75em;
+  color: #fff;
+  padding: 3px 6px;
+  margin: 3px 0;
+  background: rgba(255,255,255,0.05);
+  border-radius: 4px;
+  font-family: 'Roboto Mono Variable', 'Monaco', 'Courier New', monospace;
+  border-left: 2px solid currentColor;
+  word-break: break-all;
+  overflow-wrap: break-word;
+  line-height: 1.3;
+  display: block;
+  width: calc(100% - 12px);
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.server-item.more {
+  color: #fbbf24;
+  font-weight: 600;
+  border-left-color: #fbbf24;
+}
+
+@keyframes pulseRing {
+  0%, 100% {
+    opacity: 0.3;
+    transform: scale(1);
+    border-color: rgba(239, 68, 68, 0.3);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.1);
+    border-color: rgba(239, 68, 68, 0.8);
+  }
+}
+
+@keyframes cardPulse {
+  0%, 100% {
+    box-shadow:
+      0 8px 32px rgba(0,0,0,0.3),
+      0 0 30px rgba(239, 68, 68, 0.2),
+      inset 0 1px 0 rgba(255,255,255,0.1);
+  }
+  50% {
+    box-shadow:
+      0 12px 48px rgba(0,0,0,0.4),
+      0 0 50px rgba(239, 68, 68, 0.4),
+      inset 0 1px 0 rgba(255,255,255,0.15);
+  }
+}
+
+@keyframes alertBlink {
+  0%, 100% { opacity: 0.8; }
+  50% { opacity: 1; }
+}
+
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+</style>
