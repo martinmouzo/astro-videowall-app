@@ -217,7 +217,6 @@ const getCategoryIcon = (category: string) => {
                   hasAlert={hasAlert}
                   alertTime={hasAlert ? alertTime : undefined}
                   size="compact"
-                  style={`animation-delay: ${index * 0.05}s`}
                 />
               </div>
             );
@@ -433,8 +432,7 @@ const getCategoryIcon = (category: string) => {
     will-change: transform;
     animation: lenisCarouselScroll linear infinite;
     animation-play-state: running;
-    /* Lenis-inspired smooth movement */
-    transition: transform 0.1s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    backface-visibility: hidden; /* Better performance */
   }
 
   @keyframes lenisCarouselScroll {
@@ -449,15 +447,10 @@ const getCategoryIcon = (category: string) => {
   .carousel-slide {
     flex: 0 0 200px;
     min-width: 200px;
-    /* Lenis-style smooth transitions */
-    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    transform-origin: center;
     will-change: transform;
-  }
-
-  .carousel-slide:hover {
-    transform: scale(1.02) translateZ(0);
-    filter: brightness(1.1);
+    pointer-events: none;
+    backface-visibility: hidden; /* Better performance */
+    transform: translateZ(0); /* Force hardware acceleration on individual slides */
   }
 
   .issues-grid {
@@ -516,7 +509,6 @@ const getCategoryIcon = (category: string) => {
   }
 
   .update-icon {
-    transition: transform 0.3s ease;
     display: inline-block;
     font-size: 0.85em;
   }
@@ -757,202 +749,39 @@ const getCategoryIcon = (category: string) => {
 </style>
 
 <script>
-  import { LenisAnimator } from '../utils/lenisAnimations.ts';
-
-  // Initialize Lenis animator
-  const lenisAnimator = new LenisAnimator({
-    duration: 0.8,
-    easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)',
-    smooth: true
-  });
-
-  // Lenis-inspired carousel animation helper
-  function lenisStyleCarouselAnimate(element: HTMLElement, properties: Record<string, string>, duration: number = 0.8) {
-    const easing = 'cubic-bezier(0.25, 0.46, 0.45, 0.94)'; // Lenis easing
-    element.style.transition = `all ${duration}s ${easing}`;
-
-    Object.keys(properties).forEach(key => {
-      (element.style as any)[key] = properties[key];
-    });
-  }
-
   function initializeCarousel() {
     const carousel = document.querySelector('.carousel-track') as HTMLElement;
 
     if (!carousel) {
-      console.warn('Carousel track not found');
       return;
     }
 
     const slides = carousel.querySelectorAll('.carousel-slide');
 
     if (slides.length === 0) {
-      console.warn('No slides found in carousel');
       return;
     }
 
-    console.log(`Initializing Lenis-style carousel with ${slides.length} slides`);
-
-    // Clear any existing duplicates first
-    const originalSlides = Array.from(slides);
-
-    // Only duplicate if we haven't already and have enough slides to warrant scrolling
-    if (!carousel.dataset.initialized && originalSlides.length >= 2) {
-      // Duplicate slides for seamless loop with Lenis-style entrance
-      originalSlides.forEach((slide, index) => {
+    // Only duplicate slides once for seamless loop
+    if (!carousel.dataset.initialized && slides.length >= 2) {
+      const originalSlides = Array.from(slides);
+      originalSlides.forEach((slide) => {
         const clone = slide.cloneNode(true) as HTMLElement;
-
-        // Apply Lenis-style entrance animation to clones
-        clone.style.opacity = '0';
-        clone.style.transform = 'translateY(10px) scale(0.98)';
-
         carousel.appendChild(clone);
-
-        // Animate in with delay
-        setTimeout(() => {
-          lenisStyleCarouselAnimate(clone, {
-            opacity: '1',
-            transform: 'translateY(0) scale(1)'
-          }, 0.6);
-        }, index * 100);
       });
-
       carousel.dataset.initialized = 'true';
-      console.log(`Duplicated slides with Lenis animations, now have ${carousel.querySelectorAll('.carousel-slide').length} slides`);
     }
 
-    // Calculate animation duration based on number of slides
-    const animationDuration = Math.max(originalSlides.length * 3.5, 10); // Minimum 10 seconds, 3.5 seconds per slide
-
-    // Set the animation duration dynamically with Lenis-style smoothness
+    // Set consistent animation duration
+    const animationDuration = Math.max(slides.length * 3, 15); // 3 seconds per slide, minimum 15 seconds
     carousel.style.setProperty('animation-duration', `${animationDuration}s`);
-    carousel.style.setProperty('animation-timing-function', 'cubic-bezier(0.25, 0.46, 0.45, 0.94)');
-
-    // Apply Lenis-style hover effects to slides
-    const allSlides = carousel.querySelectorAll('.carousel-slide');
-    allSlides.forEach(slide => {
-      const slideElement = slide as HTMLElement;
-
-      slideElement.addEventListener('mouseenter', () => {
-        lenisStyleCarouselAnimate(slideElement, {
-          transform: 'scale(1.02) translateZ(0)',
-          filter: 'brightness(1.1)'
-        }, 0.3);
-
-        // Slightly slow down carousel on hover for better UX
-        carousel.style.animationDuration = `${animationDuration * 1.2}s`;
-      });
-
-      slideElement.addEventListener('mouseleave', () => {
-        lenisStyleCarouselAnimate(slideElement, {
-          transform: 'scale(1) translateZ(0)',
-          filter: 'brightness(1)'
-        }, 0.3);
-
-        // Restore normal speed
-        carousel.style.animationDuration = `${animationDuration}s`;
-      });
-    });
-
-    // Force restart animation with Lenis-style smoothness
-    carousel.style.animationPlayState = 'paused';
-
-    // Use double RAF for smoother animation start (Lenis technique)
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        carousel.style.animationPlayState = 'running';
-
-        // Apply initial entrance animation to visible slides
-        const visibleSlides = Array.from(originalSlides).slice(0, 3); // First 3 visible slides
-        visibleSlides.forEach((slide, index) => {
-          const slideElement = slide as HTMLElement;
-          slideElement.style.opacity = '0';
-          slideElement.style.transform = 'translateY(15px) scale(0.95)';
-
-          setTimeout(() => {
-            lenisStyleCarouselAnimate(slideElement, {
-              opacity: '1',
-              transform: 'translateY(0) scale(1)'
-            }, 0.8);
-          }, index * 150);
-        });
-      });
-    });
-
-    console.log(`Lenis-style carousel animation set to ${animationDuration}s duration`);
+    carousel.style.animationPlayState = 'running';
   }
 
-  // Multiple initialization attempts with Lenis-style timing
-  function initCarouselWithLenisRetry() {
-    // Initial fade-in for the entire carousel container using Lenis animator
-    const carouselContainer = document.querySelector('.carousel-container') as HTMLElement;
-    if (carouselContainer) {
-      // Use the Lenis animator for smooth entrance
-      lenisAnimator.fadeIn(carouselContainer, {
-        duration: 0.8,
-        delay: 0.2
-      });
-    }
-
-    initializeCarousel();
-
-    // Retry with Lenis-style intervals
-    setTimeout(() => initializeCarousel(), 300);
-    setTimeout(() => initializeCarousel(), 600);
-    setTimeout(() => initializeCarousel(), 1000);
-    setTimeout(() => initializeCarousel(), 2000);
-  }
-
-  // Initialize when DOM is ready with Lenis-style grace period
+  // Initialize immediately
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initCarouselWithLenisRetry);
+    document.addEventListener('DOMContentLoaded', initializeCarousel);
   } else {
-    initCarouselWithLenisRetry();
+    initializeCarousel();
   }
-
-  // Re-initialize on any layout changes with Lenis-style debounce
-  let resizeTimeout: number;
-  window.addEventListener('resize', () => {
-    clearTimeout(resizeTimeout);
-    resizeTimeout = window.setTimeout(() => {
-      initCarouselWithLenisRetry();
-    }, 300);
-  });
-
-  // Enhanced Lenis-style entrance animations for all panel elements
-  setTimeout(() => {
-    initCarouselWithLenisRetry();
-
-    // Apply staggered entrance animations to different sections
-    const summaryItems = document.querySelectorAll('.summary-item');
-    const indicatorItems = document.querySelectorAll('.indicator-item');
-    const issueItems = document.querySelectorAll('.issue-item');
-
-    // Animate summary items first
-    if (summaryItems.length > 0) {
-      lenisAnimator.slideIn(summaryItems, 'up', {
-        duration: 0.6,
-        stagger: 0.1,
-        delay: 0.3
-      });
-    }
-
-    // Then indicator items
-    if (indicatorItems.length > 0) {
-      lenisAnimator.fadeIn(indicatorItems, {
-        duration: 0.7,
-        stagger: 0.08,
-        delay: 0.8
-      });
-    }
-
-    // Finally issue items
-    if (issueItems.length > 0) {
-      lenisAnimator.slideIn(issueItems, 'left', {
-        duration: 0.6,
-        stagger: 0.05,
-        delay: 1.2
-      });
-    }
-  }, 2500);
 </script>

@@ -152,7 +152,6 @@ console.log(`[IndicatorList] Region: ${region}, Found ${totalIndicators} indicat
               <div
                 class="indicator-item"
                 style={`border-left-color: ${indicador.color}; animation-delay: ${index * 0.1}s`}
-                data-critical={indicador.tipo === 4 && indicador.valor > 0 ? "true" : "false"}
               >
                 <span class="indicator-value">{indicador.valor}</span>
                 <span class="indicator-label">{indicador.label}</span>
@@ -161,15 +160,6 @@ console.log(`[IndicatorList] Region: ${region}, Found ${totalIndicators} indicat
           </div>
         </div>
       ))}
-
-      {/* Indicador de página */}
-      {shouldAnimate && (
-        <div class="page-indicators">
-          {indicatorGroups.map((_, index) => (
-            <div class="page-dot" data-page={index}></div>
-          ))}
-        </div>
-      )}
     </div>
   ) : (
     <div class="no-data">
@@ -197,14 +187,13 @@ console.log(`[IndicatorList] Region: ${region}, Found ${totalIndicators} indicat
     height: 100%;
     position: relative;
     overflow: hidden;
-    padding-bottom: 20px; /* Añadido espacio en la parte inferior para los indicadores */
     box-sizing: border-box;
   }
 
   .indicators-page {
     position: absolute;
     width: 100%;
-    height: calc(100% - 20px); /* Reducido para dar espacio a los indicadores */
+    height: 100%;
     top: 0;
     left: 0;
     display: flex;
@@ -289,20 +278,6 @@ console.log(`[IndicatorList] Region: ${region}, Found ${totalIndicators} indicat
     }
   }
 
-  /* Efecto de pulso para valores críticos */
-  .indicator-item[data-critical="true"] {
-    animation: criticalPulse 2s ease-in-out infinite;
-  }
-
-  @keyframes criticalPulse {
-    0%, 100% {
-      box-shadow: 0 0 5px rgba(255, 0, 0, 0.3);
-    }
-    50% {
-      box-shadow: 0 0 15px rgba(255, 0, 0, 0.8);
-    }
-  }
-
   .indicator-value {
     font-weight: bold;
     color: #ffffff;
@@ -341,32 +316,34 @@ console.log(`[IndicatorList] Region: ${region}, Found ${totalIndicators} indicat
     text-rendering: optimizeLegibility;
   }
 
-  /* Page indicators */
+  /* Page indicators - HIDDEN */
+  /*
   .page-indicators {
     position: absolute;
-    bottom: 4px; /* Reducido de 8px a 4px para estar más cerca del borde */
+    bottom: 4px;
     left: 50%;
     transform: translateX(-50%);
     display: flex;
-    gap: 8px; /* Aumentado de 6px a 8px para mejor visibilidad */
-    z-index: 20; /* Aumentado de 10 a 20 para asegurar que esté por encima */
-    pointer-events: none; /* Para evitar interferencias */
+    gap: 8px;
+    z-index: 20;
+    pointer-events: none;
   }
 
   .page-dot {
-    width: 10px; /* Aumentado de 8px a 10px */
-    height: 10px; /* Aumentado de 8px a 10px */
+    width: 10px;
+    height: 10px;
     border-radius: 50%;
-    background: rgba(255, 255, 255, 0.4); /* Más opaco para mejor visibilidad */
+    background: rgba(255, 255, 255, 0.4);
     transition: all 0.3s ease;
-    border: 1px solid rgba(255, 255, 255, 0.2); /* Añadido borde para definición */
+    border: 1px solid rgba(255, 255, 255, 0.2);
   }
 
   .page-dot.active {
-    background: rgba(255, 255, 255, 0.9); /* Más opaco cuando está activo */
-    transform: scale(1.3); /* Ligeramente más grande */
-    box-shadow: 0 0 8px rgba(255, 255, 255, 0.5); /* Añadido glow effect */
+    background: rgba(255, 255, 255, 0.9);
+    transform: scale(1.3);
+    box-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
   }
+  */
 
   /* Responsive adjustments */
   @media (max-width: 1400px) {

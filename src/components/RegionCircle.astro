@@ -29,6 +29,14 @@ const centerYPercent = (mapPosition.cy / viewBoxHeight) * 100;
 // El diámetro como porcentaje del ancho del viewBox del SVG.
 const diameterPercentVW = (mapPosition.r * 2 / viewBoxWidth) * 100;
 
+// Get region-specific color for visual theming
+const regionColors = {
+  america: '#54ccb8',
+  europe: '#5e97fe',
+  asia: '#605beb'
+};
+const regionColor = regionColors[id as keyof typeof regionColors] || '#54ccb8';
+
 // Estilo para el contenedor principal del overlay
 // Se posiciona absolutamente y se centra usando transform.
 // Su tamaño se basa en el radio proporcionado, relativo al ancho del SVG.
@@ -44,8 +52,14 @@ const overlayContainerStyle = `
   align-items: center;
   justify-content: center;
   border-radius: 50%; /* Hace que el contenedor mismo sea un círculo */
-  background-color: rgba(0, 0, 0, 0.4); /* Color de fondo semitransparente para el círculo */
-  box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
+  background: linear-gradient(135deg, ${regionColor}20 0%, ${regionColor}40 100%);
+  border: 2px solid ${regionColor}60;
+  box-shadow:
+    rgba(50, 50, 93, 0.25) 0px 2px 5px -1px,
+    rgba(0, 0, 0, 0.3) 0px 1px 3px -1px,
+    inset 0 0 0 1px ${regionColor}20;
+  backdrop-filter: blur(4px);
+  --region-color: ${regionColor};
 `;
 ---
 
@@ -72,6 +86,7 @@ const overlayContainerStyle = `
   .region-overlay-container {
     /* Estilos adicionales si son necesarios más allá del style inline */
     box-sizing: border-box;
+    pointer-events: none; /* Sin interacciones */
   }
 
   .overlay-content {
@@ -168,3 +183,4 @@ const overlayContainerStyle = `
     }
   }
 </style>
+

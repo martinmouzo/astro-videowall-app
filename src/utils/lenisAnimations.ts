@@ -144,6 +144,75 @@ class LenisAnimator {
     });
   }
 
+  // Smooth scale out animation
+  scaleOut(elements: string | Element | NodeList, options: AnimationOptions = {}) {
+    const targets = this.getElements(elements);
+    if (!targets.length) return;
+
+    const opts = {
+      duration: this.config.duration * 0.6,
+      ease: 'cubic-bezier(0.55, 0.055, 0.675, 0.19)', // Ease in
+      delay: 0,
+      stagger: 0.05,
+      ...options
+    };
+
+    this.animateElements(targets, {
+      opacity: 0,
+      transform: 'scale(0.8)',
+      ...opts
+    });
+  }
+
+  // Synchronized transition between elements
+  syncTransition(fromElements: string | Element | NodeList | null, toElements: string | Element | NodeList | null, options: AnimationOptions = {}) {
+    const fromTargets = fromElements ? this.getElements(fromElements) : [];
+    const toTargets = toElements ? this.getElements(toElements) : [];
+
+    if (!fromTargets.length && !toTargets.length) return;
+
+    const opts = {
+      duration: this.config.duration,
+      ease: this.config.easing,
+      delay: 0,
+      ...options
+    };
+
+    // Animate out current elements
+    if (fromTargets.length > 0) {
+      this.animateElements(fromTargets, {
+        opacity: 0,
+        transform: 'scale(0.95) translateY(-10px)',
+        duration: opts.duration * 0.4,
+        ease: opts.ease
+      });
+    }
+
+    // Animate in new elements with slight delay
+    if (toTargets.length > 0) {
+      setTimeout(() => {
+        // Set initial state for new elements
+        toTargets.forEach((el: HTMLElement) => {
+          el.style.opacity = '0';
+          el.style.transform = 'scale(0.95) translateY(10px)';
+        });
+
+        this.animateElements(toTargets, {
+          opacity: 1,
+          transform: 'scale(1) translateY(0px)',
+          duration: opts.duration * 0.6,
+          ease: opts.ease,
+          delay: 0.1
+        });
+      }, opts.duration * 200); // 20% of animation duration
+    }
+
+    // Handle completion callback
+    if (options.onComplete) {
+      setTimeout(options.onComplete, opts.duration * 1000);
+    }
+  }
+
   // Smooth morphing transition
   morphTransition(fromElement: string | Element, toElement: string | Element, options: AnimationOptions = {}) {
     const from = this.getElement(fromElement);
@@ -314,5 +383,99 @@ export const lenisUtils = {
         });
       }, index * 200);
     });
+  },
+
+  // Enhanced region transition effect
+  regionTransition: (fromRegion: string | null, toRegion: string, options: AnimationOptions = {}) => {
+    const opts = {
+      duration: 0.8,
+      ...options
+    };
+
+    if (fromRegion) {
+      // Hide current region
+      lenis.syncTransition(fromRegion, null, {
+        duration: opts.duration * 0.5,
+        ease: 'cubic-bezier(0.55, 0.055, 0.675, 0.19)'
+      });
+    }
+
+    // Show new region with delay
+    setTimeout(() => {
+      lenis.syncTransition(null, toRegion, {
+        duration: opts.duration * 0.7,
+        ease: 'cubic-bezier(0.68, -0.55, 0.265, 1.55)',
+        onComplete: options.onComplete
+      });
+    }, fromRegion ? opts.duration * 300 : 0);
+  },
+
+  // Breathing animation for attention-grabbing elements
+  breathingEffect: (element: string | Element, options: { scale?: number; duration?: number } = {}) => {
+    const target = typeof element === 'string' ? document.querySelector(element) : element;
+    if (!target) return;
+
+    const opts = {
+      scale: 1.02,
+      duration: 2,
+      ...options
+    };
+
+    const htmlTarget = target as HTMLElement;
+    htmlTarget.style.animation = `breathe ${opts.duration}s ease-in-out infinite alternate`;
+
+    // Add keyframes if not already present
+    if (!document.querySelector('#breathe-keyframes')) {
+      const style = document.createElement('style');
+      style.id = 'breathe-keyframes';
+      style.textContent = `
+        @keyframes breathe {
+          0% { transform: scale(1); }
+          100% { transform: scale(${opts.scale}); }
+        }
+      `;
+      document.head.appendChild(style);
+    }
+  },
+
+  // Pulse effect for notifications or highlights
+  pulseEffect: (element: string | Element, color: string = '#54ccb8') => {
+    const target = typeof element === 'string' ? document.querySelector(element) : element;
+    if (!target) return;
+
+    const htmlTarget = target as HTMLElement;
+    htmlTarget.style.position = 'relative';
+    htmlTarget.style.overflow = 'hidden';
+
+    const pulse = document.createElement('div');
+    pulse.style.cssText = `
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      background: ${color};
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      opacity: 0.6;
+      animation: pulse 0.6s ease-out;
+    `;
+
+    // Add pulse keyframes if not already present
+    if (!document.querySelector('#pulse-keyframes')) {
+      const style = document.createElement('style');
+      style.id = 'pulse-keyframes';
+      style.textContent = `
+        @keyframes pulse {
+          0% { width: 0; height: 0; opacity: 0.6; }
+          100% { width: 200px; height: 200px; opacity: 0; }
+        }
+      `;
+      document.head.appendChild(style);
+    }
+
+    htmlTarget.appendChild(pulse);
+    setTimeout(() => pulse.remove(), 600);
   }
 };
