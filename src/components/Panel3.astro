@@ -75,33 +75,70 @@ async function fetchSemaforosData(): Promise<{ items: SemaforoItem[], source: st
     console.error('Error fetching semaforos data:', error);
     console.log('Usando datos de fallback local');
 
-    // Datos de fallback (mock data) - más variados para mejor visualización
+    // Datos de fallback (mock data) - solo títulos permitidos
     return {
       items: [
-        { id: 29, title: 'BBDD Oracle', priority: 10, isDeviceSubscribed: null, isStatic: true, isActive: false, sound: true, severity: 0, status: 0, items: [], timestamp: '2025-04-03 06:08:43', secondsFirstAlert: 0, demoMode: false },
+        { id: 29, title: 'BBDD', priority: 10, isDeviceSubscribed: null, isStatic: true, isActive: false, sound: true, severity: 0, status: 0, items: [], timestamp: '2025-04-03 06:08:43', secondsFirstAlert: 0, demoMode: false },
         { id: 32, title: 'Comunicaciones', priority: 30, isDeviceSubscribed: null, isStatic: true, isActive: false, sound: true, severity: 0, status: 0, items: [], timestamp: '2025-04-03 06:08:43', secondsFirstAlert: 0, demoMode: false },
-        { id: 30, title: 'Logística', priority: 40, isDeviceSubscribed: null, isStatic: true, isActive: false, sound: true, severity: 0, status: 0, items: [], timestamp: '2025-04-03 06:08:43', secondsFirstAlert: 0, demoMode: false },
+        { id: 30, title: 'Logistica', priority: 40, isDeviceSubscribed: null, isStatic: true, isActive: false, sound: true, severity: 0, status: 0, items: [], timestamp: '2025-04-03 06:08:43', secondsFirstAlert: 0, demoMode: false },
         { id: 28, title: 'E-Commerce', priority: 50, isDeviceSubscribed: null, isStatic: true, isActive: true, sound: true, severity: 2, status: 0, items: [{ severity: 2, description: 'ecom_srv01', status: 0, pais: 'ESPAÑA', ciudad: 'MADRID', cpd: 'CPD1' }], timestamp: '2025-06-03 14:14:48', secondsFirstAlert: 3600, demoMode: false },
-        { id: 69, title: 'Meccano', priority: 50, isDeviceSubscribed: null, isStatic: true, isActive: false, sound: true, severity: 0, status: 0, items: [], timestamp: '2025-04-03 06:08:43', secondsFirstAlert: 0, demoMode: false },
         { id: 27, title: 'DB21', priority: 60, isDeviceSubscribed: null, isStatic: true, isActive: true, sound: true, severity: 5, status: 0, items: [{ severity: 5, description: 'pro_axnadb22', status: 0, pais: 'NOPAIS', ciudad: 'NOCIUDAD', cpd: 'NOCPD' }], timestamp: '2025-06-03 14:14:48', secondsFirstAlert: 16723036, demoMode: false },
-        { id: 35, title: 'Red Corporativa', priority: 20, isDeviceSubscribed: null, isStatic: true, isActive: true, sound: true, severity: 4, status: 0, items: [{ severity: 4, description: 'network_core01', status: 0, pais: 'ESPAÑA', ciudad: 'BARCELONA', cpd: 'CPD2' }, { severity: 4, description: 'network_core02', status: 0, pais: 'ESPAÑA', ciudad: 'VALENCIA', cpd: 'CPD3' }], timestamp: '2025-06-03 13:45:12', secondsFirstAlert: 7200, demoMode: false },
         { id: 45, title: 'Medios de Pago', priority: 35, isDeviceSubscribed: null, isStatic: true, isActive: false, sound: true, severity: 0, status: 0, items: [], timestamp: '2025-04-03 06:08:43', secondsFirstAlert: 0, demoMode: false },
-        { id: 50, title: 'Aplicaciones Web', priority: 25, isDeviceSubscribed: null, isStatic: true, isActive: true, sound: true, severity: 3, status: 0, items: [{ severity: 3, description: 'webapp_srv01', status: 0, pais: 'FRANCIA', ciudad: 'PARIS', cpd: 'CPD4' }], timestamp: '2025-06-03 15:20:33', secondsFirstAlert: 1800, demoMode: false },
-        { id: 55, title: 'Sistema Linux', priority: 15, isDeviceSubscribed: null, isStatic: true, isActive: false, sound: true, severity: 0, status: 0, items: [], timestamp: '2025-04-03 06:08:43', secondsFirstAlert: 0, demoMode: false },
-        { id: 60, title: 'Storage', priority: 45, isDeviceSubscribed: null, isStatic: true, isActive: false, sound: true, severity: 0, status: 0, items: [], timestamp: '2025-04-03 06:08:43', secondsFirstAlert: 0, demoMode: false },
-        { id: 65, title: 'Backup System', priority: 55, isDeviceSubscribed: null, isStatic: true, isActive: false, sound: true, severity: 0, status: 0, items: [], timestamp: '2025-04-03 06:08:43', secondsFirstAlert: 0, demoMode: false }
+        { id: 50, title: 'Aplicaciones', priority: 25, isDeviceSubscribed: null, isStatic: true, isActive: true, sound: true, severity: 3, status: 0, items: [{ severity: 3, description: 'webapp_srv01', status: 0, pais: 'FRANCIA', ciudad: 'PARIS', cpd: 'CPD4' }], timestamp: '2025-06-03 15:20:33', secondsFirstAlert: 1800, demoMode: false },
+        { id: 55, title: 'Linux', priority: 15, isDeviceSubscribed: null, isStatic: true, isActive: false, sound: true, severity: 0, status: 0, items: [], timestamp: '2025-04-03 06:08:43', secondsFirstAlert: 0, demoMode: false },
+        { id:31, title: 'UPS', priority: 5, isDeviceSubscribed: null, isStatic: true, isActive: true, sound: true, severity: 4, status: 0, items: [{ severity: 4, description: 'ups_main01', status: 0, pais: 'ESPAÑA', ciudad: 'MADRID', cpd: 'CPD1' }], timestamp: '2025-06-03 13:45:12', secondsFirstAlert: 7200, demoMode: false },
+        { id: 33, title: 'Seguridad', priority: 20, isDeviceSubscribed: null, isStatic: true, isActive: false, sound: true, severity: 0, status: 0, items: [], timestamp: '2025-04-03 06:08:43', secondsFirstAlert: 0, demoMode: false },
+        { id: 34, title: 'Exchange', priority: 25, isDeviceSubscribed: null, isStatic: true, isActive: true, sound: true, severity: 2, status: 0, items: [{ severity: 2, description: 'exchange_srv01', status: 0, pais: 'ESPAÑA', ciudad: 'VALENCIA', cpd: 'CPD2' }], timestamp: '2025-06-03 15:30:45', secondsFirstAlert: 900, demoMode: false },
+        { id: 35, title: 'AIX', priority: 30, isDeviceSubscribed: null, isStatic: true, isActive: false, sound: true, severity: 0, status: 0, items: [], timestamp: '2025-04-03 06:08:43', secondsFirstAlert: 0, demoMode: false },
+        { id: 36, title: 'WAS', priority: 35, isDeviceSubscribed: null, isStatic: true, isActive: true, sound: true, severity: 3, status: 0, items: [{ severity: 3, description: 'was_cluster01', status: 0, pais: 'ESPAÑA', ciudad: 'BARCELONA', cpd: 'CPD3' }], timestamp: '2025-06-03 14:45:22', secondsFirstAlert: 2700, demoMode: false }
       ],
       source: 'component-fallback'
     };
   }
 }
 
+// Títulos permitidos para el filtro
+const ALLOWED_TITLES = [
+  'UPS', 'DB21', 'E-Commerce', 'BBDD', 'Logistica', 'Seguridad', 'Linux',
+  'Exchange', 'AIX', 'Aplicaciones', 'Servicios AD-DNS', 'Medios de Pago',
+  'SFI', 'MPS', 'MQ_EAI', 'MQ_REPDB2', 'Hipos', 'TransEcom', 'WAS',
+  'Red - CPD', 'Red - Alm ECOM', 'Red - ECOM', 'Red - Tiendas',
+  'Red - Filiales', 'Comunicaciones'
+];
+
+// Función para filtrar elementos por títulos permitidos
+function filterByAllowedTitles(items: SemaforoItem[]): SemaforoItem[] {
+  return items.filter(item => {
+    // Normalizar el título del item para comparación
+    const itemTitle = item.title.trim();
+
+    // Buscar coincidencia exacta o parcial con los títulos permitidos
+    return ALLOWED_TITLES.some(allowedTitle => {
+      // Coincidencia exacta
+      if (itemTitle === allowedTitle) return true;
+
+      // Coincidencia parcial para casos como "BBDD Oracle" que contiene "BBDD"
+      if (itemTitle.includes(allowedTitle) || allowedTitle.includes(itemTitle)) return true;
+
+      // Coincidencia sin distinguir mayúsculas/minúsculas
+      if (itemTitle.toLowerCase() === allowedTitle.toLowerCase()) return true;
+
+      return false;
+    });
+  });
+}
+
 // Obtener datos del servidor
-const { items: systemIndicators, source: dataSource } = await fetchSemaforosData();
+const { items: allItems, source: dataSource } = await fetchSemaforosData();
+
+// Aplicar filtro a los datos obtenidos
+const systemIndicators = filterByAllowedTitles(allItems);
 
 // Debug logging
-console.log(`[Panel3] Data source: ${dataSource}, Found ${systemIndicators.length} indicators`);
-console.log('[Panel3] Indicators:', systemIndicators.map(i => `${i.title}: severity=${i.severity}, active=${i.isActive}`));
+console.log(`[Panel3] Data source: ${dataSource}, Found ${allItems.length} total items, ${systemIndicators.length} filtered items`);
+console.log('[Panel3] All items:', allItems.map(i => i.title));
+console.log('[Panel3] Filtered items:', systemIndicators.map(i => `${i.title}: severity=${i.severity}, active=${i.isActive}`));
+console.log('[Panel3] Allowed titles:', ALLOWED_TITLES);
 
 // Mapear severidad a estado de color
 const mapSeverityToStatus = (severity: number, isActive: boolean): string => {
@@ -130,8 +167,12 @@ const mapTitleToCategory = (title: string): string => {
   if (lowerTitle.includes('aplicaciones') || lowerTitle.includes('app')) return 'application';
   if (lowerTitle.includes('pago') || lowerTitle.includes('medios')) return 'payment';
   if (lowerTitle.includes('exchange') || lowerTitle.includes('comunicacion')) return 'communication';
-  if (lowerTitle.includes('meccano') || lowerTitle.includes('was')) return 'system';
+  if (lowerTitle.includes('was') || lowerTitle.includes('hipos') || lowerTitle.includes('transecom')) return 'system';
   if (lowerTitle.includes('seguridad')) return 'security';
+  if (lowerTitle.includes('ups')) return 'power';
+  if (lowerTitle.includes('mq') || lowerTitle.includes('eai')) return 'messaging';
+  if (lowerTitle.includes('sfi') || lowerTitle.includes('mps')) return 'payment';
+  if (lowerTitle.includes('dns') || lowerTitle.includes('ad')) return 'network';
 
   return 'system'; // default
 };
@@ -171,6 +212,8 @@ const getCategoryIcon = (category: string) => {
     case 'payment': return '💳';
     case 'communication': return '📧';
     case 'security': return '🔒';
+    case 'power': return '⚡';
+    case 'messaging': return '💬';
     default: return '📊';
   }
 };

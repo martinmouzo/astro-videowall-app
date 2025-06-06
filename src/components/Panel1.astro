@@ -9672,12 +9672,6 @@ const svgMapContent = `
     ))
   }
 
-  <!-- Transition Indicator -->
-  <div id="transitionIndicator" class="transition-indicator">
-    <div class="transition-spinner"></div>
-    <span class="transition-text">Cambiando región...</span>
-  </div>
-
   {
     /* Los anteriores indicadores (<div class="regional-indicator"> y los <circle> SVG)
       se eliminan o comentan, ya que RegionOverlay los reemplaza. */
@@ -9721,142 +9715,16 @@ const svgMapContent = `
       display: block;
     }
 
-    /* Transition Indicator Styles */
-    .transition-indicator {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      z-index: 9999;
-      background: rgba(0, 0, 0, 0.8);
-      color: white;
-      padding: 20px 30px;
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      gap: 15px;
-      font-family: 'Quicksand Variable', sans-serif;
-      font-weight: 500;
-      opacity: 0;
-      visibility: hidden;
-      transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-    }
+    /* Transition Indicator Styles - REMOVED for static panel */
 
-    .transition-spinner {
-      width: 20px;
-      height: 20px;
-      border: 2px solid rgba(255, 255, 255, 0.3);
-      border-top: 2px solid #54ccb8;
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-    }
+    /* Enhanced region overlay transitions - REMOVED for static panel */
 
-    .transition-text {
-      font-size: 14px;
-      letter-spacing: 0.5px;
-    }
+    /* Smooth hover effects for interactive elements - REMOVED for static panel */
 
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-
-    /* Enhanced region overlay transitions */
-    :global(.region-overlay-container) {
-      transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    }
-
-    :global(.region-overlay-container.region-active) {
-      transform: translate(-50%, -50%) scale(1) !important;
-      opacity: 1 !important;
-    }
-
-    :global(.region-overlay-container.region-overlay-hidden) {
-      transform: translate(-50%, -50%) scale(0.8) !important;
-      opacity: 0 !important;
-      pointer-events: none !important;
-    }
-
-    /* Smooth hover effects for interactive elements */
-    :global(.overlay-content) {
-      transition: transform 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    }
-
-    :global(.overlay-content:hover) {
-      transform: scale(1.02);
-    }
-
-    /* Improved staggered animation support */
-    :global(.overlay-header),
-    :global(.overlay-body),
-    :global(.overlay-footer) {
-      transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    }
+    /* Improved staggered animation support - REMOVED for static panel */
 </style>
 </div>
 
 <script>
-  import { lenis, lenisUtils } from '../utils/lenisAnimations.ts';
-
-  interface RegionState {
-    id: string;
-    overlay: HTMLElement;
-    isVisible: boolean;
-  }
-
-  class RegionOverlayManager {
-    private regions: Map<string, RegionState> = new Map();
-
-    constructor() {
-      this.initializeRegions();
-    }
-
-    private initializeRegions() {
-      // Find all region overlay containers and initialize their state
-      const overlayElements = document.querySelectorAll('.region-overlay-container');
-
-      overlayElements.forEach((overlay) => {
-        const regionId = overlay.id.replace('overlay-', '');
-        const htmlElement = overlay as HTMLElement;
-
-        // Set initial state - all overlays visible from start
-        htmlElement.style.opacity = '1';
-        htmlElement.style.pointerEvents = 'auto';
-        htmlElement.style.transform = 'translate(-50%, -50%) scale(1)';
-
-        this.regions.set(regionId, {
-          id: regionId,
-          overlay: htmlElement,
-          isVisible: true
-        });
-      });
-    }
-  }
-
-  // Initialize the region overlay manager when DOM is ready
-  let regionManager: RegionOverlayManager | undefined;
-
-  // Extend window interface for TypeScript
-  declare global {
-    interface Window {
-      regionOverlayManager?: RegionOverlayManager;
-    }
-  }
-
-  // Wait for DOM to be fully loaded
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => {
-      regionManager = new RegionOverlayManager();
-      if (typeof window !== 'undefined') {
-        window.regionOverlayManager = regionManager;
-      }
-    });
-  } else {
-    regionManager = new RegionOverlayManager();
-    if (typeof window !== 'undefined') {
-      window.regionOverlayManager = regionManager;
-    }
-  }
+  // Panel1 is now completely static - no interactive functionality needed
 </script>
