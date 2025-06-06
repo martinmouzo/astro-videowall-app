@@ -473,18 +473,6 @@ const getCategoryIcon = (category: string) => {
     width: fit-content;
     padding: 4px 0;
     will-change: transform;
-    animation: lenisCarouselScroll linear infinite;
-    animation-play-state: running;
-    backface-visibility: hidden; /* Better performance */
-  }
-
-  @keyframes lenisCarouselScroll {
-    0% {
-      transform: translateX(0) translateZ(0); /* Hardware acceleration */
-    }
-    100% {
-      transform: translateX(-50%) translateZ(0);
-    }
   }
 
   .carousel-slide {
@@ -792,6 +780,8 @@ const getCategoryIcon = (category: string) => {
 </style>
 
 <script>
+  import { gsap } from 'gsap';
+
   function initializeCarousel() {
     const carousel = document.querySelector('.carousel-track') as HTMLElement;
 
@@ -815,10 +805,22 @@ const getCategoryIcon = (category: string) => {
       carousel.dataset.initialized = 'true';
     }
 
-    // Set consistent animation duration
-    const animationDuration = Math.max(slides.length * 3, 15); // 3 seconds per slide, minimum 15 seconds
-    carousel.style.setProperty('animation-duration', `${animationDuration}s`);
-    carousel.style.animationPlayState = 'running';
+    // Calculate total width for smooth infinite scroll
+    const slideWidth = 200 + 12; // slide width + gap
+    const totalSlides = carousel.children.length;
+    const totalWidth = slideWidth * totalSlides;
+
+    // Use GSAP for smooth infinite carousel
+    gsap.set(carousel, { x: 0 });
+
+    const animationDuration = Math.max(totalSlides * 3, 15); // 3 seconds per slide, minimum 15 seconds
+
+    gsap.to(carousel, {
+      x: -totalWidth / 2, // Move by half the total width (original slides)
+      duration: animationDuration,
+      ease: "none",
+      repeat: -1
+    });
   }
 
   // Initialize immediately
