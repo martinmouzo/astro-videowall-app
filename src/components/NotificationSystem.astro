@@ -1,0 +1,301 @@
+---
+// NotificationSystem.astro - Sistema de notificaciones para el monitor de red
+---
+
+<div id="notification-container" class="notification-container"></div>
+
+<style>
+  .notification-container {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10000;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    pointer-events: none;
+  }
+
+  :global(.notification) {
+    background: rgba(0, 0, 0, 0.9);
+    border-radius: 8px;
+    padding: 16px 24px;
+    color: white;
+    font-family: 'Arial', sans-serif;
+    font-size: 14px;
+    backdrop-filter: blur(15px);
+    border-left: 4px solid;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    transform: translateY(-100px);
+    opacity: 0;
+    transition: all 0.3s ease;
+    pointer-events: auto;
+    cursor: pointer;
+    min-width: 300px;
+    max-width: 500px;
+  }
+
+  :global(.notification.show) {
+    transform: translateY(0);
+    opacity: 1;
+  }
+
+  :global(.notification.success) {
+    border-left-color: #2DB34A;
+    background: linear-gradient(135deg, rgba(45, 179, 74, 0.1), rgba(0, 0, 0, 0.9));
+  }
+
+  :global(.notification.warning) {
+    border-left-color: #FF9500;
+    background: linear-gradient(135deg, rgba(255, 149, 0, 0.1), rgba(0, 0, 0, 0.9));
+  }
+
+  :global(.notification.error) {
+    border-left-color: #FF3B30;
+    background: linear-gradient(135deg, rgba(255, 59, 48, 0.1), rgba(0, 0, 0, 0.9));
+  }
+
+  :global(.notification.info) {
+    border-left-color: #007AFF;
+    background: linear-gradient(135deg, rgba(0, 122, 255, 0.1), rgba(0, 0, 0, 0.9));
+  }
+
+  :global(.notification-header) {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+    font-weight: bold;
+  }
+
+  :global(.notification-icon) {
+    font-size: 16px;
+  }
+
+  :global(.notification-title) {
+    font-size: 16px;
+    color: #FFD700;
+  }
+
+  :global(.notification-message) {
+    color: rgba(255, 255, 255, 0.9);
+    line-height: 1.4;
+  }
+
+  :global(.notification-time) {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 12px;
+    margin-top: 8px;
+    text-align: right;
+  }
+
+  :global(.notification:hover) {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 25px rgba(0, 0, 0, 0.4);
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .notification-container {
+      left: 10px;
+      right: 10px;
+      transform: none;
+    }
+
+    :global(.notification) {
+      min-width: auto;
+      max-width: none;
+    }
+  }
+</style>
+
+<script>
+  interface NotificationData {
+    type: 'success' | 'warning' | 'error' | 'info';
+    title: string;
+    message: string;
+    duration?: number;
+    icon?: string;
+  }
+
+  class NotificationSystem {
+    private container: HTMLElement;
+    private notifications: Set<HTMLElement> = new Set();
+
+    constructor() {
+      this.container = document.getElementById('notification-container')!;
+    }
+
+    show(data: NotificationData) {
+      const notification = this.createNotification(data);
+      this.container.appendChild(notification);
+      this.notifications.add(notification);
+
+      // Mostrar con animación
+      setTimeout(() => {
+        notification.classList.add('show');
+      }, 100);
+
+      // Auto-remover después del tiempo especificado
+      const duration = data.duration || 5000;
+      setTimeout(() => {
+        this.remove(notification);
+      }, duration);
+
+      // Permitir cerrar al hacer click
+      notification.addEventListener('click', () => {
+        this.remove(notification);
+      });
+
+      return notification;
+    }
+
+    private createNotification(data: NotificationData): HTMLElement {
+      const notification = document.createElement('div');
+      notification.className = `notification ${data.type}`;
+
+      const icon = data.icon || this.getDefaultIcon(data.type);
+      const time = new Date().toLocaleTimeString('es-ES', {
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit'
+      });
+
+      notification.innerHTML = `
+        <div class="notification-header">
+          <span class="notification-icon">${icon}</span>
+          <span class="notification-title">${data.title}</span>
+        </div>
+        <div class="notification-message">${data.message}</div>
+        <div class="notification-time">${time}</div>
+      `;
+
+      return notification;
+    }
+
+    private getDefaultIcon(type: string): string {
+      const icons = {
+        success: '✅',
+        warning: '⚠️',
+        error: '❌',
+        info: 'ℹ️'
+      };
+      return icons[type as keyof typeof icons] || 'ℹ️';
+    }
+
+    private remove(notification: HTMLElement) {
+      notification.classList.remove('show');
+      setTimeout(() => {
+        if (notification.parentNode) {
+          notification.parentNode.removeChild(notification);
+        }
+        this.notifications.delete(notification);
+      }, 300);
+    }
+
+    clear() {
+      this.notifications.forEach(notification => {
+        this.remove(notification);
+      });
+    }
+
+    // Métodos de conveniencia
+    success(title: string, message: string, duration?: number) {
+      return this.show({ type: 'success', title, message, duration });
+    }
+
+    warning(title: string, message: string, duration?: number) {
+      return this.show({ type: 'warning', title, message, duration });
+    }
+
+    error(title: string, message: string, duration?: number) {
+      return this.show({ type: 'error', title, message, duration });
+    }
+
+    info(title: string, message: string, duration?: number) {
+      return this.show({ type: 'info', title, message, duration });
+    }
+  }
+
+  // Inicializar sistema de notificaciones
+  let notificationSystem: NotificationSystem;
+
+  document.addEventListener('DOMContentLoaded', () => {
+    notificationSystem = new NotificationSystem();
+
+    // Exponer globalmente
+    (window as any).notifications = notificationSystem;
+
+    // Mostrar notificación de bienvenida
+    setTimeout(() => {
+      notificationSystem.info(
+        'Network Monitor',
+        'Sistema de monitoreo iniciado correctamente. Monitoreando conexiones de red...',
+        4000
+      );
+    }, 2000);
+
+    // Sistema de monitoreo de latencia
+    setupLatencyMonitoring();
+  });
+
+  function setupLatencyMonitoring() {
+    let lastLatencyValues: { [key: string]: number } = {};
+
+    // Verificar cambios de latencia cada 10 segundos
+    setInterval(() => {
+      if (!(window as any).mapUtils) return;
+
+      try {
+        const config = (window as any).mapUtils.getLatencyConfig();
+
+        config.remoteNodes.forEach((node: any) => {
+          const country = node.country;
+          const currentLatency = node.latency;
+          const lastLatency = lastLatencyValues[country];
+
+          if (lastLatency !== undefined) {
+            const increase = currentLatency - lastLatency;
+
+            // Alertas por cambios significativos
+            if (increase > 100) {
+              notificationSystem.warning(
+                'Latencia Alta Detectada',
+                `${country}: Latencia aumentó a ${currentLatency}ms (+${increase}ms)`,
+                7000
+              );
+            } else if (increase > 50) {
+              notificationSystem.info(
+                'Cambio de Latencia',
+                `${country}: Latencia: ${currentLatency}ms (+${increase}ms)`,
+                5000
+              );
+            }
+
+            // Alertas por estado crítico
+            if (currentLatency > 300) {
+              notificationSystem.error(
+                'Conexión Crítica',
+                `${country}: Latencia muy alta (${currentLatency}ms)`,
+                8000
+              );
+            }
+          }
+
+          lastLatencyValues[country] = currentLatency;
+        });
+      } catch (error) {
+        console.error('Error en monitoreo de latencia:', error);
+      }
+    }, 10000);
+  }
+
+  // Exponer tipos para uso externo
+  (window as any).NotificationTypes = {
+    SUCCESS: 'success',
+    WARNING: 'warning',
+    ERROR: 'error',
+    INFO: 'info'
+  };
+</script>
