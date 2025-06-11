@@ -22,7 +22,7 @@ const remoteNodes: LatencyNode[] = [
     city: 'New York',
     coordinates: [-74.0060, 40.7128], // Nueva York - coordenadas corregidas
     screenPosition: { x: 25, y: 14 }, // Posición del panel04.html
-    latency: 95,
+    latency: 35, // Excelente - Verde (< 50ms)
     status: 'online',
     lastUpdate: new Date()
   },
@@ -33,7 +33,7 @@ const remoteNodes: LatencyNode[] = [
     city: 'São Paulo',
     coordinates: [-46.6333, -23.5505], // São Paulo - coordenadas verificadas
     screenPosition: { x: 30, y: 37 }, // Posición del panel04.html
-    latency: 185,
+    latency: 185, // Crítico - Naranja (100-200ms)
     status: 'online',
     lastUpdate: new Date()
   },
@@ -44,8 +44,8 @@ const remoteNodes: LatencyNode[] = [
     city: 'Cape Town',
     coordinates: [18.4241, -33.9249], // Ciudad del Cabo - coordenadas verificadas
     screenPosition: { x: 53, y: 51 }, // Posición del panel04.html
-    latency: 312,
-    status: 'warning',
+    latency: 42, // Excelente - Verde (< 50ms)
+    status: 'online',
     lastUpdate: new Date()
   },
   {
@@ -55,7 +55,7 @@ const remoteNodes: LatencyNode[] = [
     city: 'Beijing',
     coordinates: [116.4074, 39.9042], // Beijing - coordenadas verificadas
     screenPosition: { x: 63, y: 17 }, // Posición del panel04.html
-    latency: 145,
+    latency: 28, // Excelente - Verde (< 50ms)
     status: 'online',
     lastUpdate: new Date()
   },
@@ -66,7 +66,7 @@ const remoteNodes: LatencyNode[] = [
     city: 'Tokyo',
     coordinates: [139.6917, 35.6895], // Tokyo - coordenadas verificadas
     screenPosition: { x: 55, y: 9 }, // Posición del panel04.html
-    latency: 198,
+    latency: 31, // Excelente - Verde (< 50ms)
     status: 'online',
     lastUpdate: new Date()
   },
@@ -77,7 +77,7 @@ const remoteNodes: LatencyNode[] = [
     city: 'Sydney',
     coordinates: [151.2093, -33.8688], // Sydney - coordenadas verificadas
     screenPosition: { x: 66, y: 34 }, // Posición del panel04.html
-    latency: 287,
+    latency: 75, // Warning - Amarillo (50-100ms)
     status: 'online',
     lastUpdate: new Date()
   }

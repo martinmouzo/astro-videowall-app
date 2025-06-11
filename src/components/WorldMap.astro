@@ -24,23 +24,30 @@ import { latencyConfig } from '../mocks/data/latency-data';
     display: none !important;
   }
 
-  :global(.central-card) {
+  :global(.arteixo-label) {
     position: absolute;
     pointer-events: none;
     z-index: 1001;
-    min-width: 130px;
-    max-width: 170px;
-    height: 60px;
-    border-radius: 14px;
-    border: 2px solid rgba(59, 130, 246, 0.4);
-    background: linear-gradient(135deg, rgba(59, 130, 246, 0.9), rgba(37, 99, 235, 0.8));
-    backdrop-filter: blur(15px);
-    overflow: hidden;
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5), 0 0 15px rgba(59, 130, 246, 0.3);
-    transform: translate(-50%, -180%);
+    transform: translate(-50%, -50%);
     display: flex;
     align-items: center;
     justify-content: center;
+  }
+
+  :global(.label-content) {
+    font-family: 'Quicksand Variable', 'Quicksand', sans-serif;
+    font-weight: 600;
+    font-size: 11px;
+    color: #ffffff;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+    background: rgba(59, 130, 246, 0.1);
+    backdrop-filter: blur(4px);
+    padding: 4px 8px;
+    border-radius: 8px;
+    border: 1px solid rgba(59, 130, 246, 0.2);
+    white-space: nowrap;
   }
 
 
@@ -345,6 +352,9 @@ import { latencyConfig } from '../mocks/data/latency-data';
   let markers: maplibregl.Marker[] = [];
   let traceLines: SVGElement | null = null;
 
+  // Variable para rastrear países activados por la animación de trazado
+  let activatedCountries: Set<string> = new Set();
+
   // Configuración del mapa para videowall estático
   const mapConfig = {
     container: 'world-map',
@@ -415,6 +425,10 @@ import { latencyConfig } from '../mocks/data/latency-data';
       map.on('load', () => {
         console.log('Mapa cargado - inicializando latency pins');
 
+        // España siempre está activada desde el inicio (nodo central)
+        activatedCountries.add('Spain');
+        console.log('🇪🇸 España activada como nodo central');
+
         // Eliminar completamente cualquier borde visible
         removeBorders();
 
@@ -432,6 +446,11 @@ import { latencyConfig } from '../mocks/data/latency-data';
 
         // Colorear países específicos
         addCountryColors();
+
+        // Actualizar colores iniciales basados en latencia
+        setTimeout(() => {
+          updateCountryColors();
+        }, 1000);
 
         // Crear pins después de un breve delay
         setTimeout(() => {
@@ -523,46 +542,103 @@ import { latencyConfig } from '../mocks/data/latency-data';
     console.log('Border removal completed');
   }
 
+  /*
+   * SISTEMA DE COLORES DINÁMICOS BASADO EN LATENCIA
+   * =============================================
+   * Los países se colorean automáticamente según su latencia actual:
+   *
+   * 🟢 Verde (#4ade80)  - Latencia < 50ms  (Excelente)
+   * 🟡 Amarillo (#fbbf24) - Latencia 50-100ms (Advertencia)
+   * 🟠 Naranja (#fb923c)  - Latencia 100-200ms (Crítico)
+   * 🔴 Rojo (#ef4444)     - Latencia > 200ms (Muy crítico)
+   * 🔵 Azul (#3B82F6)     - España (Nodo central)
+   *
+   * Los colores se actualizan automáticamente cada 15 segundos cuando
+   * cambian las medidas de latencia. Para actualizar manualmente:
+   * window.mapUtils.updateCountryColors()
+   */
+
   function addCountryColors() {
-    // Crear expresión de mapbox para colorear países
-    const expression: ExpressionSpecification = [
-      'case',
-      // Diferentes variantes de nombres para Estados Unidos
-      ['==', ['get', 'NAME'], 'United States'], '#90BA3E',
-      ['==', ['get', 'NAME'], 'United States of America'], '#90BA3E',
-      ['==', ['get', 'NAME'], 'USA'], '#90BA3E',
-      ['==', ['get', 'name'], 'United States'], '#90BA3E',
-      ['==', ['get', 'name'], 'United States of America'], '#90BA3E',
-      ['==', ['get', 'ADMIN'], 'United States of America'], '#90BA3E',
-      ['==', ['get', 'NAME_EN'], 'United States'], '#90BA3E',
-      ['==', ['get', 'iso_a2'], 'US'], '#90BA3E',
-      // Brasil
-      ['==', ['get', 'NAME'], 'Brazil'], '#90BA3E',
-      ['==', ['get', 'NAME'], 'Brasil'], '#90BA3E',
-      ['==', ['get', 'name'], 'Brazil'], '#90BA3E',
-      ['==', ['get', 'iso_a2'], 'BR'], '#90BA3E',
-      // España - usando azul en lugar de dorado para mantener consistencia
+    // Función para obtener color basado en latencia
+    function getColorByLatency(latency: number): string {
+      if (latency < 50) return '#4ade80';    // Verde - good
+      if (latency < 100) return '#fbbf24';   // Amarillo - warning
+      if (latency < 200) return '#fb923c';   // Naranja - critical
+      return '#ef4444';                      // Rojo - offline/muy crítico
+    }
+
+    // Crear expresión de mapbox para colorear países basado en latencia
+    const expressionParts: any[] = ['case'];
+
+    // Añadir cada país con su color basado en latencia actual (solo si está activado)
+    latencyConfig.remoteNodes.forEach(node => {
+      // Solo aplicar color de latencia si el país ha sido activado, sino usar gris
+      const color = activatedCountries.has(node.country) ? getColorByLatency(node.latency) : '#515151';
+
+      // Añadir todas las variantes de nombres para cada país
+      switch(node.country) {
+        case 'United States':
+          expressionParts.push(
+            ['==', ['get', 'NAME'], 'United States'], color,
+            ['==', ['get', 'NAME'], 'United States of America'], color,
+            ['==', ['get', 'NAME'], 'USA'], color,
+            ['==', ['get', 'name'], 'United States'], color,
+            ['==', ['get', 'name'], 'United States of America'], color,
+            ['==', ['get', 'ADMIN'], 'United States of America'], color,
+            ['==', ['get', 'NAME_EN'], 'United States'], color,
+            ['==', ['get', 'iso_a2'], 'US'], color
+          );
+          break;
+        case 'Brazil':
+          expressionParts.push(
+            ['==', ['get', 'NAME'], 'Brazil'], color,
+            ['==', ['get', 'NAME'], 'Brasil'], color,
+            ['==', ['get', 'name'], 'Brazil'], color,
+            ['==', ['get', 'iso_a2'], 'BR'], color
+          );
+          break;
+        case 'South Africa':
+          expressionParts.push(
+            ['==', ['get', 'NAME'], 'South Africa'], color,
+            ['==', ['get', 'name'], 'South Africa'], color,
+            ['==', ['get', 'iso_a2'], 'ZA'], color
+          );
+          break;
+        case 'China':
+          expressionParts.push(
+            ['==', ['get', 'NAME'], 'China'], color,
+            ['==', ['get', 'name'], 'China'], color,
+            ['==', ['get', 'iso_a2'], 'CN'], color
+          );
+          break;
+        case 'Japan':
+          expressionParts.push(
+            ['==', ['get', 'NAME'], 'Japan'], color,
+            ['==', ['get', 'name'], 'Japan'], color,
+            ['==', ['get', 'iso_a2'], 'JP'], color
+          );
+          break;
+        case 'Australia':
+          expressionParts.push(
+            ['==', ['get', 'NAME'], 'Australia'], color,
+            ['==', ['get', 'name'], 'Australia'], color,
+            ['==', ['get', 'iso_a2'], 'AU'], color
+          );
+          break;
+      }
+    });
+
+    // España (nodo central) - siempre azul
+    expressionParts.push(
       ['==', ['get', 'NAME'], 'Spain'], '#3B82F6',
       ['==', ['get', 'name'], 'Spain'], '#3B82F6',
-      ['==', ['get', 'iso_a2'], 'ES'], '#3B82F6',
-      // Sudáfrica
-      ['==', ['get', 'NAME'], 'South Africa'], '#90BA3E',
-      ['==', ['get', 'name'], 'South Africa'], '#90BA3E',
-      ['==', ['get', 'iso_a2'], 'ZA'], '#90BA3E',
-      // China
-      ['==', ['get', 'NAME'], 'China'], '#90BA3E',
-      ['==', ['get', 'name'], 'China'], '#90BA3E',
-      ['==', ['get', 'iso_a2'], 'CN'], '#90BA3E',
-      // Japón
-      ['==', ['get', 'NAME'], 'Japan'], '#90BA3E',
-      ['==', ['get', 'name'], 'Japan'], '#90BA3E',
-      ['==', ['get', 'iso_a2'], 'JP'], '#90BA3E',
-      // Australia
-      ['==', ['get', 'NAME'], 'Australia'], '#90BA3E',
-      ['==', ['get', 'name'], 'Australia'], '#90BA3E',
-      ['==', ['get', 'iso_a2'], 'AU'], '#90BA3E',
-      'transparent'
-    ];
+      ['==', ['get', 'iso_a2'], 'ES'], '#3B82F6'
+    );
+
+    // Color por defecto para países no monitoreados
+    expressionParts.push('#515151');
+
+    const expression = expressionParts as ExpressionSpecification;
 
     // Añadir capa para países coloreados usando ambas fuentes
     try {
@@ -628,7 +704,7 @@ import { latencyConfig } from '../mocks/data/latency-data';
 
   function createArteixoPin() {
     const centralNode = latencyConfig.centralNode;
-    console.log('Creando card central de Arteixo en coordenadas:', centralNode.coordinates);
+    console.log('Creando label central de Arteixo en coordenadas:', centralNode.coordinates);
 
     // Verificar que las coordenadas sean válidas
     if (!centralNode.coordinates || centralNode.coordinates.length !== 2) {
@@ -636,33 +712,28 @@ import { latencyConfig } from '../mocks/data/latency-data';
       return;
     }
 
-    // Nueva estructura de card central elegante y compacta
-    const centralCard = document.createElement('div');
-    centralCard.className = 'central-card';
-    centralCard.innerHTML = `
-      <div class="card-content">
-        <h3 class="country-name" style="color: #ffffff; font-size: 14px;">ESPAÑA</h3>
-        <div class="latency-display">
-          <div class="central-label" style="color: #ffffff; font-size: 16px; font-weight: 600; font-family: 'Roboto Mono Variable', 'Roboto Mono', monospace;">ARTEIXO</div>
-        </div>
-      </div>
+    // Crear el label simple sin efectos
+    const centralContainer = document.createElement('div');
+    centralContainer.className = 'arteixo-label';
+    centralContainer.innerHTML = `
+      <span class="label-content">Arteixo</span>
     `;
 
     const marker = new maplibregl.Marker({
-      element: centralCard,
+      element: centralContainer,
       anchor: 'center'
     })
     .setLngLat(centralNode.coordinates)
     .addTo(map);
 
     markers.push(marker);
-    console.log('Card central de Arteixo creada y agregada al mapa');
+    console.log('Label central de Arteixo creado y agregado al mapa');
 
     // Verificar posición después de agregarlo
     setTimeout(() => {
       const lngLat = marker.getLngLat();
       const point = map.project(lngLat);
-      console.log('Card central Arteixo - LngLat:', lngLat, 'Screen position:', point);
+      console.log('Label central Arteixo - LngLat:', lngLat, 'Screen position:', point);
     }, 100);
   }
 
@@ -854,6 +925,9 @@ import { latencyConfig } from '../mocks/data/latency-data';
           ease: "power2.out",
           onComplete: () => {
             console.log(`✅ Traza completada hacia ${toNode.country}, mostrando tarjeta...`);
+
+            // Activar el color del país cuando la traza lo alcanza
+            activateCountryColor(toNode.country);
 
             // Activar el efecto de pulso de energía
             activateEnergyPulse(path);
@@ -1387,6 +1461,14 @@ import { latencyConfig } from '../mocks/data/latency-data';
   function restartTraceAnimation() {
     console.log('🔄 Reiniciando animación de trazado');
 
+    // Resetear países activados - todos vuelven a gris except España
+    activatedCountries.clear();
+    activatedCountries.add('Spain'); // España siempre permanece activada
+    console.log('🎨 Países activados reseteados - todos vuelven a gris excepto España');
+
+    // Actualizar colores inmediatamente para mostrar todos en gris
+    updateCountryColors();
+
     // Limpiar tarjetas de países existentes
     clearCountryCards();
 
@@ -1418,6 +1500,135 @@ import { latencyConfig } from '../mocks/data/latency-data';
         animateTraces();
       }, 500);
     }
+  }
+
+  // Función para actualizar colores de países dinámicamente
+  function updateCountryColors() {
+    if (!map || !map.loaded()) return;
+
+    // Función para obtener color basado en latencia
+    function getColorByLatency(latency: number): string {
+      if (latency < 50) return '#4ade80';    // Verde - good
+      if (latency < 100) return '#fbbf24';   // Amarillo - warning
+      if (latency < 200) return '#fb923c';   // Naranja - critical
+      return '#ef4444';                      // Rojo - offline/muy crítico
+    }
+
+    console.log('🎨 Actualizando colores de países basado en latencia...');
+
+    // Crear nueva expresión con las latencias actuales
+    const expressionParts: any[] = ['case'];
+
+    // Añadir cada país con su color basado en latencia actual (solo si está activado)
+    latencyConfig.remoteNodes.forEach(node => {
+      // Solo aplicar color de latencia si el país ha sido activado, sino usar gris
+      const color = activatedCountries.has(node.country) ? getColorByLatency(node.latency) : '#515151';
+      console.log(`País: ${node.country}, Activado: ${activatedCountries.has(node.country)}, Latencia: ${node.latency}ms, Color: ${color}`);
+
+      // Añadir todas las variantes de nombres para cada país
+      switch(node.country) {
+        case 'United States':
+          expressionParts.push(
+            ['==', ['get', 'NAME'], 'United States'], color,
+            ['==', ['get', 'NAME'], 'United States of America'], color,
+            ['==', ['get', 'NAME'], 'USA'], color,
+            ['==', ['get', 'name'], 'United States'], color,
+            ['==', ['get', 'name'], 'United States of America'], color,
+            ['==', ['get', 'ADMIN'], 'United States of America'], color,
+            ['==', ['get', 'NAME_EN'], 'United States'], color,
+            ['==', ['get', 'iso_a2'], 'US'], color
+          );
+          break;
+        case 'Brazil':
+          expressionParts.push(
+            ['==', ['get', 'NAME'], 'Brazil'], color,
+            ['==', ['get', 'NAME'], 'Brasil'], color,
+            ['==', ['get', 'name'], 'Brazil'], color,
+            ['==', ['get', 'iso_a2'], 'BR'], color
+          );
+          break;
+        case 'South Africa':
+          expressionParts.push(
+            ['==', ['get', 'NAME'], 'South Africa'], color,
+            ['==', ['get', 'name'], 'South Africa'], color,
+            ['==', ['get', 'iso_a2'], 'ZA'], color
+          );
+          break;
+        case 'China':
+          expressionParts.push(
+            ['==', ['get', 'NAME'], 'China'], color,
+            ['==', ['get', 'name'], 'China'], color,
+            ['==', ['get', 'iso_a2'], 'CN'], color
+          );
+          break;
+        case 'Japan':
+          expressionParts.push(
+            ['==', ['get', 'NAME'], 'Japan'], color,
+            ['==', ['get', 'name'], 'Japan'], color,
+            ['==', ['get', 'iso_a2'], 'JP'], color
+          );
+          break;
+        case 'Australia':
+          expressionParts.push(
+            ['==', ['get', 'NAME'], 'Australia'], color,
+            ['==', ['get', 'name'], 'Australia'], color,
+            ['==', ['get', 'iso_a2'], 'AU'], color
+          );
+          break;
+      }
+    });
+
+    // España (nodo central) - siempre azul
+    expressionParts.push(
+      ['==', ['get', 'NAME'], 'Spain'], '#3B82F6',
+      ['==', ['get', 'name'], 'Spain'], '#3B82F6',
+      ['==', ['get', 'iso_a2'], 'ES'], '#3B82F6'
+    );
+
+    // Color por defecto para países no monitoreados
+    expressionParts.push('#515151');
+
+    const expression = expressionParts as ExpressionSpecification;
+
+    // Actualizar la capa de países coloreados
+    try {
+      if (map.getLayer('countries-highlighted')) {
+        map.setPaintProperty('countries-highlighted', 'fill-color', expression);
+        console.log('✅ Colores actualizados en countries-highlighted');
+      }
+      if (map.getLayer('countries-highlighted-fallback')) {
+        map.setPaintProperty('countries-highlighted-fallback', 'fill-color', expression);
+        console.log('✅ Colores actualizados en countries-highlighted-fallback');
+      }
+    } catch (error) {
+      console.error('❌ Error actualizando colores de países:', error);
+    }
+  }
+
+  // Función para activar el color de un país cuando la traza lo alcanza
+  function activateCountryColor(countryName: string) {
+    console.log(`🌍 Activando color para ${countryName}`);
+
+    // Añadir el país al conjunto de países activados
+    activatedCountries.add(countryName);
+
+    // Actualizar los colores del mapa inmediatamente
+    updateCountryColors();
+
+    // Animar la transición de color usando GSAP para suavizar el cambio
+    const targetCountryElements = document.querySelectorAll(`[data-country="${countryName}"]`);
+    targetCountryElements.forEach(element => {
+      gsap.fromTo(element,
+        {
+          filter: 'saturate(0.3) brightness(0.7)'
+        },
+        {
+          filter: 'saturate(1) brightness(1)',
+          duration: 1.5,
+          ease: "power2.out"
+        }
+      );
+    });
   }
 
   function getLatencyStatus(latency: number): string {
@@ -1470,6 +1681,9 @@ import { latencyConfig } from '../mocks/data/latency-data';
           node.latency = newLatency;
         }
       });
+
+      // Actualizar colores de países después de cambiar las latencias
+      updateCountryColors();
     }, 15000); // Actualizar cada 15 segundos
 
     // Notificación periódica de estado general cada 5 minutos
@@ -1664,6 +1878,7 @@ import { latencyConfig } from '../mocks/data/latency-data';
     resetMap: resetMap,
     markers: () => markers,
     debugMapState: debugMapState,
+    updateCountryColors: updateCountryColors, // Nueva función de debug
     // Nuevas funciones de debug
     debugCards: () => {
       console.log('=== DEBUG CARDS ===');

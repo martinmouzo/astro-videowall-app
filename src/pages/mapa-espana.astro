@@ -1,0 +1,34 @@
+---
+// Página principal del mapa de España con ubicaciones de Inditex
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SpainMap from '../components/SpainMap.astro';
+---
+
+<BaseLayout title="Mapa de España - Red de Centros Inditex">
+  <div class="spain-page-container">
+    <!-- Contenedor del mapa -->
+    <div class="spain-map-container">
+      <SpainMap />
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .spain-page-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    background: #0f0f0f;
+    color: #ffffff;
+    font-family: 'Quicksand Variable', 'Quicksand', sans-serif;
+    overflow: hidden;
+  }
+
+  .spain-map-container {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+  }
+</style>
+
+
