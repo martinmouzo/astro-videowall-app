@@ -1,31 +1,32 @@
 import type { LatencyNode, LatencyConfig, Connection, NetworkStats } from '../../types/latency';
 
-// Ubicaciones en España para el mapa nacional
-// Coordenadas verificadas y centradas para cada ubicación
+// Ubicaciones reales de Inditex en España
+// Coordenadas exactas basadas en las direcciones oficiales proporcionadas
 
-// Nodo central - Arteixo (A Coruña)
+// Sede Central - Arteixo (A Coruña)
+// Dirección: Avda. de la Diputación S/N, 15142, A Coruña, España
 const centralNode: LatencyNode = {
   id: 'arteixo-central',
   name: 'Arteixo',
   country: 'Spain',
   city: 'Arteixo',
-  coordinates: [-8.5096, 43.3039],
-  screenPosition: { x: 15, y: 20 }, // Posición en Galicia
+  coordinates: [-8.5096, 43.3039], // Sede central de Inditex
+  screenPosition: { x: 15, y: 20 },
   latency: 0,
   status: 'online',
   lastUpdate: new Date()
 };
 
-// Nodos en España según las ubicaciones especificadas
+// Sedes oficiales de Inditex en España
 const spainNodes: LatencyNode[] = [
   {
-    id: 'laracha-node',
-    name: 'Laracha',
+    id: 'laracha-cpd2-node',
+    name: 'CPD 2 A Laracha',
     country: 'Spain',
-    city: 'Laracha',
-    coordinates: [-8.5874, 43.2505], // A Coruña
+    city: 'A Laracha',
+    coordinates: [-8.5874, 43.2505], // Parque Empresarial de Laracha, A Coruña
     screenPosition: { x: 14, y: 21 },
-    latency: 5, // Muy cercano a Arteixo
+    latency: 3, // Muy cercano a Arteixo - sede central secundaria
     status: 'online',
     lastUpdate: new Date()
   },
@@ -34,9 +35,9 @@ const spainNodes: LatencyNode[] = [
     name: 'Narón',
     country: 'Spain',
     city: 'Narón',
-    coordinates: [-8.1463, 43.5294], // A Coruña
+    coordinates: [-8.1463, 43.5294], // Polígono Río do Pozo, A Coruña
     screenPosition: { x: 17, y: 18 },
-    latency: 8, // Cercano en Galicia
+    latency: 8,
     status: 'online',
     lastUpdate: new Date()
   },
@@ -44,8 +45,8 @@ const spainNodes: LatencyNode[] = [
     id: 'leon-node',
     name: 'León',
     country: 'Spain',
-    city: 'León',
-    coordinates: [-5.5665, 42.5987], // Castilla y León
+    city: 'Santovenia de la Valdoncina',
+    coordinates: [-5.5665, 42.5987], // Polígono Industrial León II Fase
     screenPosition: { x: 35, y: 25 },
     latency: 12,
     status: 'online',
@@ -55,21 +56,10 @@ const spainNodes: LatencyNode[] = [
     id: 'sallent-node',
     name: 'Sallent',
     country: 'Spain',
-    city: 'Sallent',
-    coordinates: [1.9048, 41.8177], // Barcelona (Sallent de Llobregat)
+    city: 'Cabrianes-Sallent',
+    coordinates: [1.9048, 41.8177], // Pol. Ind. Berenguer II, Barcelona
     screenPosition: { x: 68, y: 30 },
     latency: 15,
-    status: 'online',
-    lastUpdate: new Date()
-  },
-  {
-    id: 'cerdanyola-node',
-    name: 'Cerdanyola',
-    country: 'Spain',
-    city: 'Cerdanyola del Vallès',
-    coordinates: [2.1407, 41.4909], // Barcelona
-    screenPosition: { x: 69, y: 32 },
-    latency: 18,
     status: 'online',
     lastUpdate: new Date()
   },
@@ -78,9 +68,9 @@ const spainNodes: LatencyNode[] = [
     name: 'Tordera',
     country: 'Spain',
     city: 'Tordera',
-    coordinates: [2.7154, 41.7008], // Barcelona
+    coordinates: [2.7154, 41.7008], // Polígono Inditex, Barcelona
     screenPosition: { x: 72, y: 30 },
-    latency: 20,
+    latency: 18,
     status: 'online',
     lastUpdate: new Date()
   },
@@ -89,9 +79,9 @@ const spainNodes: LatencyNode[] = [
     name: 'Zaragoza',
     country: 'Spain',
     city: 'Zaragoza',
-    coordinates: [-0.8773, 41.6518], // Aragón - Plataforma Logística Plaza
+    coordinates: [-0.8773, 41.6518], // Plataforma logística de Zaragoza
     screenPosition: { x: 50, y: 28 },
-    latency: 22,
+    latency: 20,
     status: 'online',
     lastUpdate: new Date()
   },
@@ -100,31 +90,31 @@ const spainNodes: LatencyNode[] = [
     name: 'Meco',
     country: 'Spain',
     city: 'Meco',
-    coordinates: [-3.3247, 40.5464], // Madrid
+    coordinates: [-3.3247, 40.5464], // Polígono Industrial Meco, Madrid
     screenPosition: { x: 45, y: 38 },
-    latency: 25,
+    latency: 22,
     status: 'online',
     lastUpdate: new Date()
   },
   {
     id: 'cabanillas-node',
-    name: 'Cabanillas',
+    name: 'Cabanillas del Campo',
     country: 'Spain',
     city: 'Cabanillas del Campo',
-    coordinates: [-3.2369, 40.6378], // Guadalajara
+    coordinates: [-3.2369, 40.6378], // Plataforma Cabanillas S.A., Guadalajara
     screenPosition: { x: 47, y: 37 },
-    latency: 28,
+    latency: 25,
     status: 'online',
     lastUpdate: new Date()
   },
   {
     id: 'marchamalo-node',
-    name: 'Marchamalo',
+    name: 'Marchámalo',
     country: 'Spain',
-    city: 'Marchamalo',
-    coordinates: [-3.1752, 40.6246], // Guadalajara
+    city: 'Marchámalo',
+    coordinates: [-3.1752, 40.6246], // Plataforma XPO, Guadalajara
     screenPosition: { x: 48, y: 37 },
-    latency: 30,
+    latency: 28,
     status: 'online',
     lastUpdate: new Date()
   },
@@ -133,9 +123,9 @@ const spainNodes: LatencyNode[] = [
     name: 'Toledo',
     country: 'Spain',
     city: 'Toledo',
-    coordinates: [-4.0273, 39.8628], // Castilla-La Mancha
+    coordinates: [-4.0273, 39.8628], // Polígono Santa María de Benquerencia
     screenPosition: { x: 42, y: 42 },
-    latency: 32,
+    latency: 30,
     status: 'online',
     lastUpdate: new Date()
   },
@@ -144,31 +134,20 @@ const spainNodes: LatencyNode[] = [
     name: 'Illescas',
     country: 'Spain',
     city: 'Illescas',
-    coordinates: [-3.8494, 40.1217], // Toledo
+    coordinates: [-3.8494, 40.1217], // Polígono Pradillos II, Toledo
     screenPosition: { x: 43, y: 40 },
-    latency: 35,
+    latency: 32,
     status: 'online',
     lastUpdate: new Date()
   },
   {
-    id: 'elche-tempe-node',
-    name: 'Tempe Elche',
+    id: 'elche-node',
+    name: 'Elche',
     country: 'Spain',
     city: 'Elche',
-    coordinates: [-0.7037, 38.2682], // Alicante - Tempe Inditex Logistics
+    coordinates: [-0.7037, 38.2682], // Parque Industrial de Elche, Alicante
     screenPosition: { x: 52, y: 55 },
-    latency: 38,
-    status: 'online',
-    lastUpdate: new Date()
-  },
-  {
-    id: 'elche-logistics-node',
-    name: 'Elche Logistics',
-    country: 'Spain',
-    city: 'Elche',
-    coordinates: [-0.6896, 38.2584], // Alicante - Avda. del Calzado
-    screenPosition: { x: 53, y: 56 },
-    latency: 40,
+    latency: 35,
     status: 'online',
     lastUpdate: new Date()
   }
@@ -260,34 +239,97 @@ export const spainMapData = {
   }
 };
 
-// Información detallada de las ubicaciones
+// Información detallada de las ubicaciones reales de Inditex
 export const locationDetails = {
   'arteixo-central': {
-    fullName: 'Centro de Datos Principal - Arteixo',
-    address: 'Arteixo, A Coruña, Galicia',
+    fullName: 'Sede Central Inditex - Arteixo',
+    address: 'Avda. de la Diputación S/N, 15142, A Coruña, España',
     type: 'Sede Central',
     importance: 'critical',
     description: 'Centro de operaciones principal de Inditex'
   },
+  'naron-node': {
+    fullName: 'Centro Logístico Narón',
+    address: 'Polígono Río do Pozo - Parcela 2 - Sector 2, Av. Gonzalo Navarro, 37-43, 15578 - Narón, A Coruña',
+    type: 'Centro Logístico',
+    importance: 'high',
+    description: 'Centro de distribución en Galicia'
+  },
+  'laracha-cpd2-node': {
+    fullName: 'CPD 2 A Laracha - Sede Central Secundaria',
+    address: 'Parque Empresarial de Laracha, manzanas E1-E2-E3-E4, 15145, A Laracha – A Coruña, España',
+    type: 'Sede Central',
+    importance: 'critical',
+    description: 'Centro de procesamiento de datos secundario de Inditex'
+  },
+  'leon-node': {
+    fullName: 'Centro Logístico León',
+    address: 'Polígono Industrial León II Fase, Calle A Parcelas G2 y G3, SANTOVENIA DE LA VALDONCINA, 24391 León',
+    type: 'Centro Logístico',
+    importance: 'high',
+    description: 'Hub logístico en Castilla y León'
+  },
+  'sallent-node': {
+    fullName: 'Centro Logístico Sallent',
+    address: 'Pol. Ind. Berenguer II, 08650 Cabrianes-Sallent, Barcelona',
+    type: 'Centro Logístico',
+    importance: 'high',
+    description: 'Centro de distribución en Cataluña'
+  },
+  'tordera-node': {
+    fullName: 'Polígono Inditex Tordera',
+    address: 'Polígono Inditex, Ctra. local Tordera-Palafolls K.m. 0.6, 08490 - Tordera, Barcelona',
+    type: 'Centro Industrial',
+    importance: 'high',
+    description: 'Centro industrial en Barcelona'
+  },
   'zaragoza-node': {
-    fullName: 'Plataforma Logística Plaza',
-    address: 'C/Osca, 7, 50197 Zaragoza',
+    fullName: 'Plataforma Logística Zaragoza',
+    address: 'Plataforma logística de Zaragoza, C/ Osca Nº 7, 50197 - Zaragoza',
     type: 'Centro Logístico',
     importance: 'high',
     description: 'Principal hub logístico en Aragón'
   },
-  'elche-tempe-node': {
-    fullName: 'Tempe Inditex Logistics',
-    address: 'C/Ramón y Cajal, 25, 03203, Elche, Alicante',
-    type: 'Centro Logístico Tempe',
-    importance: 'high',
-    description: 'Centro logístico especializado en calzado'
-  },
-  'elche-logistics-node': {
-    fullName: 'Centro Logístico Elche',
-    address: 'Avda. del Calzado de Elche, 46, 03203, Elche, Alicante',
+  'meco-node': {
+    fullName: 'Centro Logístico Meco',
+    address: 'POLÍGONO INDUSTRIAL MECO, Sector R2, Parcela 10, 28880 - Meco - Madrid',
     type: 'Centro Logístico',
     importance: 'high',
-    description: 'Centro de distribución del calzado'
+    description: 'Centro de distribución en Madrid'
+  },
+  'cabanillas-node': {
+    fullName: 'Plataforma Cabanillas',
+    address: 'Plataforma Cabanillas S.A., Polígono Industrial SI20 parcela IG07, Avda. de la Veguilla 14, 19171 Cabanillas del Campo, Guadalajara',
+    type: 'Centro Logístico',
+    importance: 'high',
+    description: 'Centro logístico en Guadalajara'
+  },
+  'marchamalo-node': {
+    fullName: 'Plataforma XPO Marchámalo',
+    address: 'Plataforma XPO, Avd. Arriaca, 6, salida 54 - radial r2, 19180 Marchámalo, Guadalajara, España',
+    type: 'Centro Logístico',
+    importance: 'high',
+    description: 'Centro logístico XPO en Guadalajara'
+  },
+  'toledo-node': {
+    fullName: 'Centro Logístico Toledo',
+    address: 'Calle Rio Jarama 153 - Polígono Santa María de Benquerencia (Nave Montepino), Toledo',
+    type: 'Centro Logístico',
+    importance: 'high',
+    description: 'Centro de distribución en Toledo'
+  },
+  'illescas-node': {
+    fullName: 'Centro Logístico Illescas',
+    address: 'Polígono Pradillos II, CP: 45200 - ILLESCAS - TOLEDO (ESPAÑA)',
+    type: 'Centro Logístico',
+    importance: 'high',
+    description: 'Centro de distribución en Toledo'
+  },
+  'elche-node': {
+    fullName: 'Parque Industrial Elche',
+    address: 'Parque Industrial de Elche, C/. Severo Ochoa, 22-28, Carretera N-340, 03203 - Elche, Alicante',
+    type: 'Centro Industrial',
+    importance: 'high',
+    description: 'Centro industrial especializado en calzado'
   }
 };

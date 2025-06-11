@@ -1,0 +1,681 @@
+---
+// RegionAnimation.astro - Componente de animación de regiones de España
+import "@fontsource-variable/quicksand";
+---
+
+<div id="region-animation" class="region-animation-container">
+  <div class="region-header">
+    <h2>Exploración por Regiones</h2>
+    <div class="animation-status">
+      <span class="status-indicator"></span>
+      <span class="status-text">Iniciando animación...</span>
+    </div>
+  </div>
+
+  <div class="region-map-container">
+    <div id="region-map" class="region-map"></div>
+
+    <!-- Overlay de información de región -->
+    <div class="region-info-overlay">
+      <div class="region-name"></div>
+      <div class="region-details"></div>
+      <div class="centers-count"></div>
+    </div>
+
+    <!-- Controles de animación -->
+    <div class="animation-controls">
+      <button class="control-btn" id="play-pause">⏸️</button>
+      <button class="control-btn" id="restart">🔄</button>
+      <button class="control-btn" id="next">⏭️</button>
+    </div>
+  </div>
+</div>
+
+<style>
+  .region-animation-container {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    background: linear-gradient(135deg, #1a1a1a, #2a2a2a);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .region-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 30px;
+    background: rgba(0, 0, 0, 0.3);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .region-header h2 {
+    font-family: 'Quicksand Variable', 'Quicksand', sans-serif;
+    font-weight: 700;
+    font-size: 24px;
+    color: #ffffff;
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .animation-status {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .status-indicator {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #4ade80;
+    animation: pulse 2s infinite;
+  }
+
+  .status-text {
+    font-family: 'Quicksand Variable', 'Quicksand', sans-serif;
+    font-weight: 500;
+    font-size: 14px;
+    color: #cccccc;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+
+  .region-map-container {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .region-map {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    background: #1E1E1E;
+  }
+
+  /* Ocultar controles de MapLibre */
+  :global(.maplibregl-ctrl-group),
+  :global(.maplibregl-ctrl-attrib),
+  :global(.maplibregl-ctrl-logo),
+  :global(.maplibregl-ctrl) {
+    display: none !important;
+  }
+
+  .region-info-overlay {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(10px);
+    border-radius: 15px;
+    padding: 20px;
+    min-width: 280px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    z-index: 1000;
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: all 0.3s ease;
+  }
+
+  .region-info-overlay.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .region-name {
+    font-family: 'Quicksand Variable', 'Quicksand', sans-serif;
+    font-weight: 700;
+    font-size: 22px;
+    color: #ffffff;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .region-details {
+    font-family: 'Quicksand Variable', 'Quicksand', sans-serif;
+    font-weight: 500;
+    font-size: 14px;
+    color: #cccccc;
+    margin-bottom: 15px;
+    line-height: 1.5;
+  }
+
+  .centers-count {
+    font-family: 'Quicksand Variable', 'Quicksand', sans-serif;
+    font-weight: 600;
+    font-size: 16px;
+    color: #4ade80;
+    background: rgba(74, 222, 128, 0.1);
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: 1px solid rgba(74, 222, 128, 0.3);
+  }
+
+  .animation-controls {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    display: flex;
+    gap: 10px;
+    z-index: 1000;
+  }
+
+  .control-btn {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(10px);
+    color: #ffffff;
+    font-size: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+
+  .control-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: scale(1.1);
+  }
+
+  .control-btn:active {
+    transform: scale(0.95);
+  }
+
+  /* Estilos para pins de región */
+  :global(.region-center-pin) {
+    position: absolute;
+    pointer-events: auto;
+    z-index: 999;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #4ade80, #22c55e);
+    border: 2px solid rgba(255, 255, 255, 0.8);
+    box-shadow: 0 4px 12px rgba(74, 222, 128, 0.4);
+    transform: translate(-50%, -50%);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    animation: pulsePin 2s infinite;
+  }
+
+  :global(.region-center-pin:hover) {
+    transform: translate(-50%, -50%) scale(1.2);
+    box-shadow: 0 6px 16px rgba(74, 222, 128, 0.6);
+  }
+
+  :global(.region-center-pin.highlighted) {
+    background: radial-gradient(circle, #fbbf24, #f59e0b);
+    border-color: #fbbf24;
+    box-shadow: 0 6px 20px rgba(251, 191, 36, 0.6);
+    animation: highlightPulse 1.5s infinite;
+  }
+
+  @keyframes pulsePin {
+    0%, 100% {
+      box-shadow: 0 4px 12px rgba(74, 222, 128, 0.4);
+    }
+    50% {
+      box-shadow: 0 4px 12px rgba(74, 222, 128, 0.8);
+    }
+  }
+
+  @keyframes highlightPulse {
+    0%, 100% {
+      box-shadow: 0 6px 20px rgba(251, 191, 36, 0.6);
+      transform: translate(-50%, -50%) scale(1.2);
+    }
+    50% {
+      box-shadow: 0 8px 24px rgba(251, 191, 36, 1);
+      transform: translate(-50%, -50%) scale(1.3);
+    }
+  }
+
+  /* Efecto de zoom de región */
+  .region-map.zooming {
+    transition: all 2s ease-in-out;
+  }
+
+  /* Responsivo */
+  @media (max-width: 768px) {
+    .region-header {
+      padding: 15px 20px;
+    }
+
+    .region-header h2 {
+      font-size: 20px;
+    }
+
+    .region-info-overlay {
+      top: 15px;
+      left: 15px;
+      right: 15px;
+      min-width: auto;
+      padding: 15px;
+    }
+
+    .animation-controls {
+      bottom: 15px;
+      right: 15px;
+    }
+
+    .control-btn {
+      width: 45px;
+      height: 45px;
+      font-size: 18px;
+    }
+  }
+</style>
+
+<script>
+  import maplibregl from 'maplibre-gl';
+  import 'maplibre-gl/dist/maplibre-gl.css';
+  import { gsap } from 'gsap';
+  import { spainConfig } from '../mocks/data/spain-locations';
+
+  let regionMap: maplibregl.Map;
+  let regionMarkers: maplibregl.Marker[] = [];
+  let currentRegionIndex = 0;
+  let isAnimating = false;
+  let animationTimer: NodeJS.Timeout | null = null;
+
+  // Definición de regiones lógicas de España basadas en ubicaciones reales de Inditex
+  const spainRegions = [
+    {
+      name: 'Noroeste',
+      description: 'Galicia - Sede Central y Distribución Atlántica',
+      bounds: [[-9.0, 43.0], [-7.5, 44.0]] as [[number, number], [number, number]],
+      zoom: 8,
+      centers: ['arteixo-central', 'laracha-cpd2-node', 'naron-node'],
+      color: '#4ade80'
+    },
+    {
+      name: 'Norte-Centro',
+      description: 'Castilla y León - Distribución Norte',
+      bounds: [[-6.5, 42.0], [-4.5, 43.5]] as [[number, number], [number, number]],
+      zoom: 8,
+      centers: ['leon-node'],
+      color: '#3b82f6'
+    },
+    {
+      name: 'Nordeste',
+      description: 'Cataluña y Aragón - Hub Industrial y Logístico',
+      bounds: [[-1.5, 41.0], [3.5, 42.5]] as [[number, number], [number, number]],
+      zoom: 7,
+      centers: ['sallent-node', 'tordera-node', 'zaragoza-node'],
+      color: '#8b5cf6'
+    },
+    {
+      name: 'Centro',
+      description: 'Madrid, Guadalajara y Toledo - Hub Central de Distribución',
+      bounds: [[-4.5, 39.5], [-2.5, 41.0]] as [[number, number], [number, number]],
+      zoom: 7.5,
+      centers: ['meco-node', 'cabanillas-node', 'marchamalo-node', 'toledo-node', 'illescas-node'],
+      color: '#f59e0b'
+    },
+    {
+      name: 'Sureste',
+      description: 'Alicante - Centro Industrial del Calzado',
+      bounds: [[-1.5, 37.5], [0.5, 39.0]] as [[number, number], [number, number]],
+      zoom: 8.5,
+      centers: ['elche-node'],
+      color: '#ef4444'
+    }
+  ];
+
+  // Configuración del mapa de regiones
+  const regionMapConfig = {
+    container: 'region-map',
+    style: {
+      version: 8,
+      sources: {
+        'countries': {
+          type: 'vector',
+          tiles: [
+            'https://demotiles.maplibre.org/tiles/{z}/{x}/{y}.pbf'
+          ],
+          minzoom: 0,
+          maxzoom: 14
+        }
+      },
+      layers: [
+        {
+          id: 'background',
+          type: 'background',
+          paint: {
+            'background-color': '#1a1a1a'
+          }
+        },
+        {
+          id: 'countries-base',
+          type: 'fill',
+          source: 'countries',
+          'source-layer': 'countries',
+          paint: {
+            'fill-color': '#2A2A2A',
+            'fill-opacity': 0.8,
+            'fill-outline-color': 'rgba(0,0,0,0)',
+            'fill-antialias': false
+          }
+        }
+      ]
+    } as maplibregl.StyleSpecification,
+    center: [-3.7492, 40.2637] as [number, number], // Centro de España
+    zoom: 6,
+    minZoom: 5,
+    maxZoom: 12,
+    pitch: 0,
+    bearing: 0,
+    interactive: true,
+    scrollZoom: true,
+    boxZoom: false,
+    dragRotate: false,
+    dragPan: true,
+    keyboard: false,
+    doubleClickZoom: true,
+    touchZoomRotate: false,
+    preserveDrawingBuffer: true,
+    antialias: true
+  };
+
+  function initializeRegionMap() {
+    try {
+      regionMap = new maplibregl.Map(regionMapConfig);
+
+      regionMap.on('load', () => {
+        console.log('🗺️ Mapa de regiones cargado');
+
+        // Destacar España
+        highlightSpain();
+
+        // Crear todos los pins de centros
+        createAllRegionPins();
+
+        // Iniciar animación automática
+        setTimeout(() => {
+          startRegionAnimation();
+        }, 1000);
+      });
+
+      regionMap.on('error', (e) => {
+        console.error('Error en el mapa de regiones:', e);
+      });
+
+    } catch (error) {
+      console.error('Error inicializando el mapa de regiones:', error);
+    }
+  }
+
+  function highlightSpain() {
+    try {
+      regionMap.addLayer({
+        id: 'spain-highlighted',
+        type: 'fill',
+        source: 'countries',
+        'source-layer': 'countries',
+        paint: {
+          'fill-color': [
+            'case',
+            ['==', ['get', 'NAME'], 'Spain'], '#5D5D5D',
+            ['==', ['get', 'name'], 'Spain'], '#5D5D5D',
+            ['==', ['get', 'iso_a2'], 'ES'], '#5D5D5D',
+            '#2A2A2A'
+          ],
+          'fill-opacity': 0.8,
+          'fill-outline-color': 'transparent'
+        }
+      });
+      console.log('✅ España destacada en el mapa de regiones');
+    } catch (error) {
+      console.error('❌ Error destacando España:', error);
+    }
+  }
+
+  function createAllRegionPins() {
+    console.log('📍 Creando pins para todas las ubicaciones...');
+
+    // Crear pin central de Arteixo
+    createRegionPin(spainConfig.centralNode, true);
+
+    // Crear pins para todas las ubicaciones remotas
+    spainConfig.remoteNodes.forEach((node) => {
+      createRegionPin(node, false);
+    });
+
+    updateStatusText(`${regionMarkers.length} centros cargados`);
+  }
+
+  function createRegionPin(node: any, isCentral: boolean = false) {
+    if (!node.coordinates || node.coordinates.length !== 2) {
+      console.error(`❌ Coordenadas inválidas para ${node.name}:`, node.coordinates);
+      return;
+    }
+
+    const pin = document.createElement('div');
+    pin.className = isCentral ? 'region-center-pin central' : 'region-center-pin';
+    pin.setAttribute('data-center-id', node.id || node.name);
+    pin.setAttribute('data-center-name', node.name);
+
+    // Agregar información del centro en el tooltip
+    pin.title = `${node.name} - ${node.city || ''}`;
+
+    try {
+      const marker = new maplibregl.Marker({
+        element: pin,
+        anchor: 'center'
+      })
+      .setLngLat(node.coordinates)
+      .addTo(regionMap);
+
+      regionMarkers.push(marker);
+      console.log(`✅ Pin de región creado para ${node.name}`);
+
+      // Agregar evento de click
+      pin.addEventListener('click', () => {
+        focusOnCenter(node);
+      });
+
+    } catch (error) {
+      console.error(`❌ Error creando pin de región para ${node.name}:`, error);
+    }
+  }
+
+  function startRegionAnimation() {
+    if (isAnimating) return;
+
+    isAnimating = true;
+    currentRegionIndex = 0;
+    updateStatusText('Animación iniciada');
+
+    animateToNextRegion();
+  }
+
+  function animateToNextRegion() {
+    if (!isAnimating || currentRegionIndex >= spainRegions.length) {
+      // Reiniciar la animación al final
+      currentRegionIndex = 0;
+      setTimeout(() => {
+        if (isAnimating) animateToNextRegion();
+      }, 3000);
+      return;
+    }
+
+    const region = spainRegions[currentRegionIndex];
+    console.log(`🎯 Animando hacia región: ${region.name}`);
+
+    // Actualizar información de la región
+    updateRegionInfo(region);
+
+    // Destacar centros de la región
+    highlightRegionCenters(region.centers);
+
+    // Animar el mapa hacia la región
+    const bounds = new maplibregl.LngLatBounds(region.bounds[0], region.bounds[1]);
+
+    regionMap.fitBounds(bounds, {
+      padding: { top: 50, bottom: 50, left: 50, right: 50 },
+      duration: 2000,
+      zoom: region.zoom
+    });
+
+    updateStatusText(`Explorando ${region.name}`);
+
+    // Programar siguiente región
+    animationTimer = setTimeout(() => {
+      currentRegionIndex++;
+      animateToNextRegion();
+    }, 6000); // 6 segundos por región
+  }
+
+  function updateRegionInfo(region: any) {
+    const overlay = document.querySelector('.region-info-overlay') as HTMLElement;
+    const nameEl = overlay.querySelector('.region-name') as HTMLElement;
+    const detailsEl = overlay.querySelector('.region-details') as HTMLElement;
+    const countEl = overlay.querySelector('.centers-count') as HTMLElement;
+
+    nameEl.textContent = region.name;
+    detailsEl.textContent = region.description;
+    countEl.textContent = `${region.centers.length} centros en esta región`;
+
+    // Animar la aparición
+    overlay.classList.add('visible');
+
+    gsap.fromTo(overlay,
+      { scale: 0.9, opacity: 0 },
+      { scale: 1, opacity: 1, duration: 0.5, ease: "back.out(1.2)" }
+    );
+  }
+
+  function highlightRegionCenters(centerIds: string[]) {
+    // Quitar highlight de todos los pins
+    document.querySelectorAll('.region-center-pin').forEach(pin => {
+      pin.classList.remove('highlighted');
+    });
+
+    // Destacar pins de la región actual
+    centerIds.forEach(centerId => {
+      const pin = document.querySelector(`[data-center-id="${centerId}"]`);
+      if (pin) {
+        pin.classList.add('highlighted');
+      }
+    });
+  }
+
+  function updateStatusText(text: string) {
+    const statusText = document.querySelector('.status-text') as HTMLElement;
+    if (statusText) {
+      statusText.textContent = text;
+    }
+  }
+
+  function focusOnCenter(node: any) {
+    console.log(`🔍 Enfocando en centro: ${node.name}`);
+
+    regionMap.flyTo({
+      center: node.coordinates,
+      zoom: 10,
+      duration: 1500
+    });
+
+    updateStatusText(`Enfocado en ${node.name}`);
+  }
+
+  function pauseAnimation() {
+    isAnimating = false;
+    if (animationTimer) {
+      clearTimeout(animationTimer);
+      animationTimer = null;
+    }
+    updateStatusText('Animación pausada');
+  }
+
+  function resumeAnimation() {
+    if (!isAnimating) {
+      startRegionAnimation();
+    }
+  }
+
+  function restartAnimation() {
+    pauseAnimation();
+    currentRegionIndex = 0;
+
+    // Volver a la vista general de España
+    regionMap.flyTo({
+      center: [-3.7492, 40.2637],
+      zoom: 6,
+      duration: 1500
+    });
+
+    setTimeout(() => {
+      startRegionAnimation();
+    }, 2000);
+  }
+
+  function nextRegion() {
+    if (animationTimer) {
+      clearTimeout(animationTimer);
+    }
+    currentRegionIndex++;
+    if (currentRegionIndex >= spainRegions.length) {
+      currentRegionIndex = 0;
+    }
+    animateToNextRegion();
+  }
+
+  // Inicializar cuando el DOM esté listo
+  document.addEventListener('DOMContentLoaded', () => {
+    initializeRegionMap();
+
+    // Configurar controles
+    const playPauseBtn = document.getElementById('play-pause');
+    const restartBtn = document.getElementById('restart');
+    const nextBtn = document.getElementById('next');
+
+    playPauseBtn?.addEventListener('click', () => {
+      if (isAnimating) {
+        pauseAnimation();
+        playPauseBtn.textContent = '▶️';
+      } else {
+        resumeAnimation();
+        playPauseBtn.textContent = '⏸️';
+      }
+    });
+
+    restartBtn?.addEventListener('click', restartAnimation);
+    nextBtn?.addEventListener('click', nextRegion);
+  });
+
+  // Funciones globales para debugging
+  (window as any).regionAnimationUtils = {
+    getRegionMap: () => regionMap,
+    getRegions: () => spainRegions,
+    getCurrentRegion: () => spainRegions[currentRegionIndex],
+    getMarkers: () => regionMarkers,
+    pauseAnimation,
+    resumeAnimation,
+    restartAnimation,
+    nextRegion,
+    isAnimating: () => isAnimating,
+    debugRegionAnimation: () => {
+      console.log('=== DEBUG REGION ANIMATION ===');
+      console.log('Map loaded:', regionMap ? regionMap.loaded() : 'Not initialized');
+      console.log('Total markers:', regionMarkers.length);
+      console.log('Current region index:', currentRegionIndex);
+      console.log('Is animating:', isAnimating);
+      console.log('Regions defined:', spainRegions.length);
+    }
+  };
+</script>
