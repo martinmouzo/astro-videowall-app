@@ -20,6 +20,7 @@ import "@fontsource-variable/quicksand";
       <div class="region-name"></div>
       <div class="region-details"></div>
       <div class="centers-count"></div>
+      <ul class="centers-list"></ul>
     </div>
 
     <!-- Controles de animación -->
@@ -158,6 +159,32 @@ import "@fontsource-variable/quicksand";
     padding: 8px 12px;
     border-radius: 8px;
     border: 1px solid rgba(74, 222, 128, 0.3);
+    margin-bottom: 10px;
+  }
+
+  .centers-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    max-height: 150px;
+    overflow-y: auto;
+    font-family: 'Quicksand Variable', 'Quicksand', sans-serif;
+  }
+
+  .centers-list li {
+    font-size: 13px;
+    color: #bbbbbb;
+    padding: 6px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  }
+
+  .centers-list li:last-child {
+    border-bottom: none;
+  }
+
+  .centers-list strong {
+    color: #ffffff;
+    font-weight: 600;
   }
 
   .animation-controls {
@@ -339,40 +366,7 @@ import "@fontsource-variable/quicksand";
   // Configuración del mapa de regiones
   const regionMapConfig = {
     container: 'region-map',
-    style: {
-      version: 8,
-      sources: {
-        'countries': {
-          type: 'vector',
-          tiles: [
-            'https://demotiles.maplibre.org/tiles/{z}/{x}/{y}.pbf'
-          ],
-          minzoom: 0,
-          maxzoom: 14
-        }
-      },
-      layers: [
-        {
-          id: 'background',
-          type: 'background',
-          paint: {
-            'background-color': '#1a1a1a'
-          }
-        },
-        {
-          id: 'countries-base',
-          type: 'fill',
-          source: 'countries',
-          'source-layer': 'countries',
-          paint: {
-            'fill-color': '#2A2A2A',
-            'fill-opacity': 0.8,
-            'fill-outline-color': 'rgba(0,0,0,0)',
-            'fill-antialias': false
-          }
-        }
-      ]
-    } as maplibregl.StyleSpecification,
+    style: 'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json', // URL del estilo Dark Matter
     center: [-3.7492, 40.2637] as [number, number], // Centro de España
     zoom: 6,
     minZoom: 5,
@@ -396,13 +390,135 @@ import "@fontsource-variable/quicksand";
       regionMap = new maplibregl.Map(regionMapConfig);
 
       regionMap.on('load', () => {
-        console.log('🗺️ Mapa de regiones cargado');
+        console.log('🗺️ Mapa de regiones cargado con Dark Matter GL Style');
 
-        // Destacar España
-        highlightSpain();
+        // ---- START: MODIFICATIONS FOR COLOR MATCHING AND MINIMALIST STYLE ----
+        const style = regionMap.getStyle();
+        if (!style || !style.layers) {
+          console.error('Estilo de mapa no disponible para modificar.');
+          return;
+        }
 
-        // Crear todos los pins de centros
-        createAllRegionPins();
+        // Target colors from SpainMap.astro
+        const targetBackgroundColor = '#525252'; // Updated
+        const targetWaterColor = '#1A1A1A';    // Updated
+        const targetLandColor = '#525252';      // Updated
+
+        // Patterns for layers to hide for a minimalist, flat look
+        // Order matters if a layer could match multiple patterns
+        const hidePatterns = [
+          'road',       // roads, roadname_*
+          'tunnel',
+          'bridge',
+          'aeroway',
+          'building',
+          'poi',        // Points of Interest labels and icons
+          'housenumber',
+          'boundary_',  // Admin boundaries (county, state, country lines)
+          'residential',// e.g., landuse_residential
+          'waterway',   // River/stream lines. Also hides waterway_label if not caught by a more specific rule.
+          'transit',    // Transit lines/labels if any
+          'ferry',      // Ferry routes
+          // Specific Dark Matter layers that might add too much detail or are not place labels
+          'building-extrusion',
+          'hillshade',
+          'landuse_overlay',
+          'contour',
+          'watername', // Explicitly hide water names (watername_ocean, watername_sea, watername_lake)
+          'waterway_label', // Explicitly hide waterway labels
+          'park',       // Hides park_national_park, park_nature_reserve etc.
+          'landuse'     // Hides landuse (cemetery, stadium etc. from Dark Matter). landuse_residential is covered by 'residential'.
+          // Add other specific non-place labels if they appear
+        ];
+
+        // Patterns for layers to ALWAYS SHOW (these are exceptions to hidePatterns)
+        const showPatterns = [
+          'place_', // place_hamlet, place_suburb, place_village, place_town, place_city_*, place_capital_*
+        ];
+
+
+        style.layers.forEach(layer => {
+          const layerId = layer.id.toLowerCase(); // Work with lowercase for consistency
+          let forceShow = false; // Renamed from специальноПоказать
+
+          // Check if layer should be specifically shown (overrides hiding)
+          for (const pattern of showPatterns) {
+            if (layerId.includes(pattern)) {
+              forceShow = true;
+              // console.log(`Force showing layer: ${layer.id}`);
+              break;
+            }
+          }
+
+          if (!forceShow) {
+            let isHidden = false;
+            // Check if layer should be hidden
+            for (const pattern of hidePatterns) {
+              if (layerId.includes(pattern)) {
+                if (regionMap.getLayer(layer.id)) {
+                  try {
+                    regionMap.setLayoutProperty(layer.id, 'visibility', 'none');
+                    // console.log(`Hid layer: ${layer.id}`);
+                    isHidden = true;
+                  } catch (e) {
+                    // console.warn(`Could not hide layer ${layer.id}: ${e.message}`);
+                  }
+                }
+                break;
+              }
+            }
+            if (isHidden) return; // Skip color changes if hidden by general rules and not force-shown
+          } else {
+             // If specifically shown, ensure visibility is set to 'visible' in case a broader rule tried to hide it
+             const currentLayer = regionMap.getLayer(layer.id);
+             if (currentLayer) {
+                try {
+                    // Check current visibility, only set if it's 'none'
+                    const currentVisibility = regionMap.getLayoutProperty(layer.id, 'visibility');
+                    if (currentVisibility === 'none') {
+                        regionMap.setLayoutProperty(layer.id, 'visibility', 'visible');
+                        // console.log(`Ensured layer is visible: ${layer.id}`);
+                    }
+                } catch (e) {
+                    // console.warn(`Could not ensure visibility for layer ${layer.id}: ${e.message}`);
+                }
+            }
+          }
+
+          // Apply color changes to visible layers
+          try {
+            if (layer.id === 'background') { // Exact ID match
+              if (regionMap.getPaintProperty(layer.id, 'background-color')) {
+                regionMap.setPaintProperty(layer.id, 'background-color', targetBackgroundColor);
+              }
+            } else if (layer.id === 'water') { // Exact ID match for main water bodies
+              if (regionMap.getPaintProperty(layer.id, 'fill-color')) {
+                regionMap.setPaintProperty(layer.id, 'fill-color', targetWaterColor);
+              }
+              if (regionMap.getPaintProperty(layer.id, 'fill-outline-color')) {
+                 regionMap.setPaintProperty(layer.id, 'fill-outline-color', 'transparent');
+              }
+            } else if (layerId.includes('landcover') || layerId.includes('earth')) {
+              // This primarily targets base land layers like 'landcover', 'earth'
+              // Assumes more specific land markings (park, landuse categories) are hidden by hidePatterns
+              // Avoid changing colors of layers that are meant to be shown (place labels) if they are fill types.
+              const layerToStyle = regionMap.getLayer(layer.id);
+              if (layerToStyle && layerToStyle.type === 'fill' && !forceShow) {
+                if (regionMap.getPaintProperty(layer.id, 'fill-color')) {
+                  regionMap.setPaintProperty(layer.id, 'fill-color', targetLandColor);
+                }
+                if (regionMap.getPaintProperty(layer.id, 'fill-outline-color')) {
+                  regionMap.setPaintProperty(layer.id, 'fill-outline-color', 'transparent');
+                }
+              }
+            }
+          } catch (e) {
+            // console.warn(`Could not set paint property for layer ${layer.id}: ${e.message}`);
+          }
+        });
+        console.log('🗺️ Mapa de regiones: Dark Matter GL Style colors and visibility adjusted.');
+        // ---- END: MODIFICATIONS ----
+
 
         // Iniciar animación automática
         setTimeout(() => {
@@ -420,42 +536,40 @@ import "@fontsource-variable/quicksand";
   }
 
   function highlightSpain() {
-    try {
-      regionMap.addLayer({
-        id: 'spain-highlighted',
-        type: 'fill',
-        source: 'countries',
-        'source-layer': 'countries',
-        paint: {
-          'fill-color': [
-            'case',
-            ['==', ['get', 'NAME'], 'Spain'], '#5D5D5D',
-            ['==', ['get', 'name'], 'Spain'], '#5D5D5D',
-            ['==', ['get', 'iso_a2'], 'ES'], '#5D5D5D',
-            '#2A2A2A'
-          ],
-          'fill-opacity': 0.8,
-          'fill-outline-color': 'transparent'
-        }
-      });
-      console.log('✅ España destacada en el mapa de regiones');
-    } catch (error) {
-      console.error('❌ Error destacando España:', error);
-    }
+    // Esta función ya no es necesaria con un estilo GL completo como Dark Matter.
+    // El estilo en sí debería manejar la diferenciación de características geográficas.
+    console.log('ℹ️ Usando Dark Matter GL Style. La función highlightSpain no se aplica de la misma manera.');
   }
 
-  function createAllRegionPins() {
-    console.log('📍 Creando pins para todas las ubicaciones...');
+  function clearAllPins() {
+    // Limpiar todos los pins existentes
+    regionMarkers.forEach(marker => {
+      marker.remove();
+    });
+    regionMarkers = [];
+    console.log('🧹 Todos los pins limpiados');
+  }
 
-    // Crear pin central de Arteixo
-    createRegionPin(spainConfig.centralNode, true);
+  function createRegionPins(centerIds: string[]) {
+    // Limpiar pins existentes
+    clearAllPins();
 
-    // Crear pins para todas las ubicaciones remotas
-    spainConfig.remoteNodes.forEach((node) => {
-      createRegionPin(node, false);
+    console.log(`📍 Creando pins para región con centros: ${centerIds.join(', ')}`);
+
+    // Crear pin central de Arteixo siempre
+    if (centerIds.includes('arteixo-central') || centerIds.includes('laracha-cpd2-node') || centerIds.includes('naron-node')) {
+      createRegionPin(spainConfig.centralNode, true);
+    }
+
+    // Crear pins para ubicaciones de esta región
+    centerIds.forEach(centerId => {
+      const node = spainConfig.remoteNodes.find(n => n.id === centerId || n.name === centerId);
+      if (node) {
+        createRegionPin(node, false);
+      }
     });
 
-    updateStatusText(`${regionMarkers.length} centros cargados`);
+    updateStatusText(`${regionMarkers.length} centros cargados en región`);
   }
 
   function createRegionPin(node: any, isCentral: boolean = false) {
@@ -519,8 +633,8 @@ import "@fontsource-variable/quicksand";
     // Actualizar información de la región
     updateRegionInfo(region);
 
-    // Destacar centros de la región
-    highlightRegionCenters(region.centers);
+    // Crear pins solo para esta región
+    createRegionPins(region.centers);
 
     // Animar el mapa hacia la región
     const bounds = new maplibregl.LngLatBounds(region.bounds[0], region.bounds[1]);
@@ -542,13 +656,33 @@ import "@fontsource-variable/quicksand";
 
   function updateRegionInfo(region: any) {
     const overlay = document.querySelector('.region-info-overlay') as HTMLElement;
+    if (!overlay) return;
+
     const nameEl = overlay.querySelector('.region-name') as HTMLElement;
     const detailsEl = overlay.querySelector('.region-details') as HTMLElement;
     const countEl = overlay.querySelector('.centers-count') as HTMLElement;
+    const centersListEl = overlay.querySelector('.centers-list') as HTMLUListElement;
 
-    nameEl.textContent = region.name;
-    detailsEl.textContent = region.description;
-    countEl.textContent = `${region.centers.length} centros en esta región`;
+    if (nameEl) nameEl.textContent = region.name;
+    if (detailsEl) detailsEl.textContent = region.description;
+    if (countEl) countEl.textContent = `${region.centers.length} centros en esta región`;
+
+    if (centersListEl) {
+      centersListEl.innerHTML = ''; // Clear previous items
+
+      region.centers.forEach((centerId: string) => {
+        let node = spainConfig.remoteNodes.find(n => n.id === centerId);
+        if (!node && spainConfig.centralNode.id === centerId) {
+          node = spainConfig.centralNode;
+        }
+
+        if (node) {
+          const listItem = document.createElement('li');
+          listItem.innerHTML = `<strong>${node.name}</strong> (${node.city || 'N/A'})`;
+          centersListEl.appendChild(listItem);
+        }
+      });
+    }
 
     // Animar la aparición
     overlay.classList.add('visible');
@@ -560,18 +694,8 @@ import "@fontsource-variable/quicksand";
   }
 
   function highlightRegionCenters(centerIds: string[]) {
-    // Quitar highlight de todos los pins
-    document.querySelectorAll('.region-center-pin').forEach(pin => {
-      pin.classList.remove('highlighted');
-    });
-
-    // Destacar pins de la región actual
-    centerIds.forEach(centerId => {
-      const pin = document.querySelector(`[data-center-id="${centerId}"]`);
-      if (pin) {
-        pin.classList.add('highlighted');
-      }
-    });
+    // Esta función ya no es necesaria ya que creamos los pins dinámicamente
+    console.log(`🎯 Pins creados dinámicamente para: ${centerIds.join(', ')}`);
   }
 
   function updateStatusText(text: string) {
@@ -611,6 +735,9 @@ import "@fontsource-variable/quicksand";
   function restartAnimation() {
     pauseAnimation();
     currentRegionIndex = 0;
+
+    // Limpiar todos los pins
+    clearAllPins();
 
     // Volver a la vista general de España
     regionMap.flyTo({
