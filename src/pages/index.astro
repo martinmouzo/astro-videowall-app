@@ -8,42 +8,76 @@ import Panel4 from '../components/Panel4.astro';
 <BaseLayout title="Videowall">
     <style>
         .panoramic-display-container {
-            display: flex;
-            flex-direction: row;
+            display: grid;
+            grid-template-columns:
+                minmax(1600px, 1.4fr)    /* Panel1 - Increased from 1200px to 1600px for larger SVG */
+                minmax(965px, max-content) /* Panel2 - Charts (exact content width) */
+                minmax(600px, 0.8fr)     /* Panel3 - Semaphore indicators */
+                minmax(800px, 1fr);      /* Panel4 - World map with pins */
             width: 100%;
-            min-width: max-content;
-            height: 100%;
+            min-width: max-content; /* Allow horizontal expansion as needed */
+            height: 100vh;
             background-color: #1E1E1E;
-            gap: 3px; /* Further reduced from 6px to 3px for tighter spacing */
+            gap: 4px;
+            box-sizing: border-box;
+            overflow-x: auto; /* Allow horizontal scrolling if needed */
         }
+
         .panel-wrapper {
             height: 100%;
-            overflow: hidden;
             position: relative;
             box-sizing: border-box;
             background-color: #1E1E1E;
+            min-width: 0; /* Allow shrinking if necessary */
+            overflow: hidden; /* Contain content within panel boundaries */
         }
+
         .panel-wrapper:first-child {
-            /* Panel1 - World map SVG needs significant space */
-            flex: 2.0;
-            min-width: 35%;
+            /* Panel1 - World map SVG with region circles */
+            overflow: visible; /* Allow region circles to be fully visible */
         }
+
         .panel-wrapper:nth-child(2) {
-            /* Panel2 - Charts */
-            flex: 1.2;
-            min-width: 25%;
+            /* Panel2 - Charts with specific width requirements */
+            min-width: 965px; /* Exact minimum space needed (reduced from 1000px) */
+            display: flex;
+            justify-content: center; /* Center the content horizontally */
+            align-items: flex-start; /* Align content to top */
         }
+
         .panel-wrapper:nth-child(3) {
-            /* Panel3 - Semaphore */
-            flex: 1.3;
-            min-width: 25%;
+            /* Panel3 - Semaphore system */
+            min-width: 600px; /* Adequate space for semaphore grid */
         }
+
         .panel-wrapper:last-child {
-            /* Panel4 - WorldMap component */
-            flex: 1.5;
-            min-width: 25%;
+            /* Panel4 - WorldMap component with pins */
             container-type: inline-size;
-            overflow: visible; /* Permitir que las cards de latencia sean visibles */
+            overflow: hidden;
+            position: relative;
+            min-width: 800px; /* Ensure world map displays completely */
+        }
+
+        /* Responsive behavior for very large screens */
+        @media (min-width: 4000px) {
+            .panoramic-display-container {
+                grid-template-columns:
+                    minmax(1800px, 1.5fr)    /* Increased Panel1 space for large screens */
+                    minmax(1065px, max-content) /* Slightly larger Panel2 but still content-based */
+                    minmax(700px, 0.8fr)     /* Slightly more space for Panel3 */
+                    minmax(900px, 1fr);      /* More space for Panel4 */
+            }
+        }
+
+        /* Ensure smooth scaling on ultra-wide displays */
+        @media (min-width: 5000px) {
+            .panoramic-display-container {
+                grid-template-columns:
+                    minmax(2200px, 1.6fr)    /* Maximum space for Panel1 - significantly increased */
+                    minmax(1165px, max-content) /* Enhanced Panel2 but content-based */
+                    minmax(800px, 0.9fr)     /* Enhanced Panel3 space */
+                    minmax(1000px, 1fr);     /* Enhanced Panel4 space */
+            }
         }
     </style>
     <div class="panoramic-display-container">

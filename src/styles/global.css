@@ -51,3 +51,28 @@
   letter-spacing: 0.5px;
   font-variant-numeric: tabular-nums;
 }
+
+/* Panoramic Videowall Support */
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  overflow-x: auto; /* Allow horizontal scrolling for panoramic displays */
+  overflow-y: hidden; /* Prevent vertical scrolling */
+  height: 100vh;
+  background-color: #1E1E1E;
+}
+
+/* Smooth scrolling for panoramic navigation */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Optimize rendering for large displays */
+* {
+  backface-visibility: hidden;
+  transform: translateZ(0);
+}

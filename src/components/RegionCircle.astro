@@ -59,6 +59,7 @@ const overlayContainerStyle = `
     rgba(0, 0, 0, 0.3) 0px 1px 3px -1px,
     inset 0 0 0 1px ${regionColor}20;
   backdrop-filter: blur(4px);
+  z-index: 100; /* Ensure circles are above the SVG map */
   --region-color: ${regionColor};
 `;
 ---
@@ -85,6 +86,9 @@ const overlayContainerStyle = `
 <style>
   .region-overlay-container {
     /* Estilos adicionales si son necesarios más allá del style inline */
+    max-width: none; /* Sin restricción de ancho máximo */
+    max-height: none; /* Sin restricción de altura máxima */
+    z-index: 100; /* Asegurar que esté por encima del mapa */
     box-sizing: border-box;
     pointer-events: none; /* Sin interacciones */
   }
@@ -101,9 +105,9 @@ const overlayContainerStyle = `
     pointer-events: auto; /* Permite interacción con el contenido */
     color: white;
     text-align: center;
-    font-size: clamp(0.6em, 1.8vmin, 0.9em); /* Aumentado para mejor legibilidad */
+    font-size: clamp(0.7em, 2.0vmin, 1.0em); /* More balanced font scaling */
     overflow: hidden; /* Evita que el contenido desborde el círculo */
-    gap: 0.5em; /* Aumentado gap para mejor separación */
+    gap: 0.6em; /* Balanced spacing for medium-sized circles */
   }
 
   .overlay-header {
@@ -117,13 +121,13 @@ const overlayContainerStyle = `
 
   .overlay-header h4 {
     margin: 0;
-    font-size: 1.4em; /* Aumentado de 1.3em para mejor visibilidad */
+    font-size: 1.5em; /* Balanced title size for medium circles */
     white-space: pre-wrap; /* Para manejar nombres multilínea */
     font-weight: 700;
     letter-spacing: .1em;
     text-shadow: 1px 1px 2px black;
     font-family: 'Quicksand Variable', sans-serif;
-    margin-bottom: 0.3em; /* Aumentado margen inferior */
+    margin-bottom: 0.35em; /* Balanced margin for medium circles */
   }
 
   .overlay-body {
@@ -134,7 +138,7 @@ const overlayContainerStyle = `
     width: 100%;
     overflow: hidden;
     padding: 0;
-    max-height: calc(100% - 4em); /* Ajustado para el nuevo spacing */
+    max-height: calc(100% - 3.5em); /* Adjusted for the new spacing */
   }
 
   .overlay-footer {
@@ -142,7 +146,7 @@ const overlayContainerStyle = `
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-top: 0.4em; /* Aumentado margen superior */
+    margin-top: 0.35em; /* Balanced margin for consistency */
     padding-top: 0;
     position: relative;
     flex-shrink: 0; /* Evita compresión */
@@ -180,6 +184,38 @@ const overlayContainerStyle = `
     .overlay-header h4 {
       font-size: 1.0em;
       margin-bottom: 0.05em;
+    }
+  }
+
+  /* Mejoras para Panel1 con más espacio disponible */
+  @container (min-width: 600px) {
+    .overlay-content {
+      font-size: clamp(0.9em, 2.3vmin, 1.2em); /* More balanced font scaling for larger panels */
+      padding: 4.5%; /* Moderate padding increase */
+      gap: 0.8em; /* Balanced gap for better spacing */
+    }
+
+    .overlay-header h4 {
+      font-size: 1.7em; /* More proportional title size */
+      margin-bottom: 0.4em; /* Balanced margin */
+    }
+
+    .overlay-body {
+      max-height: none; /* Sin restricción de altura en paneles grandes */
+    }
+  }
+
+  /* Additional improvements for very large panels */
+  @container (min-width: 1000px) {
+    .overlay-content {
+      font-size: clamp(1.2em, 2.8vmin, 1.6em); /* Even larger font for very large panels */
+      padding: 6%; /* More padding for very large panels */
+      gap: 1.2em; /* Maximum gap for optimal spacing */
+    }
+
+    .overlay-header h4 {
+      font-size: 2.2em; /* Maximum title size for very large panels */
+      margin-bottom: 0.6em; /* Maximum margin */
     }
   }
 </style>

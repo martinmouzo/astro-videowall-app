@@ -25,7 +25,7 @@ const regions: RegionData[] = [
     name: "AMÉRICA",
     iconSrc: "/icons/america-pin.svg",
     position: { top: "10%", left: "14%", transform: "translate(-50%, -50%)" },
-    circle: { cx: 650, cy: 650, r: 630 },
+    circle: { cx: 650, cy: 650, r: 620 }, // Balanced size for larger panel
     regionColor: "#54ccb8",
   },
   {
@@ -33,15 +33,15 @@ const regions: RegionData[] = [
     name: "EUROPA, ÁFRICA\nY ORIENTE MEDIO",
     iconSrc: "/icons/europe-pin.svg",
     position: { top: "15%", left: "50%", transform: "translate(-50%, -50%)" },
-    circle: { cx: 1928, cy: 700, r: 630 },
+    circle: { cx: 1928, cy: 700, r: 620 }, // Balanced size for larger panel
     regionColor: "#5e97fe",
   },
   {
     id: "asia",
     name: "ASIA Y AUSTRALIA",
     iconSrc: "/icons/asia-pin.svg",
-    position: { top: "20%", left: "150%", transform: "translate(-50%, -50%)" },
-    circle: { cx: 3200, cy: 950, r: 630 },
+    position: { top: "20%", left: "85%", transform: "translate(-50%, -50%)" },
+    circle: { cx: 3200, cy: 950, r: 620 }, // Balanced size for larger panel
     regionColor: "#605beb",
   },
 ];
@@ -9688,15 +9688,9 @@ const svgMapContent = `
     .map-panel-container {
       position: relative; /* Clave para el posicionamiento absoluto de los overlays */
       width: 100%;
-      /* Se recomienda usar vw/vh para un escalado más predecible del SVG y los overlays,
-       o asegurar un aspect-ratio fijo para el contenedor del SVG.
-       Por ejemplo, para un video 16:9:
-    */
-      aspect-ratio: 16 / 9;
-      /* O podrías usar un alto fijo y ancho 100% si el diseño lo permite:
-       height: 80vh;
-    */
-      overflow: hidden; /* Evita que los overlays se salgan si hay errores de cálculo */
+      height: 100%; /* Usar toda la altura disponible del panel */
+      /* aspect-ratio: 16 / 9; */ /* Removed fixed aspect ratio for better flexibility */
+      overflow: visible; /* Changed from hidden to visible to allow region elements to display fully */
       background-color: #1e1e1e; /* Color de fondo si el SVG no carga */
     }
 
@@ -9706,7 +9700,7 @@ const svgMapContent = `
       left: 0;
       width: 100%;
       height: 100%;
-      z-index: 0; /* El mapa SVG va detrás */
+      z-index: 1; /* Lower z-index so region circles appear above */
     }
 
     .map-background svg {
