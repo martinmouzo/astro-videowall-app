@@ -98,7 +98,7 @@ const spainNodes: LatencyNode[] = [
   },
   {
     id: 'cabanillas-node',
-    name: 'Cabanillas del Campo',
+    name: 'Cabanillas',
     country: 'Spain',
     city: 'Cabanillas del Campo',
     coordinates: [-3.2369, 40.6378], // Plataforma Cabanillas S.A., Guadalajara

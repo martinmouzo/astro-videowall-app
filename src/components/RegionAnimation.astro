@@ -22,13 +22,6 @@ import "@fontsource-variable/quicksand";
       <div class="centers-count"></div>
       <ul class="centers-list"></ul>
     </div>
-
-    <!-- Controles de animación -->
-    <div class="animation-controls">
-      <button class="control-btn" id="play-pause">⏸️</button>
-      <button class="control-btn" id="restart">🔄</button>
-      <button class="control-btn" id="next">⏭️</button>
-    </div>
   </div>
 </div>
 
@@ -113,113 +106,333 @@ import "@fontsource-variable/quicksand";
     position: absolute;
     top: 20px;
     left: 20px;
-    background: rgba(0, 0, 0, 0.85);
-    backdrop-filter: blur(10px);
-    border-radius: 15px;
-    padding: 20px;
-    min-width: 280px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.92), rgba(20, 20, 20, 0.95));
+    backdrop-filter: blur(20px);
+    border-radius: 18px;
+    padding: 24px;
+    min-width: 380px;
+    max-width: 600px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow:
+      0 16px 40px rgba(0, 0, 0, 0.6),
+      0 4px 16px rgba(0, 0, 0, 0.4),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
     z-index: 1000;
     opacity: 0;
-    transform: translateY(-10px);
-    transition: all 0.3s ease;
+    transform: translateY(-15px) scale(0.95);
+    transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
   }
 
   .region-info-overlay.visible {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateY(0) scale(1);
   }
 
   .region-name {
     font-family: 'Quicksand Variable', 'Quicksand', sans-serif;
     font-weight: 700;
-    font-size: 22px;
+    font-size: 24px;
     color: #ffffff;
-    margin-bottom: 10px;
+    margin-bottom: 8px;
     text-transform: uppercase;
-    letter-spacing: 1px;
+    letter-spacing: 1.2px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .region-name::before {
+    content: "📍";
+    font-size: 20px;
+    filter: drop-shadow(0 0 8px rgba(74, 222, 128, 0.6));
   }
 
   .region-details {
     font-family: 'Quicksand Variable', 'Quicksand', sans-serif;
     font-weight: 500;
     font-size: 14px;
-    color: #cccccc;
-    margin-bottom: 15px;
-    line-height: 1.5;
+    color: #e0e0e0;
+    margin-bottom: 18px;
+    line-height: 1.6;
+    font-style: italic;
+    padding-left: 30px;
   }
 
   .centers-count {
     font-family: 'Quicksand Variable', 'Quicksand', sans-serif;
     font-weight: 600;
-    font-size: 16px;
+    font-size: 15px;
     color: #4ade80;
-    background: rgba(74, 222, 128, 0.1);
-    padding: 8px 12px;
-    border-radius: 8px;
-    border: 1px solid rgba(74, 222, 128, 0.3);
-    margin-bottom: 10px;
+    background: linear-gradient(135deg, rgba(74, 222, 128, 0.15), rgba(74, 222, 128, 0.08));
+    padding: 12px 16px;
+    border-radius: 12px;
+    border: 1px solid rgba(74, 222, 128, 0.4);
+    margin-bottom: 16px;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    box-shadow: 0 4px 12px rgba(74, 222, 128, 0.2);
   }
 
   .centers-list {
     list-style: none;
     padding: 0;
     margin: 0;
-    max-height: 150px;
-    overflow-y: auto;
     font-family: 'Quicksand Variable', 'Quicksand', sans-serif;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
   }
 
   .centers-list li {
-    font-size: 13px;
-    color: #bbbbbb;
-    padding: 6px 0;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-  }
-
-  .centers-list li:last-child {
-    border-bottom: none;
-  }
-
-  .centers-list strong {
-    color: #ffffff;
-    font-weight: 600;
-  }
-
-  .animation-controls {
-    position: absolute;
-    bottom: 20px;
-    right: 20px;
-    display: flex;
-    gap: 10px;
-    z-index: 1000;
-  }
-
-  .control-btn {
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    border: none;
-    background: rgba(0, 0, 0, 0.8);
-    backdrop-filter: blur(10px);
-    color: #ffffff;
-    font-size: 20px;
-    cursor: pointer;
-    transition: all 0.3s ease;
     display: flex;
     align-items: center;
-    justify-content: center;
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 12px 16px;
+    border-radius: 16px;
+    backdrop-filter: blur(10px);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    /* Default background and border */
+    background: linear-gradient(135deg, rgba(50, 50, 50, 0.8), rgba(30, 30, 30, 0.85));
+    border: 1px solid rgba(255, 255, 255, 0.1);
   }
 
-  .control-btn:hover {
-    background: rgba(255, 255, 255, 0.1);
-    transform: scale(1.1);
+  .centers-list li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background: linear-gradient(180deg,
+      var(--latency-color-light, rgba(255,255,255,0.3)),
+      var(--latency-color-dark, rgba(255,255,255,0.2))
+    );
+    transition: all 0.3s ease;
   }
 
-  .control-btn:active {
-    transform: scale(0.95);
+  .centers-list li::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg,
+      var(--latency-color-light, transparent),
+      transparent 50%
+    );
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+  }
+
+  .centers-list li.excellent {
+    --latency-color-light: rgba(74, 222, 128, 0.15);
+    --latency-color-dark: rgba(34, 197, 94, 0.8);
+    --latency-glow: rgba(74, 222, 128, 0.4);
+
+    /* Background and border for the li itself */
+    background: linear-gradient(135deg, rgba(74, 222, 128, 0.3), rgba(34, 197, 94, 0.4));
+    border-color: rgba(74, 222, 128, 0.6);
+  }
+
+  .centers-list li.good {
+    --latency-color-light: rgba(132, 204, 22, 0.15);
+    --latency-color-dark: rgba(101, 163, 13, 0.8);
+    --latency-glow: rgba(132, 204, 22, 0.4);
+
+    /* Background and border for the li itself */
+    background: linear-gradient(135deg, rgba(132, 204, 22, 0.3), rgba(101, 163, 13, 0.4));
+    border-color: rgba(132, 204, 22, 0.6);
+  }
+
+  .centers-list li.warning {
+    --latency-color-light: rgba(251, 191, 36, 0.15);
+    --latency-color-dark: rgba(245, 158, 11, 0.8);
+    --latency-glow: rgba(251, 191, 36, 0.4);
+
+    /* Background and border for the li itself */
+    background: linear-gradient(135deg, rgba(251, 191, 36, 0.3), rgba(245, 158, 11, 0.4));
+    border-color: rgba(251, 191, 36, 0.6);
+  }
+
+  .centers-list li.critical {
+    --latency-color-light: rgba(239, 68, 68, 0.15);
+    --latency-color-dark: rgba(220, 38, 38, 0.8);
+    --latency-glow: rgba(239, 68, 68, 0.4);
+
+    /* Background and border for the li itself */
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.3), rgba(220, 38, 38, 0.4));
+    border-color: rgba(239, 68, 68, 0.6);
+  }
+
+  .centers-list li:hover {
+    transform: translateY(-2px) scale(1.02);
+    border-color: var(--latency-color-dark, rgba(255, 255, 255, 0.25));
+    box-shadow:
+      0 12px 32px rgba(0, 0, 0, 0.4),
+      0 0 20px var(--latency-glow, rgba(255, 255, 255, 0.15));
+  }
+
+  /* Specific hover backgrounds for each latency type */
+  .centers-list li.excellent:hover {
+    background: linear-gradient(135deg, rgba(74, 222, 128, 0.4), rgba(34, 197, 94, 0.5));
+  }
+  .centers-list li.good:hover {
+    background: linear-gradient(135deg, rgba(132, 204, 22, 0.4), rgba(101, 163, 13, 0.5));
+  }
+  .centers-list li.warning:hover {
+    background: linear-gradient(135deg, rgba(251, 191, 36, 0.4), rgba(245, 158, 11, 0.5));
+  }
+  .centers-list li.critical:hover {
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.4), rgba(220, 38, 38, 0.5));
+  }
+
+  .centers-list li:hover::before {
+    width: 6px;
+    box-shadow: 0 0 15px var(--latency-glow, rgba(255, 255, 255, 0.3));
+  }
+
+  .centers-list li:hover::after {
+    opacity: 0.08;
+  }
+
+  .center-badge {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    gap: 10px;
+  }
+
+  .center-info {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    min-width: 0;
+  }
+
+  .center-name {
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 15px;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+    margin-bottom: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .center-location {
+    color: rgba(255, 255, 255, 0.7);
+    font-weight: 500;
+    font-size: 12px;
+    font-style: italic;
+    opacity: 0.8;
+  }
+
+  .latency-badge {
+    font-family: 'Quicksand Variable', 'Quicksand', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    padding: 8px 14px;
+    border-radius: 20px;
+    text-align: center;
+    min-width: 55px;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    box-shadow:
+      0 4px 12px rgba(0, 0, 0, 0.3),
+      inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    background: linear-gradient(135deg,
+      var(--latency-color-light),
+      var(--latency-color-dark)
+    );
+    border: 1px solid var(--latency-border);
+    position: relative;
+    overflow: hidden;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease;
+    flex-shrink: 0;
+  }
+
+  .latency-badge::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg,
+      transparent,
+      rgba(255, 255, 255, 0.4),
+      transparent
+    );
+    transition: left 0.6s ease;
+  }
+
+  .centers-list li:hover .latency-badge::before {
+    left: 100%;
+  }
+
+  .latency-badge.excellent {
+    --latency-color-light: rgba(74, 222, 128, 0.95);
+    --latency-color-dark: rgba(34, 197, 94, 1);
+    --latency-border: rgba(74, 222, 128, 0.8);
+    color: #ffffff;
+  }
+
+  .latency-badge.good {
+    --latency-color-light: rgba(132, 204, 22, 0.95);
+    --latency-color-dark: rgba(101, 163, 13, 1);
+    --latency-border: rgba(132, 204, 22, 0.8);
+    color: #ffffff;
+  }
+
+  .latency-badge.warning {
+    --latency-color-light: rgba(251, 191, 36, 0.95);
+    --latency-color-dark: rgba(245, 158, 11, 1);
+    --latency-border: rgba(251, 191, 36, 0.8);
+    color: #000000;
+  }
+
+  .latency-badge.critical {
+    --latency-color-light: rgba(239, 68, 68, 0.95);
+    --latency-color-dark: rgba(220, 38, 38, 1);
+    --latency-border: rgba(239, 68, 68, 0.8);
+    color: #ffffff;
+  }
+
+  /* Efecto de entrada staggered para las lista de centros */
+  .centers-list li {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: slideInCenter 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  }
+
+  .centers-list li:nth-child(1) { animation-delay: 0.1s; }
+  .centers-list li:nth-child(2) { animation-delay: 0.15s; }
+  .centers-list li:nth-child(3) { animation-delay: 0.2s; }
+  .centers-list li:nth-child(4) { animation-delay: 0.25s; }
+  .centers-list li:nth-child(5) { animation-delay: 0.3s; }
+  .centers-list li:nth-child(6) { animation-delay: 0.35s; }
+  /* Add more if needed, or handle dynamically if list length varies greatly */
+
+  @keyframes slideInCenter {
+    0% {
+      opacity: 0;
+      transform: translateY(20px) scale(0.95);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
   }
 
   /* Estilos para pins de región */
@@ -237,6 +450,107 @@ import "@fontsource-variable/quicksand";
     cursor: pointer;
     transition: all 0.3s ease;
     animation: pulsePin 2s infinite;
+    opacity: 0;
+  }
+
+  /* Pins más pequeños en regiones de alta densidad */
+  :global(.region-center-pin:not(.region-low-density .region-center-pin)) {
+    width: 14px;
+    height: 14px;
+  }
+
+  :global(.region-center-pin.fade-in) {
+    animation: fadeInPin 0.5s ease-out forwards, pulsePin 2s infinite 0.5s;
+  }
+
+  @keyframes fadeInPin {
+    0% {
+      opacity: 0;
+      transform: translate(-50%, -50%) scale(0.3);
+    }
+    100% {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1);
+    }
+  }
+
+  /* Estilos para etiquetas de pins */
+  :global(.pin-label) {
+    position: relative;
+    top: 5px;
+    background: rgba(0, 0, 0, 0.9);
+    backdrop-filter: blur(10px);
+    color: #ffffff;
+    font-family: 'Quicksand Variable', 'Quicksand', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 4px 8px;
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    white-space: nowrap;
+    z-index: 1000;
+    pointer-events: none;
+    opacity: 0.6; /* Opacidad base para regiones de alta densidad */
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+    text-align: center;
+    transform: translateY(-5px);
+  }
+
+  :global(.region-center-pin:hover + .pin-label) {
+    opacity: 1;
+    transform: translateY(-5px) scale(1.05);
+    background: rgba(0, 0, 0, 0.95);
+    border-color: rgba(255, 255, 255, 0.5);
+    z-index: 1001;
+  }
+
+  :global(.region-center-pin.central + .pin-label) {
+    background: rgba(74, 222, 128, 0.9);
+    border-color: rgba(74, 222, 128, 0.5);
+    color: #000000;
+    font-weight: 700;
+    opacity: 0.7; /* Un poco más visible para el pin central */
+  }
+
+  :global(.region-center-pin.central:hover + .pin-label) {
+    opacity: 1;
+    background: rgba(74, 222, 128, 1);
+    border-color: rgba(74, 222, 128, 0.8);
+    transform: translateY(-5px) scale(1.05);
+    z-index: 1001;
+  }
+
+  /* Etiquetas más visibles para regiones con pocos pins */
+  :global(.region-low-density .pin-label) {
+    opacity: 0.85;
+    font-size: 12px; /* Ligeramente más grandes en regiones con espacio */
+  }
+
+  :global(.region-low-density .region-center-pin:hover + .pin-label) {
+    opacity: 1;
+    transform: translateY(-5px) scale(1.05);
+  }
+
+  /* Indicador de conteo para regiones de alta densidad */
+  :global(.density-indicator) {
+    position: absolute;
+    top: -20px;
+    right: -10px;
+    background: rgba(251, 191, 36, 0.9);
+    color: #000000;
+    font-family: 'Quicksand Variable', 'Quicksand', sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 10px;
+    border: 1px solid rgba(251, 191, 36, 0.7);
+    z-index: 1002;
+    min-width: 16px;
+    text-align: center;
+    animation: fadeInPin 0.5s ease-out forwards;
   }
 
   :global(.region-center-pin:hover) {
@@ -291,18 +605,53 @@ import "@fontsource-variable/quicksand";
       left: 15px;
       right: 15px;
       min-width: auto;
+      max-width: none;
       padding: 15px;
     }
 
-    .animation-controls {
-      bottom: 15px;
-      right: 15px;
+    .centers-list {
+      gap: 10px;
     }
 
-    .control-btn {
-      width: 45px;
-      height: 45px;
-      font-size: 18px;
+    .centers-list li {
+      padding: 14px 16px;
+    }
+
+    .center-name {
+      font-size: 14px;
+    }
+
+    .center-location {
+      font-size: 11px;
+    }
+
+    .latency-badge {
+      font-size: 12px;
+      padding: 6px 12px;
+      min-width: 50px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .region-info-overlay {
+      top: 10px;
+      left: 10px;
+      right: 10px;
+      padding: 12px;
+    }
+
+    .center-badge {
+      gap: 12px;
+    }
+
+    .center-name {
+      font-size: 13px;
+    }
+
+    .latency-badge {
+      font-size: 11px;
+      padding: 5px 10px;
+      min-width: 45px;
     }
   }
 </style>
@@ -349,7 +698,7 @@ import "@fontsource-variable/quicksand";
       name: 'Centro',
       description: 'Madrid, Guadalajara y Toledo - Hub Central de Distribución',
       bounds: [[-4.5, 39.5], [-2.5, 41.0]] as [[number, number], [number, number]],
-      zoom: 7.5,
+      zoom: 8.5,
       centers: ['meco-node', 'cabanillas-node', 'marchamalo-node', 'toledo-node', 'illescas-node'],
       color: '#f59e0b'
     },
@@ -556,48 +905,115 @@ import "@fontsource-variable/quicksand";
 
     console.log(`📍 Creando pins para región con centros: ${centerIds.join(', ')}`);
 
+    // Determinar si es una región de alta densidad (más de 3 pins)
+    const isHighDensity = centerIds.length > 3;
+    let pinIndex = 0;
+
     // Crear pin central de Arteixo siempre
     if (centerIds.includes('arteixo-central') || centerIds.includes('laracha-cpd2-node') || centerIds.includes('naron-node')) {
-      createRegionPin(spainConfig.centralNode, true);
+      setTimeout(() => {
+        createRegionPin(spainConfig.centralNode, true, isHighDensity);
+      }, pinIndex * 200);
+      pinIndex++;
     }
 
     // Crear pins para ubicaciones de esta región
     centerIds.forEach(centerId => {
       const node = spainConfig.remoteNodes.find(n => n.id === centerId || n.name === centerId);
       if (node) {
-        createRegionPin(node, false);
+        setTimeout(() => {
+          createRegionPin(node, false, isHighDensity);
+        }, pinIndex * 200);
+        pinIndex++;
       }
     });
 
-    updateStatusText(`${regionMarkers.length} centros cargados en región`);
+    updateStatusText(`${centerIds.length} centros cargados en región`);
   }
 
-  function createRegionPin(node: any, isCentral: boolean = false) {
+  function createRegionPin(node: any, isCentral: boolean = false, isHighDensity: boolean = false) {
     if (!node.coordinates || node.coordinates.length !== 2) {
       console.error(`❌ Coordenadas inválidas para ${node.name}:`, node.coordinates);
       return;
     }
 
+    // Crear contenedor principal para el pin y la etiqueta
+    const pinContainer = document.createElement('div');
+    pinContainer.style.position = 'relative';
+    pinContainer.style.display = 'flex';
+    pinContainer.style.flexDirection = 'column';
+    pinContainer.style.alignItems = 'center';
+
+    // Aplicar clase de densidad
+    if (!isHighDensity) {
+      pinContainer.classList.add('region-low-density');
+    }
+
+    // Crear el pin propiamente dicho
     const pin = document.createElement('div');
     pin.className = isCentral ? 'region-center-pin central' : 'region-center-pin';
     pin.setAttribute('data-center-id', node.id || node.name);
     pin.setAttribute('data-center-name', node.name);
 
+    // Crear etiqueta para el pin
+    const label = document.createElement('div');
+    label.className = 'pin-label';
+
+    // Para regiones de alta densidad, usar nombres más cortos
+    if (isHighDensity && node.name.length > 12) {
+      // Intentar acortar el nombre manteniendo información clave
+      let shortName = node.name;
+      if (shortName.includes('-')) {
+        shortName = shortName.split('-')[0];
+      }
+      if (shortName.includes(' ')) {
+        shortName = shortName.split(' ')[0];
+      }
+      label.textContent = shortName;
+    } else {
+      label.textContent = node.name;
+    }
+
+    // Aplicar estilo inicial a la etiqueta para animación
+    label.style.opacity = '0';
+    label.style.transform = 'translateY(-5px) scale(0.8)';
+
+    // Agregar el pin y la etiqueta al contenedor
+    pinContainer.appendChild(pin);
+    pinContainer.appendChild(label);
+
     // Agregar información del centro en el tooltip
-    pin.title = `${node.name} - ${node.city || ''}`;
+    pinContainer.title = `${node.name} - ${node.city || ''}`;
 
     try {
       const marker = new maplibregl.Marker({
-        element: pin,
-        anchor: 'center'
+        element: pinContainer,
+        anchor: 'bottom'
       })
       .setLngLat(node.coordinates)
       .addTo(regionMap);
 
-      regionMarkers.push(marker);
-      console.log(`✅ Pin de región creado para ${node.name}`);
+      // Activar animación de fade-in para el pin
+      setTimeout(() => {
+        pin.classList.add('fade-in');
+      }, 50);
 
-      // Agregar evento de click
+      // Animar la etiqueta por separado con un pequeño retraso
+      setTimeout(() => {
+        label.style.transition = 'all 0.5s ease-out';
+        label.style.opacity = isHighDensity ? '0.6' : '0.85';
+        label.style.transform = 'translateY(-5px) scale(1)';
+
+        // Para pins centrales, hacer la etiqueta más visible
+        if (isCentral) {
+          label.style.opacity = '0.7';
+        }
+      }, 300);
+
+      regionMarkers.push(marker);
+      console.log(`✅ Pin de región creado para ${node.name} (densidad: ${isHighDensity ? 'alta' : 'baja'})`);
+
+      // Agregar evento de click al pin
       pin.addEventListener('click', () => {
         focusOnCenter(node);
       });
@@ -665,12 +1081,18 @@ import "@fontsource-variable/quicksand";
 
     if (nameEl) nameEl.textContent = region.name;
     if (detailsEl) detailsEl.textContent = region.description;
-    if (countEl) countEl.textContent = `${region.centers.length} centros en esta región`;
+
+    // Destacar regiones de alta densidad
+    const densityText = region.centers.length > 3
+      ? `${region.centers.length} centros (región de alta densidad)`
+      : `${region.centers.length} centros en esta región`;
+
+    if (countEl) countEl.textContent = densityText;
 
     if (centersListEl) {
       centersListEl.innerHTML = ''; // Clear previous items
 
-      region.centers.forEach((centerId: string) => {
+      region.centers.forEach((centerId: string, index: number) => {
         let node = spainConfig.remoteNodes.find(n => n.id === centerId);
         if (!node && spainConfig.centralNode.id === centerId) {
           node = spainConfig.centralNode;
@@ -678,7 +1100,38 @@ import "@fontsource-variable/quicksand";
 
         if (node) {
           const listItem = document.createElement('li');
-          listItem.innerHTML = `<strong>${node.name}</strong> (${node.city || 'N/A'})`;
+
+          const getLatencyClass = (latency: number) => {
+            if (latency === 0) return 'excellent'; // HUB
+            if (latency <= 10) return 'excellent';
+            if (latency <= 20) return 'good';
+            if (latency <= 35) return 'warning';
+            return 'critical';
+          };
+
+          const latencyClass = getLatencyClass(node.latency);
+          listItem.classList.add(latencyClass); // Add class to li for styling
+
+          const latencyText = node.latency === 0 ? 'Nodo Central' : `${node.latency}ms`;
+
+          // Get location info (city or extract from name)
+          const location = node.city || node.name.split('-')[0] || '';
+
+          listItem.innerHTML = `
+            <div class="center-badge">
+              <div class="center-info">
+                <div class="center-name">${node.name}</div>
+
+              </div>
+              <div class="latency-badge ${latencyClass}">${latencyText}</div>
+            </div>
+          `;
+
+          // Aplicar delay para animación staggered
+          listItem.style.animation = 'none'; // Reset animation
+          listItem.offsetHeight; // Trigger reflow
+          listItem.style.animation = `slideInCenter 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards ${(index + 1) * 0.05}s`;
+
           centersListEl.appendChild(listItem);
         }
       });
@@ -765,24 +1218,6 @@ import "@fontsource-variable/quicksand";
   // Inicializar cuando el DOM esté listo
   document.addEventListener('DOMContentLoaded', () => {
     initializeRegionMap();
-
-    // Configurar controles
-    const playPauseBtn = document.getElementById('play-pause');
-    const restartBtn = document.getElementById('restart');
-    const nextBtn = document.getElementById('next');
-
-    playPauseBtn?.addEventListener('click', () => {
-      if (isAnimating) {
-        pauseAnimation();
-        playPauseBtn.textContent = '▶️';
-      } else {
-        resumeAnimation();
-        playPauseBtn.textContent = '⏸️';
-      }
-    });
-
-    restartBtn?.addEventListener('click', restartAnimation);
-    nextBtn?.addEventListener('click', nextRegion);
   });
 
   // Funciones globales para debugging
@@ -791,10 +1226,6 @@ import "@fontsource-variable/quicksand";
     getRegions: () => spainRegions,
     getCurrentRegion: () => spainRegions[currentRegionIndex],
     getMarkers: () => regionMarkers,
-    pauseAnimation,
-    resumeAnimation,
-    restartAnimation,
-    nextRegion,
     isAnimating: () => isAnimating,
     debugRegionAnimation: () => {
       console.log('=== DEBUG REGION ANIMATION ===');
