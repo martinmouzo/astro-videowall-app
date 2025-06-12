@@ -1,0 +1,324 @@
+---
+// Página de demo del mapa mundial con países coloreados
+import BaseLayout from '../layouts/BaseLayout.astro';
+import WorldMap from '../components/WorldMap.astro';
+---
+
+<BaseLayout title="Mapa Mundial - Países Coloreados">
+  <div class="demo-container">
+    <!-- Header informativo -->
+    <header class="demo-header">
+      <div class="header-content">
+        <h1>🌍 Mapa Mundial con Países Destacados</h1>
+        <p>Mapa minimalista con capacidad de resaltar países específicos con colores personalizados</p>
+        <div class="feature-badges">
+          <span class="badge">MapLibre GL JS</span>
+          <span class="badge">Vector Tiles</span>
+          <span class="badge">País Coloreado</span>
+          <span class="badge">Sin Etiquetas</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Contenedor del mapa -->
+    <div class="map-container">
+      <WorldMap />
+    </div>
+
+    <!-- Información adicional -->
+    <aside class="info-panel">
+      <div class="info-section">
+        <h3>🎨 Países Destacados</h3>
+        <ul class="location-list">
+          <li>
+            <strong>Sudáfrica</strong>
+            <span class="color-badge" style="background-color: #90EE90;"></span>
+            <span>Verde claro (#90EE90)</span>
+          </li>
+          <li>
+            <strong>España</strong>
+            <span class="color-badge" style="background-color: #FFD700;"></span>
+            <span>Oro (#FFD700)</span>
+          </li>
+          <li>
+            <strong>Francia</strong>
+            <span class="color-badge" style="background-color: #87CEEB;"></span>
+            <span>Azul cielo (#87CEEB)</span>
+          </li>
+          <li>
+            <strong>Brasil</strong>
+            <span class="color-badge" style="background-color: #FF6B6B;"></span>
+            <span>Rojo coral (#FF6B6B)</span>
+          </li>
+          <li>
+            <strong>Japón</strong>
+            <span class="color-badge" style="background-color: #DDA0DD;"></span>
+            <span>Violeta (#DDA0DD)</span>
+          </li>
+          <li>
+            <strong>Australia</strong>
+            <span class="color-badge" style="background-color: #98D8C8;"></span>
+            <span>Verde menta (#98D8C8)</span>
+          </li>
+        </ul>
+      </div>
+
+      <div class="info-section">
+        <h3>⚡ Características Técnicas</h3>
+        <ul class="feature-list">
+          <li>✅ Mapa sin etiquetas ni controles UI</li>
+          <li>✅ Coloreado dinámico de países específicos</li>
+          <li>✅ Vector tiles para datos de países</li>
+          <li>✅ Estilo minimalista y moderno</li>
+          <li>✅ Interacción con click y hover</li>
+          <li>✅ Funciones JavaScript globales para control dinámico</li>
+        </ul>
+      </div>
+
+      <div class="info-section">
+        <h3>🛠️ Controles Dinámicos</h3>
+        <p>Usa la consola del navegador para cambiar colores dinámicamente:</p>
+        <div class="code-examples">
+          <code>updateCountryColor('Germany', '#FF5733')</code>
+          <code>removeCountryColor('Spain')</code>
+        </div>
+      </div>
+    </aside>
+  </div>
+</BaseLayout>
+
+<style>
+  .demo-container {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+    color: white;
+    font-family: 'Inter Variable', -apple-system, BlinkMacSystemFont, sans-serif;
+  }
+
+  .demo-header {
+    padding: 2rem;
+    background: rgba(42, 42, 42, 0.95);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .header-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  .demo-header h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin: 0 0 1rem 0;
+    background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .demo-header p {
+    font-size: 1.2rem;
+    color: #cccccc;
+    margin: 0 0 1.5rem 0;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .feature-badges {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .badge {
+    padding: 0.5rem 1rem;
+    background: rgba(255, 107, 107, 0.2);
+    border: 1px solid #ff6b6b;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: #ff6b6b;
+  }
+
+  .map-container {
+    flex: 1;
+    position: relative;
+    min-height: 70vh;
+  }
+
+  .info-panel {
+    padding: 2rem;
+    background: rgba(26, 26, 26, 0.95);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .info-section {
+    max-width: 1200px;
+    margin: 0 auto 2rem auto;
+  }
+
+  .info-section:last-child {
+    margin-bottom: 0;
+  }
+
+  .info-section h3 {
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin: 0 0 1rem 0;
+    color: #ff6b6b;
+  }
+
+  .location-list, .feature-list, .usage-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .location-list li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    margin-bottom: 0.5rem;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    border-left: 3px solid #ff6b6b;
+    gap: 1rem;
+  }
+
+  .location-list strong {
+    color: #ffffff;
+    font-weight: 600;
+    min-width: 120px;
+  }
+
+  .color-badge {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    margin-right: 0.5rem;
+  }
+
+  .location-list span {
+    color: #cccccc;
+    font-size: 0.9rem;
+  }
+
+  .feature-list li, .usage-list li {
+    padding: 0.5rem 0;
+    color: #cccccc;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .feature-list li:last-child, .usage-list li:last-child {
+    border-bottom: none;
+  }
+
+  .usage-list {
+    counter-reset: step-counter;
+  }
+
+  .usage-list li {
+    counter-increment: step-counter;
+    position: relative;
+    padding-left: 2rem;
+  }
+
+  .usage-list li::before {
+    content: counter(step-counter);
+    position: absolute;
+    left: 0;
+    top: 0.5rem;
+    width: 1.5rem;
+    height: 1.5rem;
+    background: #ff6b6b;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    font-weight: 600;
+  }
+
+  .code-examples {
+    margin-top: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .code-examples code {
+    background: rgba(0, 0, 0, 0.3);
+    padding: 0.75rem 1rem;
+    border-radius: 6px;
+    font-family: 'Monaco', 'Consolas', monospace;
+    font-size: 0.85rem;
+    color: #4ecdc4;
+    border-left: 3px solid #4ecdc4;
+    display: block;
+  }
+
+  @media (max-width: 768px) {
+    .demo-header {
+      padding: 1rem;
+    }
+
+    .demo-header h1 {
+      font-size: 2rem;
+    }
+
+    .demo-header p {
+      font-size: 1rem;
+    }
+
+    .feature-badges {
+      gap: 0.25rem;
+    }
+
+    .badge {
+      font-size: 0.7rem;
+      padding: 0.4rem 0.8rem;
+    }
+
+    .info-panel {
+      padding: 1rem;
+    }
+
+    .info-section {
+      margin-bottom: 1.5rem;
+    }
+
+    .location-list li {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.25rem;
+    }
+
+    .map-container {
+      min-height: 60vh;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .demo-header h1 {
+      font-size: 1.5rem;
+    }
+
+    .demo-header p {
+      font-size: 0.9rem;
+    }
+
+    .map-container {
+      min-height: 50vh;
+    }
+  }
+</style>

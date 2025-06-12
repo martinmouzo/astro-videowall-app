@@ -1,0 +1,269 @@
+---
+// network-monitor.astro - Página de monitoreo de red con mapa interactivo
+import BaseLayout from '../layouts/BaseLayout.astro';
+import WorldMap from '../components/WorldMap.astro';
+import MapStats from '../components/MapStats.astro';
+import NotificationSystem from '../components/NotificationSystem.astro';
+---
+
+<BaseLayout title="Network Monitor - Videowall CPD">
+  <main class="network-monitor">
+    <div class="map-container">
+      <WorldMap />
+      <MapStats />
+      <NotificationSystem />
+    </div>
+
+    <div class="control-panel">
+      <button id="reset-view" class="control-btn">
+        <span class="btn-icon">🌍</span>
+        Reset View
+      </button>
+
+      <button id="toggle-stats" class="control-btn">
+        <span class="btn-icon">📊</span>
+        Toggle Stats
+      </button>
+
+      <button id="refresh-data" class="control-btn">
+        <span class="btn-icon">🔄</span>
+        Refresh Data
+      </button>
+
+      <button id="clear-notifications" class="control-btn">
+        <span class="btn-icon">🔔</span>
+        Clear Alerts
+      </button>
+    </div>
+  </main>
+</BaseLayout>
+
+<style>
+  .network-monitor {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    background: #1E1E1E;
+  }
+
+  .map-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+  }
+
+  .control-panel {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    display: flex;
+    gap: 10px;
+    z-index: 1000;
+  }
+
+  .control-btn {
+    background: rgba(0, 0, 0, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    padding: 12px 16px;
+    color: white;
+    font-family: 'Arial', sans-serif;
+    font-size: 14px;
+    cursor: pointer;
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .control-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.3);
+    transform: translateY(-2px);
+  }
+
+  .control-btn:active {
+    transform: translateY(0);
+  }
+
+  .btn-icon {
+    font-size: 16px;
+    display: inline-block;
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .control-panel {
+      bottom: 10px;
+      left: 10px;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .control-btn {
+      padding: 10px 14px;
+      font-size: 12px;
+    }
+  }
+
+  /* Ocultar barra de scroll */
+  :global(body) {
+    overflow: hidden;
+  }
+</style>
+
+<script>
+  // Controles de la interfaz
+  function setupControls() {
+    const resetViewBtn = document.getElementById('reset-view');
+    const toggleStatsBtn = document.getElementById('toggle-stats');
+    const refreshDataBtn = document.getElementById('refresh-data');
+    const clearNotificationsBtn = document.getElementById('clear-notifications');
+
+    if (resetViewBtn) {
+      resetViewBtn.addEventListener('click', () => {
+        if ((window as any).mapUtils && (window as any).mapUtils.getMap()) {
+          const map = (window as any).mapUtils.getMap();
+          map.flyTo({
+            center: [0, 20],
+            zoom: 2,
+            duration: 2000
+          });
+
+          // Mostrar notificación
+          if ((window as any).notifications) {
+            (window as any).notifications.info('Vista Restablecida', 'Mapa centrado en vista global');
+          }
+        }
+      });
+    }
+
+    if (toggleStatsBtn) {
+      toggleStatsBtn.addEventListener('click', () => {
+        const statsContainer = document.getElementById('map-stats');
+        if (statsContainer) {
+          const isVisible = statsContainer.style.display !== 'none';
+          statsContainer.style.display = isVisible ? 'none' : 'block';
+          toggleStatsBtn.innerHTML = `
+            <span class="btn-icon">📊</span>
+            ${isVisible ? 'Show Stats' : 'Hide Stats'}
+          `;
+
+          // Mostrar notificación
+          if ((window as any).notifications) {
+            (window as any).notifications.info(
+              'Panel de Estadísticas',
+              `Estadísticas ${isVisible ? 'ocultadas' : 'mostradas'}`
+            );
+          }
+        }
+      });
+    }
+
+    if (refreshDataBtn) {
+      refreshDataBtn.addEventListener('click', () => {
+        if ((window as any).mapUtils && (window as any).mapUtils.resetMap) {
+          (window as any).mapUtils.resetMap();
+        }
+        if ((window as any).mapStatsUtils && (window as any).mapStatsUtils.updateMapStats) {
+          (window as any).mapStatsUtils.updateMapStats();
+        }
+
+        // Animación visual del botón
+        refreshDataBtn.style.transform = 'rotate(360deg)';
+        setTimeout(() => {
+          refreshDataBtn.style.transform = '';
+        }, 500);
+
+        // Mostrar notificación
+        if ((window as any).notifications) {
+          (window as any).notifications.success('Datos Actualizados', 'Información del mapa refrescada correctamente');
+        }
+      });
+    }
+
+    if (clearNotificationsBtn) {
+      clearNotificationsBtn.addEventListener('click', () => {
+        if ((window as any).notifications) {
+          (window as any).notifications.clear();
+
+          // Mostrar confirmación temporal
+          setTimeout(() => {
+            if ((window as any).notifications) {
+              (window as any).notifications.info('Alertas Limpiadas', 'Todas las notificaciones han sido eliminadas', 2000);
+            }
+          }, 300);
+        }
+      });
+    }
+  }
+
+  // Atajos de teclado
+  function setupKeyboardShortcuts() {
+    document.addEventListener('keydown', (e) => {
+      switch (e.key) {
+        case 'r':
+        case 'R':
+          if (e.ctrlKey || e.metaKey) {
+            e.preventDefault();
+            document.getElementById('refresh-data')?.click();
+          }
+          break;
+        case 's':
+        case 'S':
+          if (e.ctrlKey || e.metaKey) {
+            e.preventDefault();
+            document.getElementById('toggle-stats')?.click();
+          }
+          break;
+        case 'c':
+        case 'C':
+          if (e.ctrlKey || e.metaKey) {
+            e.preventDefault();
+            document.getElementById('clear-notifications')?.click();
+          }
+          break;
+        case 'Escape':
+          document.getElementById('reset-view')?.click();
+          break;
+        case 'F1':
+          e.preventDefault();
+          showHelpNotification();
+          break;
+      }
+    });
+  }
+
+  function showHelpNotification() {
+    if ((window as any).notifications) {
+      (window as any).notifications.info(
+        'Atajos de Teclado',
+        `
+        • Ctrl+R: Actualizar datos<br>
+        • Ctrl+S: Mostrar/ocultar estadísticas<br>
+        • Ctrl+C: Limpiar notificaciones<br>
+        • Escape: Restablecer vista<br>
+        • F1: Mostrar esta ayuda
+        `,
+        8000
+      );
+    }
+  }
+
+  // Inicializar cuando el DOM esté listo
+  document.addEventListener('DOMContentLoaded', () => {
+    setupControls();
+    setupKeyboardShortcuts();
+
+    console.log('🌍 Network Monitor initialized');
+    console.log('⌨️  Keyboard shortcuts:');
+    console.log('   • Ctrl/Cmd + R: Refresh data');
+    console.log('   • Ctrl/Cmd + S: Toggle stats');
+    console.log('   • Ctrl/Cmd + C: Clear notifications');
+    console.log('   • Escape: Reset view');
+    console.log('   • F1: Show help');
+    console.log('🔧 Debug tools available in window.mapUtils');
+  });
+</script>

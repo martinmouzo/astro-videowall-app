@@ -1,0 +1,1239 @@
+---
+// RegionAnimation.astro - Componente de animación de regiones de España
+import "@fontsource-variable/quicksand";
+---
+
+<div id="region-animation" class="region-animation-container">
+  <div class="region-header">
+    <h2>Exploración por Regiones</h2>
+    <div class="animation-status">
+      <span class="status-indicator"></span>
+      <span class="status-text">Iniciando animación...</span>
+    </div>
+  </div>
+
+  <div class="region-map-container">
+    <div id="region-map" class="region-map"></div>
+
+    <!-- Overlay de información de región -->
+    <div class="region-info-overlay">
+      <div class="region-name"></div>
+      <div class="region-details"></div>
+      <div class="centers-count"></div>
+      <ul class="centers-list"></ul>
+    </div>
+  </div>
+</div>
+
+<style>
+  .region-animation-container {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    background: linear-gradient(135deg, #1a1a1a, #2a2a2a);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .region-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 30px;
+    background: rgba(0, 0, 0, 0.3);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .region-header h2 {
+    font-family: 'Quicksand Variable', 'Quicksand', sans-serif;
+    font-weight: 700;
+    font-size: 24px;
+    color: #ffffff;
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .animation-status {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .status-indicator {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #4ade80;
+    animation: pulse 2s infinite;
+  }
+
+  .status-text {
+    font-family: 'Quicksand Variable', 'Quicksand', sans-serif;
+    font-weight: 500;
+    font-size: 14px;
+    color: #cccccc;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+
+  .region-map-container {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .region-map {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    background: #1E1E1E;
+  }
+
+  /* Ocultar controles de MapLibre */
+  :global(.maplibregl-ctrl-group),
+  :global(.maplibregl-ctrl-attrib),
+  :global(.maplibregl-ctrl-logo),
+  :global(.maplibregl-ctrl) {
+    display: none !important;
+  }
+
+  .region-info-overlay {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.92), rgba(20, 20, 20, 0.95));
+    backdrop-filter: blur(20px);
+    border-radius: 18px;
+    padding: 24px;
+    min-width: 380px;
+    max-width: 600px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow:
+      0 16px 40px rgba(0, 0, 0, 0.6),
+      0 4px 16px rgba(0, 0, 0, 0.4),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    z-index: 1000;
+    opacity: 0;
+    transform: translateY(-15px) scale(0.95);
+    transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .region-info-overlay.visible {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+
+  .region-name {
+    font-family: 'Quicksand Variable', 'Quicksand', sans-serif;
+    font-weight: 700;
+    font-size: 24px;
+    color: #ffffff;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .region-name::before {
+    content: "📍";
+    font-size: 20px;
+    filter: drop-shadow(0 0 8px rgba(74, 222, 128, 0.6));
+  }
+
+  .region-details {
+    font-family: 'Quicksand Variable', 'Quicksand', sans-serif;
+    font-weight: 500;
+    font-size: 14px;
+    color: #e0e0e0;
+    margin-bottom: 18px;
+    line-height: 1.6;
+    font-style: italic;
+    padding-left: 30px;
+  }
+
+  .centers-count {
+    font-family: 'Quicksand Variable', 'Quicksand', sans-serif;
+    font-weight: 600;
+    font-size: 15px;
+    color: #4ade80;
+    background: linear-gradient(135deg, rgba(74, 222, 128, 0.15), rgba(74, 222, 128, 0.08));
+    padding: 12px 16px;
+    border-radius: 12px;
+    border: 1px solid rgba(74, 222, 128, 0.4);
+    margin-bottom: 16px;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    box-shadow: 0 4px 12px rgba(74, 222, 128, 0.2);
+  }
+
+  .centers-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    font-family: 'Quicksand Variable', 'Quicksand', sans-serif;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .centers-list li {
+    display: flex;
+    align-items: center;
+    padding: 12px 16px;
+    border-radius: 16px;
+    backdrop-filter: blur(10px);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    /* Default background and border */
+    background: linear-gradient(135deg, rgba(50, 50, 50, 0.8), rgba(30, 30, 30, 0.85));
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .centers-list li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background: linear-gradient(180deg,
+      var(--latency-color-light, rgba(255,255,255,0.3)),
+      var(--latency-color-dark, rgba(255,255,255,0.2))
+    );
+    transition: all 0.3s ease;
+  }
+
+  .centers-list li::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg,
+      var(--latency-color-light, transparent),
+      transparent 50%
+    );
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+  }
+
+  .centers-list li.excellent {
+    --latency-color-light: rgba(74, 222, 128, 0.15);
+    --latency-color-dark: rgba(34, 197, 94, 0.8);
+    --latency-glow: rgba(74, 222, 128, 0.4);
+
+    /* Background and border for the li itself */
+    background: linear-gradient(135deg, rgba(74, 222, 128, 0.3), rgba(34, 197, 94, 0.4));
+    border-color: rgba(74, 222, 128, 0.6);
+  }
+
+  .centers-list li.good {
+    --latency-color-light: rgba(132, 204, 22, 0.15);
+    --latency-color-dark: rgba(101, 163, 13, 0.8);
+    --latency-glow: rgba(132, 204, 22, 0.4);
+
+    /* Background and border for the li itself */
+    background: linear-gradient(135deg, rgba(132, 204, 22, 0.3), rgba(101, 163, 13, 0.4));
+    border-color: rgba(132, 204, 22, 0.6);
+  }
+
+  .centers-list li.warning {
+    --latency-color-light: rgba(251, 191, 36, 0.15);
+    --latency-color-dark: rgba(245, 158, 11, 0.8);
+    --latency-glow: rgba(251, 191, 36, 0.4);
+
+    /* Background and border for the li itself */
+    background: linear-gradient(135deg, rgba(251, 191, 36, 0.3), rgba(245, 158, 11, 0.4));
+    border-color: rgba(251, 191, 36, 0.6);
+  }
+
+  .centers-list li.critical {
+    --latency-color-light: rgba(239, 68, 68, 0.15);
+    --latency-color-dark: rgba(220, 38, 38, 0.8);
+    --latency-glow: rgba(239, 68, 68, 0.4);
+
+    /* Background and border for the li itself */
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.3), rgba(220, 38, 38, 0.4));
+    border-color: rgba(239, 68, 68, 0.6);
+  }
+
+  .centers-list li:hover {
+    transform: translateY(-2px) scale(1.02);
+    border-color: var(--latency-color-dark, rgba(255, 255, 255, 0.25));
+    box-shadow:
+      0 12px 32px rgba(0, 0, 0, 0.4),
+      0 0 20px var(--latency-glow, rgba(255, 255, 255, 0.15));
+  }
+
+  /* Specific hover backgrounds for each latency type */
+  .centers-list li.excellent:hover {
+    background: linear-gradient(135deg, rgba(74, 222, 128, 0.4), rgba(34, 197, 94, 0.5));
+  }
+  .centers-list li.good:hover {
+    background: linear-gradient(135deg, rgba(132, 204, 22, 0.4), rgba(101, 163, 13, 0.5));
+  }
+  .centers-list li.warning:hover {
+    background: linear-gradient(135deg, rgba(251, 191, 36, 0.4), rgba(245, 158, 11, 0.5));
+  }
+  .centers-list li.critical:hover {
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.4), rgba(220, 38, 38, 0.5));
+  }
+
+  .centers-list li:hover::before {
+    width: 6px;
+    box-shadow: 0 0 15px var(--latency-glow, rgba(255, 255, 255, 0.3));
+  }
+
+  .centers-list li:hover::after {
+    opacity: 0.08;
+  }
+
+  .center-badge {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    gap: 10px;
+  }
+
+  .center-info {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    min-width: 0;
+  }
+
+  .center-name {
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 15px;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+    margin-bottom: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .center-location {
+    color: rgba(255, 255, 255, 0.7);
+    font-weight: 500;
+    font-size: 12px;
+    font-style: italic;
+    opacity: 0.8;
+  }
+
+  .latency-badge {
+    font-family: 'Quicksand Variable', 'Quicksand', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    padding: 8px 14px;
+    border-radius: 20px;
+    text-align: center;
+    min-width: 55px;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    box-shadow:
+      0 4px 12px rgba(0, 0, 0, 0.3),
+      inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    background: linear-gradient(135deg,
+      var(--latency-color-light),
+      var(--latency-color-dark)
+    );
+    border: 1px solid var(--latency-border);
+    position: relative;
+    overflow: hidden;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease;
+    flex-shrink: 0;
+  }
+
+  .latency-badge::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg,
+      transparent,
+      rgba(255, 255, 255, 0.4),
+      transparent
+    );
+    transition: left 0.6s ease;
+  }
+
+  .centers-list li:hover .latency-badge::before {
+    left: 100%;
+  }
+
+  .latency-badge.excellent {
+    --latency-color-light: rgba(74, 222, 128, 0.95);
+    --latency-color-dark: rgba(34, 197, 94, 1);
+    --latency-border: rgba(74, 222, 128, 0.8);
+    color: #ffffff;
+  }
+
+  .latency-badge.good {
+    --latency-color-light: rgba(132, 204, 22, 0.95);
+    --latency-color-dark: rgba(101, 163, 13, 1);
+    --latency-border: rgba(132, 204, 22, 0.8);
+    color: #ffffff;
+  }
+
+  .latency-badge.warning {
+    --latency-color-light: rgba(251, 191, 36, 0.95);
+    --latency-color-dark: rgba(245, 158, 11, 1);
+    --latency-border: rgba(251, 191, 36, 0.8);
+    color: #000000;
+  }
+
+  .latency-badge.critical {
+    --latency-color-light: rgba(239, 68, 68, 0.95);
+    --latency-color-dark: rgba(220, 38, 38, 1);
+    --latency-border: rgba(239, 68, 68, 0.8);
+    color: #ffffff;
+  }
+
+  /* Efecto de entrada staggered para las lista de centros */
+  .centers-list li {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: slideInCenter 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  }
+
+  .centers-list li:nth-child(1) { animation-delay: 0.1s; }
+  .centers-list li:nth-child(2) { animation-delay: 0.15s; }
+  .centers-list li:nth-child(3) { animation-delay: 0.2s; }
+  .centers-list li:nth-child(4) { animation-delay: 0.25s; }
+  .centers-list li:nth-child(5) { animation-delay: 0.3s; }
+  .centers-list li:nth-child(6) { animation-delay: 0.35s; }
+  /* Add more if needed, or handle dynamically if list length varies greatly */
+
+  @keyframes slideInCenter {
+    0% {
+      opacity: 0;
+      transform: translateY(20px) scale(0.95);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  /* Estilos para pins de región */
+  :global(.region-center-pin) {
+    position: absolute;
+    pointer-events: auto;
+    z-index: 999;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #4ade80, #22c55e);
+    border: 2px solid rgba(255, 255, 255, 0.8);
+    box-shadow: 0 4px 12px rgba(74, 222, 128, 0.4);
+    transform: translate(-50%, -50%);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    animation: pulsePin 2s infinite;
+    opacity: 0;
+  }
+
+  /* Pins más pequeños en regiones de alta densidad */
+  :global(.region-center-pin:not(.region-low-density .region-center-pin)) {
+    width: 14px;
+    height: 14px;
+  }
+
+  :global(.region-center-pin.fade-in) {
+    animation: fadeInPin 0.5s ease-out forwards, pulsePin 2s infinite 0.5s;
+  }
+
+  @keyframes fadeInPin {
+    0% {
+      opacity: 0;
+      transform: translate(-50%, -50%) scale(0.3);
+    }
+    100% {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1);
+    }
+  }
+
+  /* Estilos para etiquetas de pins */
+  :global(.pin-label) {
+    position: relative;
+    top: 5px;
+    background: rgba(0, 0, 0, 0.9);
+    backdrop-filter: blur(10px);
+    color: #ffffff;
+    font-family: 'Quicksand Variable', 'Quicksand', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 4px 8px;
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    white-space: nowrap;
+    z-index: 1000;
+    pointer-events: none;
+    opacity: 0.6; /* Opacidad base para regiones de alta densidad */
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+    text-align: center;
+    transform: translateY(-5px);
+  }
+
+  :global(.region-center-pin:hover + .pin-label) {
+    opacity: 1;
+    transform: translateY(-5px) scale(1.05);
+    background: rgba(0, 0, 0, 0.95);
+    border-color: rgba(255, 255, 255, 0.5);
+    z-index: 1001;
+  }
+
+  :global(.region-center-pin.central + .pin-label) {
+    background: rgba(74, 222, 128, 0.9);
+    border-color: rgba(74, 222, 128, 0.5);
+    color: #000000;
+    font-weight: 700;
+    opacity: 0.7; /* Un poco más visible para el pin central */
+  }
+
+  :global(.region-center-pin.central:hover + .pin-label) {
+    opacity: 1;
+    background: rgba(74, 222, 128, 1);
+    border-color: rgba(74, 222, 128, 0.8);
+    transform: translateY(-5px) scale(1.05);
+    z-index: 1001;
+  }
+
+  /* Etiquetas más visibles para regiones con pocos pins */
+  :global(.region-low-density .pin-label) {
+    opacity: 0.85;
+    font-size: 12px; /* Ligeramente más grandes en regiones con espacio */
+  }
+
+  :global(.region-low-density .region-center-pin:hover + .pin-label) {
+    opacity: 1;
+    transform: translateY(-5px) scale(1.05);
+  }
+
+  /* Indicador de conteo para regiones de alta densidad */
+  :global(.density-indicator) {
+    position: absolute;
+    top: -20px;
+    right: -10px;
+    background: rgba(251, 191, 36, 0.9);
+    color: #000000;
+    font-family: 'Quicksand Variable', 'Quicksand', sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 10px;
+    border: 1px solid rgba(251, 191, 36, 0.7);
+    z-index: 1002;
+    min-width: 16px;
+    text-align: center;
+    animation: fadeInPin 0.5s ease-out forwards;
+  }
+
+  :global(.region-center-pin:hover) {
+    transform: translate(-50%, -50%) scale(1.2);
+    box-shadow: 0 6px 16px rgba(74, 222, 128, 0.6);
+  }
+
+  :global(.region-center-pin.highlighted) {
+    background: radial-gradient(circle, #fbbf24, #f59e0b);
+    border-color: #fbbf24;
+    box-shadow: 0 6px 20px rgba(251, 191, 36, 0.6);
+    animation: highlightPulse 1.5s infinite;
+  }
+
+  @keyframes pulsePin {
+    0%, 100% {
+      box-shadow: 0 4px 12px rgba(74, 222, 128, 0.4);
+    }
+    50% {
+      box-shadow: 0 4px 12px rgba(74, 222, 128, 0.8);
+    }
+  }
+
+  @keyframes highlightPulse {
+    0%, 100% {
+      box-shadow: 0 6px 20px rgba(251, 191, 36, 0.6);
+      transform: translate(-50%, -50%) scale(1.2);
+    }
+    50% {
+      box-shadow: 0 8px 24px rgba(251, 191, 36, 1);
+      transform: translate(-50%, -50%) scale(1.3);
+    }
+  }
+
+  /* Efecto de zoom de región */
+  .region-map.zooming {
+    transition: all 2s ease-in-out;
+  }
+
+  /* Responsivo */
+  @media (max-width: 768px) {
+    .region-header {
+      padding: 15px 20px;
+    }
+
+    .region-header h2 {
+      font-size: 20px;
+    }
+
+    .region-info-overlay {
+      top: 15px;
+      left: 15px;
+      right: 15px;
+      min-width: auto;
+      max-width: none;
+      padding: 15px;
+    }
+
+    .centers-list {
+      gap: 10px;
+    }
+
+    .centers-list li {
+      padding: 14px 16px;
+    }
+
+    .center-name {
+      font-size: 14px;
+    }
+
+    .center-location {
+      font-size: 11px;
+    }
+
+    .latency-badge {
+      font-size: 12px;
+      padding: 6px 12px;
+      min-width: 50px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .region-info-overlay {
+      top: 10px;
+      left: 10px;
+      right: 10px;
+      padding: 12px;
+    }
+
+    .center-badge {
+      gap: 12px;
+    }
+
+    .center-name {
+      font-size: 13px;
+    }
+
+    .latency-badge {
+      font-size: 11px;
+      padding: 5px 10px;
+      min-width: 45px;
+    }
+  }
+</style>
+
+<script>
+  import maplibregl from 'maplibre-gl';
+  import 'maplibre-gl/dist/maplibre-gl.css';
+  import { gsap } from 'gsap';
+  import { spainConfig } from '../mocks/data/spain-locations';
+
+  let regionMap: maplibregl.Map;
+  let regionMarkers: maplibregl.Marker[] = [];
+  let currentRegionIndex = 0;
+  let isAnimating = false;
+  let animationTimer: NodeJS.Timeout | null = null;
+
+  // Definición de regiones lógicas de España basadas en ubicaciones reales de Inditex
+  const spainRegions = [
+    {
+      name: 'Noroeste',
+      description: 'Galicia - Sede Central y Distribución Atlántica',
+      bounds: [[-9.0, 43.0], [-7.5, 44.0]] as [[number, number], [number, number]],
+      zoom: 8,
+      centers: ['arteixo-central', 'laracha-cpd2-node', 'naron-node'],
+      color: '#4ade80'
+    },
+    {
+      name: 'Norte-Centro',
+      description: 'Castilla y León - Distribución Norte',
+      bounds: [[-6.5, 42.0], [-4.5, 43.5]] as [[number, number], [number, number]],
+      zoom: 8,
+      centers: ['leon-node'],
+      color: '#3b82f6'
+    },
+    {
+      name: 'Nordeste',
+      description: 'Cataluña y Aragón - Hub Industrial y Logístico',
+      bounds: [[-1.5, 41.0], [3.5, 42.5]] as [[number, number], [number, number]],
+      zoom: 7,
+      centers: ['sallent-node', 'tordera-node', 'zaragoza-node'],
+      color: '#8b5cf6'
+    },
+    {
+      name: 'Centro',
+      description: 'Madrid, Guadalajara y Toledo - Hub Central de Distribución',
+      bounds: [[-4.5, 39.5], [-2.5, 41.0]] as [[number, number], [number, number]],
+      zoom: 8.5,
+      centers: ['meco-node', 'cabanillas-node', 'marchamalo-node', 'toledo-node', 'illescas-node'],
+      color: '#f59e0b'
+    },
+    {
+      name: 'Sureste',
+      description: 'Alicante - Centro Industrial del Calzado',
+      bounds: [[-1.5, 37.5], [0.5, 39.0]] as [[number, number], [number, number]],
+      zoom: 8.5,
+      centers: ['elche-node'],
+      color: '#ef4444'
+    }
+  ];
+
+  // Configuración del mapa de regiones
+  const regionMapConfig = {
+    container: 'region-map',
+    style: 'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json', // URL del estilo Dark Matter
+    center: [-3.7492, 40.2637] as [number, number], // Centro de España
+    zoom: 6,
+    minZoom: 5,
+    maxZoom: 12,
+    pitch: 0,
+    bearing: 0,
+    interactive: true,
+    scrollZoom: true,
+    boxZoom: false,
+    dragRotate: false,
+    dragPan: true,
+    keyboard: false,
+    doubleClickZoom: true,
+    touchZoomRotate: false,
+    preserveDrawingBuffer: true,
+    antialias: true
+  };
+
+  function initializeRegionMap() {
+    try {
+      regionMap = new maplibregl.Map(regionMapConfig);
+
+      regionMap.on('load', () => {
+        console.log('🗺️ Mapa de regiones cargado con Dark Matter GL Style');
+
+        // ---- START: MODIFICATIONS FOR COLOR MATCHING AND MINIMALIST STYLE ----
+        const style = regionMap.getStyle();
+        if (!style || !style.layers) {
+          console.error('Estilo de mapa no disponible para modificar.');
+          return;
+        }
+
+        // Target colors from SpainMap.astro
+        const targetBackgroundColor = '#525252'; // Updated
+        const targetWaterColor = '#1A1A1A';    // Updated
+        const targetLandColor = '#525252';      // Updated
+
+        // Patterns for layers to hide for a minimalist, flat look
+        // Order matters if a layer could match multiple patterns
+        const hidePatterns = [
+          'road',       // roads, roadname_*
+          'tunnel',
+          'bridge',
+          'aeroway',
+          'building',
+          'poi',        // Points of Interest labels and icons
+          'housenumber',
+          'boundary_',  // Admin boundaries (county, state, country lines)
+          'residential',// e.g., landuse_residential
+          'waterway',   // River/stream lines. Also hides waterway_label if not caught by a more specific rule.
+          'transit',    // Transit lines/labels if any
+          'ferry',      // Ferry routes
+          // Specific Dark Matter layers that might add too much detail or are not place labels
+          'building-extrusion',
+          'hillshade',
+          'landuse_overlay',
+          'contour',
+          'watername', // Explicitly hide water names (watername_ocean, watername_sea, watername_lake)
+          'waterway_label', // Explicitly hide waterway labels
+          'park',       // Hides park_national_park, park_nature_reserve etc.
+          'landuse'     // Hides landuse (cemetery, stadium etc. from Dark Matter). landuse_residential is covered by 'residential'.
+          // Add other specific non-place labels if they appear
+        ];
+
+        // Patterns for layers to ALWAYS SHOW (these are exceptions to hidePatterns)
+        const showPatterns = [
+          'place_', // place_hamlet, place_suburb, place_village, place_town, place_city_*, place_capital_*
+        ];
+
+
+        style.layers.forEach(layer => {
+          const layerId = layer.id.toLowerCase(); // Work with lowercase for consistency
+          let forceShow = false; // Renamed from специальноПоказать
+
+          // Check if layer should be specifically shown (overrides hiding)
+          for (const pattern of showPatterns) {
+            if (layerId.includes(pattern)) {
+              forceShow = true;
+              // console.log(`Force showing layer: ${layer.id}`);
+              break;
+            }
+          }
+
+          if (!forceShow) {
+            let isHidden = false;
+            // Check if layer should be hidden
+            for (const pattern of hidePatterns) {
+              if (layerId.includes(pattern)) {
+                if (regionMap.getLayer(layer.id)) {
+                  try {
+                    regionMap.setLayoutProperty(layer.id, 'visibility', 'none');
+                    // console.log(`Hid layer: ${layer.id}`);
+                    isHidden = true;
+                  } catch (e) {
+                    // console.warn(`Could not hide layer ${layer.id}: ${e.message}`);
+                  }
+                }
+                break;
+              }
+            }
+            if (isHidden) return; // Skip color changes if hidden by general rules and not force-shown
+          } else {
+             // If specifically shown, ensure visibility is set to 'visible' in case a broader rule tried to hide it
+             const currentLayer = regionMap.getLayer(layer.id);
+             if (currentLayer) {
+                try {
+                    // Check current visibility, only set if it's 'none'
+                    const currentVisibility = regionMap.getLayoutProperty(layer.id, 'visibility');
+                    if (currentVisibility === 'none') {
+                        regionMap.setLayoutProperty(layer.id, 'visibility', 'visible');
+                        // console.log(`Ensured layer is visible: ${layer.id}`);
+                    }
+                } catch (e) {
+                    // console.warn(`Could not ensure visibility for layer ${layer.id}: ${e.message}`);
+                }
+            }
+          }
+
+          // Apply color changes to visible layers
+          try {
+            if (layer.id === 'background') { // Exact ID match
+              if (regionMap.getPaintProperty(layer.id, 'background-color')) {
+                regionMap.setPaintProperty(layer.id, 'background-color', targetBackgroundColor);
+              }
+            } else if (layer.id === 'water') { // Exact ID match for main water bodies
+              if (regionMap.getPaintProperty(layer.id, 'fill-color')) {
+                regionMap.setPaintProperty(layer.id, 'fill-color', targetWaterColor);
+              }
+              if (regionMap.getPaintProperty(layer.id, 'fill-outline-color')) {
+                 regionMap.setPaintProperty(layer.id, 'fill-outline-color', 'transparent');
+              }
+            } else if (layerId.includes('landcover') || layerId.includes('earth')) {
+              // This primarily targets base land layers like 'landcover', 'earth'
+              // Assumes more specific land markings (park, landuse categories) are hidden by hidePatterns
+              // Avoid changing colors of layers that are meant to be shown (place labels) if they are fill types.
+              const layerToStyle = regionMap.getLayer(layer.id);
+              if (layerToStyle && layerToStyle.type === 'fill' && !forceShow) {
+                if (regionMap.getPaintProperty(layer.id, 'fill-color')) {
+                  regionMap.setPaintProperty(layer.id, 'fill-color', targetLandColor);
+                }
+                if (regionMap.getPaintProperty(layer.id, 'fill-outline-color')) {
+                  regionMap.setPaintProperty(layer.id, 'fill-outline-color', 'transparent');
+                }
+              }
+            }
+          } catch (e) {
+            // console.warn(`Could not set paint property for layer ${layer.id}: ${e.message}`);
+          }
+        });
+        console.log('🗺️ Mapa de regiones: Dark Matter GL Style colors and visibility adjusted.');
+        // ---- END: MODIFICATIONS ----
+
+
+        // Iniciar animación automática
+        setTimeout(() => {
+          startRegionAnimation();
+        }, 1000);
+      });
+
+      regionMap.on('error', (e) => {
+        console.error('Error en el mapa de regiones:', e);
+      });
+
+    } catch (error) {
+      console.error('Error inicializando el mapa de regiones:', error);
+    }
+  }
+
+  function highlightSpain() {
+    // Esta función ya no es necesaria con un estilo GL completo como Dark Matter.
+    // El estilo en sí debería manejar la diferenciación de características geográficas.
+    console.log('ℹ️ Usando Dark Matter GL Style. La función highlightSpain no se aplica de la misma manera.');
+  }
+
+  function clearAllPins() {
+    // Limpiar todos los pins existentes
+    regionMarkers.forEach(marker => {
+      marker.remove();
+    });
+    regionMarkers = [];
+    console.log('🧹 Todos los pins limpiados');
+  }
+
+  function createRegionPins(centerIds: string[]) {
+    // Limpiar pins existentes
+    clearAllPins();
+
+    console.log(`📍 Creando pins para región con centros: ${centerIds.join(', ')}`);
+
+    // Determinar si es una región de alta densidad (más de 3 pins)
+    const isHighDensity = centerIds.length > 3;
+    let pinIndex = 0;
+
+    // Crear pin central de Arteixo siempre
+    if (centerIds.includes('arteixo-central') || centerIds.includes('laracha-cpd2-node') || centerIds.includes('naron-node')) {
+      setTimeout(() => {
+        createRegionPin(spainConfig.centralNode, true, isHighDensity);
+      }, pinIndex * 200);
+      pinIndex++;
+    }
+
+    // Crear pins para ubicaciones de esta región
+    centerIds.forEach(centerId => {
+      const node = spainConfig.remoteNodes.find(n => n.id === centerId || n.name === centerId);
+      if (node) {
+        setTimeout(() => {
+          createRegionPin(node, false, isHighDensity);
+        }, pinIndex * 200);
+        pinIndex++;
+      }
+    });
+
+    updateStatusText(`${centerIds.length} centros cargados en región`);
+  }
+
+  function createRegionPin(node: any, isCentral: boolean = false, isHighDensity: boolean = false) {
+    if (!node.coordinates || node.coordinates.length !== 2) {
+      console.error(`❌ Coordenadas inválidas para ${node.name}:`, node.coordinates);
+      return;
+    }
+
+    // Crear contenedor principal para el pin y la etiqueta
+    const pinContainer = document.createElement('div');
+    pinContainer.style.position = 'relative';
+    pinContainer.style.display = 'flex';
+    pinContainer.style.flexDirection = 'column';
+    pinContainer.style.alignItems = 'center';
+
+    // Aplicar clase de densidad
+    if (!isHighDensity) {
+      pinContainer.classList.add('region-low-density');
+    }
+
+    // Crear el pin propiamente dicho
+    const pin = document.createElement('div');
+    pin.className = isCentral ? 'region-center-pin central' : 'region-center-pin';
+    pin.setAttribute('data-center-id', node.id || node.name);
+    pin.setAttribute('data-center-name', node.name);
+
+    // Crear etiqueta para el pin
+    const label = document.createElement('div');
+    label.className = 'pin-label';
+
+    // Para regiones de alta densidad, usar nombres más cortos
+    if (isHighDensity && node.name.length > 12) {
+      // Intentar acortar el nombre manteniendo información clave
+      let shortName = node.name;
+      if (shortName.includes('-')) {
+        shortName = shortName.split('-')[0];
+      }
+      if (shortName.includes(' ')) {
+        shortName = shortName.split(' ')[0];
+      }
+      label.textContent = shortName;
+    } else {
+      label.textContent = node.name;
+    }
+
+    // Aplicar estilo inicial a la etiqueta para animación
+    label.style.opacity = '0';
+    label.style.transform = 'translateY(-5px) scale(0.8)';
+
+    // Agregar el pin y la etiqueta al contenedor
+    pinContainer.appendChild(pin);
+    pinContainer.appendChild(label);
+
+    // Agregar información del centro en el tooltip
+    pinContainer.title = `${node.name} - ${node.city || ''}`;
+
+    try {
+      const marker = new maplibregl.Marker({
+        element: pinContainer,
+        anchor: 'bottom'
+      })
+      .setLngLat(node.coordinates)
+      .addTo(regionMap);
+
+      // Activar animación de fade-in para el pin
+      setTimeout(() => {
+        pin.classList.add('fade-in');
+      }, 50);
+
+      // Animar la etiqueta por separado con un pequeño retraso
+      setTimeout(() => {
+        label.style.transition = 'all 0.5s ease-out';
+        label.style.opacity = isHighDensity ? '0.6' : '0.85';
+        label.style.transform = 'translateY(-5px) scale(1)';
+
+        // Para pins centrales, hacer la etiqueta más visible
+        if (isCentral) {
+          label.style.opacity = '0.7';
+        }
+      }, 300);
+
+      regionMarkers.push(marker);
+      console.log(`✅ Pin de región creado para ${node.name} (densidad: ${isHighDensity ? 'alta' : 'baja'})`);
+
+      // Agregar evento de click al pin
+      pin.addEventListener('click', () => {
+        focusOnCenter(node);
+      });
+
+    } catch (error) {
+      console.error(`❌ Error creando pin de región para ${node.name}:`, error);
+    }
+  }
+
+  function startRegionAnimation() {
+    if (isAnimating) return;
+
+    isAnimating = true;
+    currentRegionIndex = 0;
+    updateStatusText('Animación iniciada');
+
+    animateToNextRegion();
+  }
+
+  function animateToNextRegion() {
+    if (!isAnimating || currentRegionIndex >= spainRegions.length) {
+      // Reiniciar la animación al final
+      currentRegionIndex = 0;
+      setTimeout(() => {
+        if (isAnimating) animateToNextRegion();
+      }, 3000);
+      return;
+    }
+
+    const region = spainRegions[currentRegionIndex];
+    console.log(`🎯 Animando hacia región: ${region.name}`);
+
+    // Actualizar información de la región
+    updateRegionInfo(region);
+
+    // Crear pins solo para esta región
+    createRegionPins(region.centers);
+
+    // Animar el mapa hacia la región
+    const bounds = new maplibregl.LngLatBounds(region.bounds[0], region.bounds[1]);
+
+    regionMap.fitBounds(bounds, {
+      padding: { top: 50, bottom: 50, left: 50, right: 50 },
+      duration: 2000,
+      zoom: region.zoom
+    });
+
+    updateStatusText(`Explorando ${region.name}`);
+
+    // Programar siguiente región
+    animationTimer = setTimeout(() => {
+      currentRegionIndex++;
+      animateToNextRegion();
+    }, 6000); // 6 segundos por región
+  }
+
+  function updateRegionInfo(region: any) {
+    const overlay = document.querySelector('.region-info-overlay') as HTMLElement;
+    if (!overlay) return;
+
+    const nameEl = overlay.querySelector('.region-name') as HTMLElement;
+    const detailsEl = overlay.querySelector('.region-details') as HTMLElement;
+    const countEl = overlay.querySelector('.centers-count') as HTMLElement;
+    const centersListEl = overlay.querySelector('.centers-list') as HTMLUListElement;
+
+    if (nameEl) nameEl.textContent = region.name;
+    if (detailsEl) detailsEl.textContent = region.description;
+
+    // Destacar regiones de alta densidad
+    const densityText = region.centers.length > 3
+      ? `${region.centers.length} centros (región de alta densidad)`
+      : `${region.centers.length} centros en esta región`;
+
+    if (countEl) countEl.textContent = densityText;
+
+    if (centersListEl) {
+      centersListEl.innerHTML = ''; // Clear previous items
+
+      region.centers.forEach((centerId: string, index: number) => {
+        let node = spainConfig.remoteNodes.find(n => n.id === centerId);
+        if (!node && spainConfig.centralNode.id === centerId) {
+          node = spainConfig.centralNode;
+        }
+
+        if (node) {
+          const listItem = document.createElement('li');
+
+          const getLatencyClass = (latency: number) => {
+            if (latency === 0) return 'excellent'; // HUB
+            if (latency <= 10) return 'excellent';
+            if (latency <= 20) return 'good';
+            if (latency <= 35) return 'warning';
+            return 'critical';
+          };
+
+          const latencyClass = getLatencyClass(node.latency);
+          listItem.classList.add(latencyClass); // Add class to li for styling
+
+          const latencyText = node.latency === 0 ? 'Nodo Central' : `${node.latency}ms`;
+
+          // Get location info (city or extract from name)
+          const location = node.city || node.name.split('-')[0] || '';
+
+          listItem.innerHTML = `
+            <div class="center-badge">
+              <div class="center-info">
+                <div class="center-name">${node.name}</div>
+
+              </div>
+              <div class="latency-badge ${latencyClass}">${latencyText}</div>
+            </div>
+          `;
+
+          // Aplicar delay para animación staggered
+          listItem.style.animation = 'none'; // Reset animation
+          listItem.offsetHeight; // Trigger reflow
+          listItem.style.animation = `slideInCenter 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards ${(index + 1) * 0.05}s`;
+
+          centersListEl.appendChild(listItem);
+        }
+      });
+    }
+
+    // Animar la aparición
+    overlay.classList.add('visible');
+
+    gsap.fromTo(overlay,
+      { scale: 0.9, opacity: 0 },
+      { scale: 1, opacity: 1, duration: 0.5, ease: "back.out(1.2)" }
+    );
+  }
+
+  function highlightRegionCenters(centerIds: string[]) {
+    // Esta función ya no es necesaria ya que creamos los pins dinámicamente
+    console.log(`🎯 Pins creados dinámicamente para: ${centerIds.join(', ')}`);
+  }
+
+  function updateStatusText(text: string) {
+    const statusText = document.querySelector('.status-text') as HTMLElement;
+    if (statusText) {
+      statusText.textContent = text;
+    }
+  }
+
+  function focusOnCenter(node: any) {
+    console.log(`🔍 Enfocando en centro: ${node.name}`);
+
+    regionMap.flyTo({
+      center: node.coordinates,
+      zoom: 10,
+      duration: 1500
+    });
+
+    updateStatusText(`Enfocado en ${node.name}`);
+  }
+
+  function pauseAnimation() {
+    isAnimating = false;
+    if (animationTimer) {
+      clearTimeout(animationTimer);
+      animationTimer = null;
+    }
+    updateStatusText('Animación pausada');
+  }
+
+  function resumeAnimation() {
+    if (!isAnimating) {
+      startRegionAnimation();
+    }
+  }
+
+  function restartAnimation() {
+    pauseAnimation();
+    currentRegionIndex = 0;
+
+    // Limpiar todos los pins
+    clearAllPins();
+
+    // Volver a la vista general de España
+    regionMap.flyTo({
+      center: [-3.7492, 40.2637],
+      zoom: 6,
+      duration: 1500
+    });
+
+    setTimeout(() => {
+      startRegionAnimation();
+    }, 2000);
+  }
+
+  function nextRegion() {
+    if (animationTimer) {
+      clearTimeout(animationTimer);
+    }
+    currentRegionIndex++;
+    if (currentRegionIndex >= spainRegions.length) {
+      currentRegionIndex = 0;
+    }
+    animateToNextRegion();
+  }
+
+  // Inicializar cuando el DOM esté listo
+  document.addEventListener('DOMContentLoaded', () => {
+    initializeRegionMap();
+  });
+
+  // Funciones globales para debugging
+  (window as any).regionAnimationUtils = {
+    getRegionMap: () => regionMap,
+    getRegions: () => spainRegions,
+    getCurrentRegion: () => spainRegions[currentRegionIndex],
+    getMarkers: () => regionMarkers,
+    isAnimating: () => isAnimating,
+    debugRegionAnimation: () => {
+      console.log('=== DEBUG REGION ANIMATION ===');
+      console.log('Map loaded:', regionMap ? regionMap.loaded() : 'Not initialized');
+      console.log('Total markers:', regionMarkers.length);
+      console.log('Current region index:', currentRegionIndex);
+      console.log('Is animating:', isAnimating);
+      console.log('Regions defined:', spainRegions.length);
+    }
+  };
+</script>

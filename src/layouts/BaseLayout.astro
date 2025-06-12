@@ -20,10 +20,10 @@ const baseHeight = 2160;
 ---
 
 <!doctype html>
-<html lang="en" style="overflow-x: auto;">
+<html lang="en" style="overflow-x: auto; overflow-y: hidden;">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
@@ -56,12 +56,13 @@ const baseHeight = 2160;
       }
 
       .videowall-container {
-        min-width: var(--baseWidth);
-        width: 100vw;
-        height: var(--baseHeight);
-        overflow-x: auto;
-        overflow-y: hidden;
+        width: 100%;
+        min-width: max-content; /* Allow expansion beyond viewport for panoramic displays */
+        height: 100vh; /* Full viewport height */
+        overflow-x: auto; /* Allow horizontal scrolling for panoramic displays */
+        overflow-y: hidden; /* Prevent vertical scrolling */
         position: relative;
+        background-color: #1E1E1E; /* Consistent dark background */
       }
 
       /* Simple Fade Transition (Astro uses <ViewTransitions /> or custom CSS) */

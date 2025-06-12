@@ -1,0 +1,324 @@
+---
+// SpainMap.astro - Componente simplificado de mapa de España con ubicaciones estáticas
+import "@fontsource-variable/quicksand";
+import { spainConfig } from '../mocks/data/spain-locations';
+---
+
+<div id="spain-map" class="spain-map-container"></div>
+
+<style>
+  .spain-map-container {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    background: #1E1E1E;
+    overflow: hidden;
+  }
+
+  /* Ocultar controles de MapLibre */
+  :global(.maplibregl-ctrl-group),
+  :global(.maplibregl-ctrl-attrib),
+  :global(.maplibregl-ctrl-logo),
+  :global(.maplibregl-ctrl) {
+    display: none !important;
+  }
+
+  /* Pin central de Arteixo */
+  :global(.arteixo-central-pin) {
+    position: absolute;
+    pointer-events: none;
+    z-index: 1001;
+    transform: translate(-50%, -50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  :global(.arteixo-central-pin .pin-content) {
+    font-family: 'Quicksand Variable', 'Quicksand', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    color: #ffffff;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+    background: linear-gradient(135deg, #5D5D5D, rgba(93, 93, 93, 0.8));
+    backdrop-filter: blur(6px);
+    padding: 6px 12px;
+    border-radius: 12px;
+    border: 2px solid rgba(93, 93, 93, 0.4);
+    white-space: nowrap;
+    box-shadow: 0 4px 16px rgba(93, 93, 93, 0.3);
+  }
+
+  /* Pins de ubicaciones */
+  :global(.spain-location-pin) {
+    position: absolute;
+    pointer-events: none;
+    z-index: 1000;
+    min-width: 120px;
+    max-width: 160px;
+    height: auto;
+    min-height: 50px;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: linear-gradient(135deg, rgba(30, 30, 30, 0.95), rgba(45, 45, 45, 0.9));
+    backdrop-filter: blur(12px);
+    overflow: hidden;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4), 0 0 10px rgba(255, 255, 255, 0.03);
+    transform: translate(-50%, -50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 8px;
+  }
+
+  :global(.location-name) {
+    font-family: 'Quicksand Variable', 'Quicksand', sans-serif;
+    font-weight: 600;
+    font-size: 11px;
+    color: #ffffff;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    line-height: 1.2;
+  }
+
+  :global(.location-type) {
+    font-family: 'Quicksand Variable', 'Quicksand', sans-serif;
+    font-weight: 400;
+    font-size: 9px;
+    color: rgba(255, 255, 255, 0.7);
+    text-align: center;
+    margin-top: 2px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+</style>
+
+<script>
+  import maplibregl from 'maplibre-gl';
+  import 'maplibre-gl/dist/maplibre-gl.css';
+  import { spainConfig, spainMapData, locationDetails } from '../mocks/data/spain-locations';
+  import type { LngLatLike, StyleSpecification, ExpressionSpecification } from 'maplibre-gl';
+
+  let map: maplibregl.Map;
+  let markers: maplibregl.Marker[] = [];
+
+  // Configuración simplificada del mapa de España
+  const spainMapConfig = {
+    container: 'spain-map',
+    style: {
+      version: 8,
+      sources: {
+        'countries': {
+          type: 'vector',
+          tiles: [
+            'https://demotiles.maplibre.org/tiles/{z}/{x}/{y}.pbf'
+          ],
+          minzoom: 0,
+          maxzoom: 14
+        }
+      },
+      layers: [
+        {
+          id: 'background',
+          type: 'background',
+          paint: {
+            'background-color': '#1a1a1a'
+          }
+        },
+        {
+          id: 'countries-base',
+          type: 'fill',
+          source: 'countries',
+          'source-layer': 'countries',
+          paint: {
+            'fill-color': '#2A2A2A',
+            'fill-opacity': 0.8,
+            'fill-outline-color': 'rgba(0,0,0,0)',
+            'fill-antialias': false
+          }
+        }
+      ]
+    } as StyleSpecification,
+    center: spainMapData.center as LngLatLike,
+    zoom: spainMapData.zoom.initial,
+    minZoom: spainMapData.zoom.min,
+    maxZoom: spainMapData.zoom.max,
+    pitch: 0,
+    bearing: 0,
+    interactive: false, // Mapa estático
+    scrollZoom: false,
+    boxZoom: false,
+    dragRotate: false,
+    dragPan: false,
+    keyboard: false,
+    doubleClickZoom: false,
+    touchZoomRotate: false,
+    preserveDrawingBuffer: true,
+    antialias: true
+  };
+
+  function initializeSpainMap() {
+    try {
+      map = new maplibregl.Map(spainMapConfig);
+
+      map.on('load', () => {
+        console.log('🇪🇸 Mapa estático de España cargado');
+
+        // Colorear España
+        addSpainColors();
+
+        // Crear pins de todas las ubicaciones
+        createAllLocationPins();
+      });
+
+      map.on('error', (e) => {
+        console.error('Error en el mapa de España:', e);
+        setTimeout(() => {
+          if (!map.loaded()) {
+            initializeSpainMap();
+          }
+        }, 2000);
+      });
+
+      return map;
+    } catch (error) {
+      console.error('Error inicializando el mapa de España:', error);
+      setTimeout(initializeSpainMap, 2000);
+    }
+  }
+
+  function addSpainColors() {
+    // Destacar España en color gris, resto del mapa en gris más oscuro
+    const expression: ExpressionSpecification = [
+      'case',
+      ['==', ['get', 'NAME'], 'Spain'], '#5D5D5D',
+      ['==', ['get', 'name'], 'Spain'], '#5D5D5D',
+      ['==', ['get', 'iso_a2'], 'ES'], '#5D5D5D',
+      '#2A2A2A'
+    ];
+
+    try {
+      map.addLayer({
+        id: 'spain-highlighted',
+        type: 'fill',
+        source: 'countries',
+        'source-layer': 'countries',
+        paint: {
+          'fill-color': expression,
+          'fill-opacity': 0.8,
+          'fill-outline-color': 'transparent'
+        }
+      });
+      console.log('✅ España destacada en el mapa');
+    } catch (error) {
+      console.error('❌ Error destacando España:', error);
+    }
+  }
+
+  function createAllLocationPins() {
+    console.log('📍 Creando pins para todas las ubicaciones...');
+
+    // Crear pin central de Arteixo
+    createCentralPin();
+
+    // Crear pins para todas las ubicaciones remotas
+    spainConfig.remoteNodes.forEach((node) => {
+      createLocationPin(node);
+    });
+  }
+
+  function createCentralPin() {
+    const centralNode = spainConfig.centralNode;
+    console.log('🏢 Creando pin central de Arteixo:', centralNode.coordinates);
+
+    if (!centralNode.coordinates || centralNode.coordinates.length !== 2) {
+      console.error('❌ Coordenadas de Arteixo inválidas:', centralNode.coordinates);
+      return;
+    }
+
+    const centralContainer = document.createElement('div');
+    centralContainer.className = 'arteixo-central-pin';
+    centralContainer.innerHTML = `
+      <span class="pin-content">${centralNode.name}</span>
+    `;
+
+    const marker = new maplibregl.Marker({
+      element: centralContainer,
+      anchor: 'center'
+    })
+    .setLngLat(centralNode.coordinates)
+    .addTo(map);
+
+    markers.push(marker);
+    console.log('✅ Pin central de Arteixo creado');
+  }
+
+  function createLocationPin(node: any) {
+    console.log(`📍 Creando pin para ${node.name}`);
+
+    if (!node.coordinates || node.coordinates.length !== 2) {
+      console.error(`❌ Coordenadas inválidas para ${node.name}:`, node.coordinates);
+      return;
+    }
+
+    const pin = document.createElement('div');
+    pin.className = 'spain-location-pin';
+
+    // Obtener información detallada si está disponible
+    const details = node.id && locationDetails[node.id as keyof typeof locationDetails];
+    const displayName = details?.fullName || node.name;
+    const locationType = details?.type || 'Centro';
+
+    pin.innerHTML = `
+      <div class="location-name">${displayName}</div>
+      <div class="location-type">${locationType}</div>
+    `;
+
+    try {
+      const marker = new maplibregl.Marker({
+        element: pin,
+        anchor: 'center'
+      })
+      .setLngLat(node.coordinates)
+      .addTo(map);
+
+      markers.push(marker);
+      console.log(`✅ Pin creado para ${node.name}`);
+    } catch (error) {
+      console.error(`❌ Error creando pin para ${node.name}:`, error);
+    }
+  }
+
+  // Función para obtener estadísticas básicas del mapa
+  function getSpainMapStats() {
+    return {
+      totalLocations: spainConfig.remoteNodes.length + 1, // +1 por Arteixo
+      markersCount: markers.length,
+      mapLoaded: map ? map.loaded() : false,
+      isStatic: true
+    };
+  }
+
+  // Inicializar cuando el DOM esté listo
+  document.addEventListener('DOMContentLoaded', initializeSpainMap);
+
+  // Funciones globales para debugging
+  (window as any).spainMapUtils = {
+    getSpainConfig: () => spainConfig,
+    getMap: () => map,
+    getStats: getSpainMapStats,
+    markers: () => markers,
+    debugSpainMap: () => {
+      console.log('=== DEBUG SPAIN MAP (STATIC) ===');
+      console.log('Map loaded:', map ? map.loaded() : 'Not initialized');
+      console.log('Total markers:', markers.length);
+      console.log('Spain config locations:', spainConfig.remoteNodes.length);
+      console.log('Central node:', spainConfig.centralNode);
+    },
+    locationDetails: locationDetails
+  };
+</script>

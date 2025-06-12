@@ -1,0 +1,2111 @@
+---
+// WorldMap.astro - Componente de mapa mundial con latency pins
+import "@fontsource-variable/quicksand";
+import "@fontsource-variable/roboto-mono";
+import { latencyConfig } from '../mocks/data/latency-data';
+---
+
+<div id="world-map" class="world-map-container"></div>
+
+<style>
+  .world-map-container {
+    width: 100%;
+    height: 100%; /* Changed from 100vh to 100% for better panel integration */
+    position: relative;
+    background: #1E1E1E;
+    overflow: visible; /* Allow complete world map visualization */
+    min-height: 600px; /* Minimum height for proper world map display */
+  }
+
+  /* Ocultar controles de MapLibre */
+  :global(.maplibregl-ctrl-group),
+  :global(.maplibregl-ctrl-attrib),
+  :global(.maplibregl-ctrl-logo),
+  :global(.maplibregl-ctrl) {
+    display: none !important;
+  }
+
+  :global(.arteixo-label) {
+    position: absolute;
+    pointer-events: none;
+    z-index: 1001;
+    transform: translate(-50%, -50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  :global(.label-content) {
+    font-family: 'Quicksand Variable', 'Quicksand', sans-serif;
+    font-weight: 600;
+    font-size: 11px;
+    color: #ffffff;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+    background: rgba(59, 130, 246, 0.1);
+    backdrop-filter: blur(4px);
+    padding: 4px 8px;
+    border-radius: 8px;
+    border: 1px solid rgba(59, 130, 246, 0.2);
+    white-space: nowrap;
+  }
+
+
+  :global(.country-card) {
+    position: absolute;
+    pointer-events: none;
+    z-index: 1000;
+    min-width: 110px;
+    max-width: 150px;
+    height: 55px;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: linear-gradient(135deg, rgba(30, 30, 30, 0.9), rgba(45, 45, 45, 0.8));
+    backdrop-filter: blur(12px);
+    overflow: hidden;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4), 0 0 8px rgba(255, 255, 255, 0.03);
+    transform: translate(-50%, -180%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  :global(.country-card.good) {
+    border-color: rgba(74, 222, 128, 0.25);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4), 0 0 8px rgba(74, 222, 128, 0.15);
+  }
+
+  :global(.country-card.warning) {
+    border-color: rgba(251, 191, 36, 0.25);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4), 0 0 8px rgba(251, 191, 36, 0.15);
+  }
+
+  :global(.country-card.critical) {
+    border-color: rgba(239, 68, 68, 0.25);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4), 0 0 8px rgba(239, 68, 68, 0.15);
+  }
+
+  :global(.country-card.offline) {
+    border-color: rgba(107, 114, 128, 0.2);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4), 0 0 8px rgba(107, 114, 128, 0.1);
+  }
+
+  :global(.card-content) {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 8px 12px;
+  }
+
+  :global(.country-name) {
+    font-family: 'Quicksand Variable', 'Quicksand', sans-serif;
+    font-weight: 600;
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.95);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin: 0 0 4px 0;
+    line-height: 1.1;
+    text-align: center;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7);
+  }
+
+  :global(.latency-display) {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+  }
+
+  :global(.latency-value) {
+    font-family: 'Roboto Mono Variable', 'Roboto Mono', monospace;
+    font-weight: 700;
+    font-size: 20px;
+    line-height: 1;
+    margin: 0;
+    letter-spacing: -0.3px;
+    font-variant-numeric: tabular-nums;
+    text-align: center;
+  }
+
+  :global(.latency-value.good) {
+    color: #4ade80;
+    text-shadow: 0 0 6px rgba(74, 222, 128, 0.3);
+  }
+
+  :global(.latency-value.warning) {
+    color: #fbbf24;
+    text-shadow: 0 0 6px rgba(251, 191, 36, 0.3);
+  }
+
+  :global(.latency-value.critical) {
+    color: #ef4444;
+    text-shadow: 0 0 6px rgba(239, 68, 68, 0.3);
+  }
+
+  :global(.latency-value.offline) {
+    color: #6b7280;
+    text-shadow: 0 0 6px rgba(107, 114, 128, 0.3);
+  }
+
+  :global(.latency-unit) {
+    font-family: 'Roboto Mono Variable', 'Roboto Mono', monospace;
+    font-weight: 500;
+    font-size: 12px;
+    opacity: 0.8;
+    margin-left: 3px;
+  }
+
+
+  @keyframes pinAppear {
+    0% {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1) rotate(0deg);
+    }
+    100% {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1) rotate(0deg);
+    }
+  }
+
+  @keyframes labelAppear {
+    0% {
+      opacity: 1;
+      transform: translate(-50%, -100%) translateY(0);
+    }
+    100% {
+      opacity: 1;
+      transform: translate(-50%, -100%) translateY(0);
+    }
+  }
+
+
+  @keyframes pulse {
+    0%, 100% {
+      box-shadow: 0 4px 15px rgba(45, 179, 74, 0.4);
+    }
+    50% {
+      box-shadow: 0 4px 15px rgba(45, 179, 74, 0.4);
+    }
+  }
+
+
+  :global(.pin-latency.good) {
+    box-shadow: 0 6px 20px rgba(45, 179, 74, 0.5);
+  }
+
+  /* Líneas de conexión SVG overlay */
+  :global(.connection-lines) {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 500;
+  }
+
+  :global(.connection-line) {
+    stroke: #2DB34A;
+    stroke-width: 2;
+    fill: none;
+    opacity: 0.7;
+  }
+
+  /* Líneas de trazado animado con efectos de pulso de energía */
+  :global(.trace-lines) {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 501;
+  }
+
+  :global(.trace-path) {
+    stroke: rgba(59, 130, 246, 0.9);
+    stroke-width: 3;
+    fill: none;
+    stroke-linecap: round;
+    filter: drop-shadow(0 0 4px rgba(59, 130, 246, 0.5));
+    opacity: 0;
+  }
+
+
+  :global(.trace-path.active) {
+    opacity: 1;
+    animation: energyPulse 3s ease-in-out infinite;
+  }
+
+  @keyframes energyPulse {
+    0% {
+      stroke-width: 3;
+      opacity: 0.8;
+      filter: drop-shadow(0 0 4px rgba(59, 130, 246, 0.5));
+    }
+    20% {
+      stroke-width: 3.2;
+      opacity: 0.85;
+      filter: drop-shadow(0 0 6px rgba(59, 130, 246, 0.6));
+    }
+    50% {
+      stroke-width: 3.8;
+      opacity: 0.95;
+      filter: drop-shadow(0 0 10px rgba(59, 130, 246, 0.7));
+    }
+    80% {
+      stroke-width: 3.2;
+      opacity: 0.85;
+      filter: drop-shadow(0 0 6px rgba(59, 130, 246, 0.6));
+    }
+    100% {
+      stroke-width: 3;
+      opacity: 0.8;
+      filter: drop-shadow(0 0 4px rgba(59, 130, 246, 0.5));
+    }
+  }
+
+
+  :global(.trace-path.energy-flow) {
+    stroke-dasharray: 8, 12;
+    animation: energyFlow 2.5s linear infinite, energyPulse 3s ease-in-out infinite;
+  }
+
+  @keyframes energyFlow {
+    0% {
+      stroke-dashoffset: 0;
+    }
+    100% {
+      stroke-dashoffset: 20;
+    }
+  }
+
+
+  :global(.energy-particle) {
+    filter: drop-shadow(0 0 4px rgba(59, 130, 246, 0.8));
+    opacity: 0;
+  }
+
+  :global(.energy-particle.active) {
+    opacity: 0.8;
+    animation: particleGlow 0.5s ease-in-out infinite alternate;
+  }
+
+  @keyframes particleGlow {
+    0% {
+      filter: drop-shadow(0 0 3px rgba(59, 130, 246, 0.6));
+    }
+    100% {
+      filter: drop-shadow(0 0 6px rgba(59, 130, 246, 1));
+    }
+  }
+
+  :global(.trace-path.animated) {
+    opacity: 1;
+    animation: traceDraw 2s ease-out forwards;
+  }
+
+  @keyframes traceDraw {
+    from {
+      stroke-dashoffset: 1000;
+      opacity: 0.3;
+    }
+    to {
+      stroke-dashoffset: 0;
+      opacity: 0.8;
+    }
+  }
+
+  /* Animaciones para las tarjetas */
+  @keyframes cardFadeIn {
+    from {
+      opacity: 0;
+      transform: translate(-50%, -180%) scale(0.8);
+    }
+    to {
+      opacity: 1;
+      transform: translate(-50%, -180%) scale(1);
+    }
+  }
+
+  :global(.country-card.animate-in) {
+    animation: cardFadeIn 0.6s ease-out forwards;
+  }
+
+
+  @keyframes dashMove {
+    0% { stroke-dashoffset: 0; }
+    100% { stroke-dashoffset: 0; }
+  }
+</style>
+
+<script>
+  import maplibregl from 'maplibre-gl';
+  import 'maplibre-gl/dist/maplibre-gl.css';
+  import { gsap } from 'gsap';
+  import { latencyConfig } from '../mocks/data/latency-data';
+  import type { LngLatLike, StyleSpecification, ExpressionSpecification } from 'maplibre-gl';
+
+  let map: maplibregl.Map;
+  let markers: maplibregl.Marker[] = [];
+  let traceLines: SVGElement | null = null;
+
+  // Variable para rastrear países activados por la animación de trazado
+  let activatedCountries: Set<string> = new Set();
+
+  // Configuración del mapa para videowall estático
+  const mapConfig = {
+    container: 'world-map',
+    style: {
+      version: 8,
+      sources: {
+        'countries': {
+          type: 'vector',
+          tiles: [
+            'https://tiles.openmaptiles.org/data/v3/{z}/{x}/{y}.pbf?key=get_your_own_OpenmapTiles_key'
+          ],
+          minzoom: 0,
+          maxzoom: 8
+        },
+        'countries-natural-earth': {
+          type: 'vector',
+          tiles: [
+            'https://demotiles.maplibre.org/tiles/{z}/{x}/{y}.pbf'
+          ],
+          minzoom: 0,
+          maxzoom: 8
+        }
+      },
+      layers: [
+        {
+          id: 'background',
+          type: 'background',
+          paint: {
+            'background-color': '#1E1E1E'
+          }
+        },
+        {
+          id: 'countries-base',
+          type: 'fill',
+          source: 'countries-natural-earth',
+          'source-layer': 'countries',
+          paint: {
+            'fill-color': '#515151',
+            'fill-opacity': 0.8,
+            'fill-outline-color': 'rgba(0,0,0,0)',
+            'fill-antialias': false
+          }
+        }
+      ]
+    } as StyleSpecification,
+    center: [0, 10] as LngLatLike, // Centro del mundo ligeramente al norte, más centrado
+    zoom: 1.8, // Reducido para mostrar el mapa mundial completo
+    minZoom: 1.5, // Límite mínimo para mantener el mundo visible
+    maxZoom: 4, // Límite máximo apropiado para videowall
+    pitch: 0,
+    bearing: 0,
+    // Desactivar toda interacción para videowall estático
+    interactive: false,
+    scrollZoom: false,
+    boxZoom: false,
+    dragRotate: false,
+    dragPan: false,
+    keyboard: false,
+    doubleClickZoom: false,
+    touchZoomRotate: false,
+    // Configuraciones adicionales para estabilidad
+    preserveDrawingBuffer: true,
+    antialias: true
+  };
+
+  function initializeMap() {
+    try {
+      map = new maplibregl.Map(mapConfig);
+
+      map.on('load', () => {
+        console.log('Mapa cargado - inicializando latency pins');
+
+        // España siempre está activada desde el inicio (nodo central)
+        activatedCountries.add('Spain');
+        console.log('🇪🇸 España activada como nodo central');
+
+        // Eliminar completamente cualquier borde visible
+        removeBorders();
+
+        // Notificación de inicialización exitosa (solo una vez)
+        setTimeout(() => {
+          if (typeof (window as any).notificationUtils !== 'undefined') {
+            (window as any).notificationUtils.show(
+              'success',
+              'Monitor de Red Activo',
+              'Sistema de monitoreo de latencia iniciado correctamente. Videowall en funcionamiento.',
+              '🌍'
+            );
+          }
+        }, 3000);
+
+        // Colorear países específicos
+        addCountryColors();
+
+        // Actualizar colores iniciales basados en latencia
+        setTimeout(() => {
+          updateCountryColors();
+        }, 1000);
+
+        // Crear pins después de un breve delay
+        setTimeout(() => {
+          createArteixoPin();
+
+          // Esperar un poco más antes de iniciar las trazas
+          setTimeout(() => {
+            startTraceAnimation();
+
+            // Repetir la animación cada 30 segundos para mantener el efecto visual
+            setInterval(() => {
+              restartTraceAnimation();
+            }, 30000);
+          }, 1000);
+        }, 500);
+
+        // Iniciar actualizaciones de latencia
+        startLatencyUpdates();
+      });
+
+      map.on('error', (e) => {
+        console.error('Error en el mapa:', e);
+        // Reintentar después de un delay si hay error
+        setTimeout(() => {
+          if (!map.loaded()) {
+            initializeMap();
+          }
+        }, 2000);
+      });
+
+      return map;
+    } catch (error) {
+      console.error('Error inicializando el mapa:', error);
+      // Reintentar después de un delay
+      setTimeout(initializeMap, 2000);
+    }
+  }
+
+  function removeBorders() {
+    // Eliminar cualquier layer de líneas/bordes existente
+    const layersToRemove = [
+      'countries-stroke',
+      'countries-stroke-bright',
+      'countries-outline',
+      'boundaries',
+      'boundary',
+      'admin-1-boundary',
+      'admin-0-boundary',
+      'admin-0-boundary-bg',
+      'admin-1-boundary-bg'
+    ];
+
+    layersToRemove.forEach(layerId => {
+      try {
+        if (map.getLayer(layerId)) {
+          map.removeLayer(layerId);
+          console.log(`Removed border layer: ${layerId}`);
+        }
+      } catch (e) {
+        // Layer doesn't exist, ignore
+      }
+    });
+
+    // Actualizar layers existentes para remover bordes explícitamente
+    const existingLayers = map.getStyle().layers;
+    existingLayers.forEach(layer => {
+      if (layer.type === 'fill' && layer.source && typeof layer.source === 'string' &&
+          (layer.source.includes('countries') || layer.id.includes('countries'))) {
+        try {
+          map.setPaintProperty(layer.id, 'fill-outline-color', 'transparent');
+        } catch (e) {
+          console.log(`Could not set outline for layer ${layer.id}:`, e);
+        }
+      }
+
+      // Ocultar cualquier layer de tipo line que pueda mostrar fronteras
+      if (layer.type === 'line' && layer.source && typeof layer.source === 'string' &&
+          (layer.source.includes('countries') || layer.source.includes('boundary') ||
+           layer.id.includes('boundary') || layer.id.includes('border'))) {
+        try {
+          map.setLayoutProperty(layer.id, 'visibility', 'none');
+          console.log(`Hidden line layer: ${layer.id}`);
+        } catch (e) {
+          console.log(`Could not hide line layer ${layer.id}:`, e);
+        }
+      }
+    });
+
+    console.log('Border removal completed');
+  }
+
+  /*
+   * SISTEMA DE COLORES DINÁMICOS BASADO EN LATENCIA
+   * =============================================
+   * Los países se colorean automáticamente según su latencia actual:
+   *
+   * 🟢 Verde (#4ade80)  - Latencia < 50ms  (Excelente)
+   * 🟡 Amarillo (#fbbf24) - Latencia 50-100ms (Advertencia)
+   * 🟠 Naranja (#fb923c)  - Latencia 100-200ms (Crítico)
+   * 🔴 Rojo (#ef4444)     - Latencia > 200ms (Muy crítico)
+   * 🔵 Azul (#3B82F6)     - España (Nodo central)
+   *
+   * Los colores se actualizan automáticamente cada 15 segundos cuando
+   * cambian las medidas de latencia. Para actualizar manualmente:
+   * window.mapUtils.updateCountryColors()
+   */
+
+  function addCountryColors() {
+    // Función para obtener color basado en latencia
+    function getColorByLatency(latency: number): string {
+      if (latency < 50) return '#4ade80';    // Verde - good
+      if (latency < 100) return '#fbbf24';   // Amarillo - warning
+      if (latency < 200) return '#fb923c';   // Naranja - critical
+      return '#ef4444';                      // Rojo - offline/muy crítico
+    }
+
+    // Crear expresión de mapbox para colorear países basado en latencia
+    const expressionParts: any[] = ['case'];
+
+    // Añadir cada país con su color basado en latencia actual (solo si está activado)
+    latencyConfig.remoteNodes.forEach(node => {
+      // Solo aplicar color de latencia si el país ha sido activado, sino usar gris
+      const color = activatedCountries.has(node.country) ? getColorByLatency(node.latency) : '#515151';
+
+      // Añadir todas las variantes de nombres para cada país
+      switch(node.country) {
+        case 'United States':
+          expressionParts.push(
+            ['==', ['get', 'NAME'], 'United States'], color,
+            ['==', ['get', 'NAME'], 'United States of America'], color,
+            ['==', ['get', 'NAME'], 'USA'], color,
+            ['==', ['get', 'name'], 'United States'], color,
+            ['==', ['get', 'name'], 'United States of America'], color,
+            ['==', ['get', 'ADMIN'], 'United States of America'], color,
+            ['==', ['get', 'NAME_EN'], 'United States'], color,
+            ['==', ['get', 'iso_a2'], 'US'], color
+          );
+          break;
+        case 'Brazil':
+          expressionParts.push(
+            ['==', ['get', 'NAME'], 'Brazil'], color,
+            ['==', ['get', 'NAME'], 'Brasil'], color,
+            ['==', ['get', 'name'], 'Brazil'], color,
+            ['==', ['get', 'iso_a2'], 'BR'], color
+          );
+          break;
+        case 'South Africa':
+          expressionParts.push(
+            ['==', ['get', 'NAME'], 'South Africa'], color,
+            ['==', ['get', 'name'], 'South Africa'], color,
+            ['==', ['get', 'iso_a2'], 'ZA'], color
+          );
+          break;
+        case 'China':
+          expressionParts.push(
+            ['==', ['get', 'NAME'], 'China'], color,
+            ['==', ['get', 'name'], 'China'], color,
+            ['==', ['get', 'iso_a2'], 'CN'], color
+          );
+          break;
+        case 'Japan':
+          expressionParts.push(
+            ['==', ['get', 'NAME'], 'Japan'], color,
+            ['==', ['get', 'name'], 'Japan'], color,
+            ['==', ['get', 'iso_a2'], 'JP'], color
+          );
+          break;
+        case 'Australia':
+          expressionParts.push(
+            ['==', ['get', 'NAME'], 'Australia'], color,
+            ['==', ['get', 'name'], 'Australia'], color,
+            ['==', ['get', 'iso_a2'], 'AU'], color
+          );
+          break;
+      }
+    });
+
+    // España (nodo central) - siempre azul
+    expressionParts.push(
+      ['==', ['get', 'NAME'], 'Spain'], '#3B82F6',
+      ['==', ['get', 'name'], 'Spain'], '#3B82F6',
+      ['==', ['get', 'iso_a2'], 'ES'], '#3B82F6'
+    );
+
+    // Color por defecto para países no monitoreados
+    expressionParts.push('#515151');
+
+    const expression = expressionParts as ExpressionSpecification;
+
+    // Añadir capa para países coloreados usando ambas fuentes
+    try {
+      map.addLayer({
+        id: 'countries-highlighted',
+        type: 'fill',
+        source: 'countries-natural-earth',
+        'source-layer': 'countries',
+        paint: {
+          'fill-color': expression,
+          'fill-opacity': 0.8,
+          'fill-outline-color': 'transparent'
+        }
+      });
+    } catch (error) {
+      console.log('Error con countries-natural-earth, intentando con countries:', error);
+
+      // Fallback a la fuente principal
+      map.addLayer({
+        id: 'countries-highlighted-fallback',
+        type: 'fill',
+        source: 'countries',
+        'source-layer': 'countries',
+        paint: {
+          'fill-color': expression,
+          'fill-opacity': 0.8,
+          'fill-outline-color': 'transparent'
+        }
+      });
+    }
+
+    // Debug: Log para verificar las propiedades disponibles en ambas fuentes
+    setTimeout(() => {
+      console.log('=== DEBUGGING COUNTRY SOURCES ===');
+
+      // Probar countries-natural-earth
+      try {
+        const features1 = map.querySourceFeatures('countries-natural-earth', {
+          sourceLayer: 'countries'
+        });
+        console.log('Natural Earth features:', features1.length);
+        features1.slice(0, 5).forEach((feature, index) => {
+          console.log(`Natural Earth Feature ${index}:`, feature.properties);
+        });
+      } catch (e) {
+        console.log('Error querying natural earth:', e);
+      }
+
+      // Probar countries
+      try {
+        const features2 = map.querySourceFeatures('countries', {
+          sourceLayer: 'countries'
+        });
+        console.log('Countries features:', features2.length);
+        features2.slice(0, 5).forEach((feature, index) => {
+          console.log(`Countries Feature ${index}:`, feature.properties);
+        });
+      } catch (e) {
+        console.log('Error querying countries:', e);
+      }
+    }, 3000);
+  }
+
+  function createArteixoPin() {
+    const centralNode = latencyConfig.centralNode;
+    console.log('Creando label central de Arteixo en coordenadas:', centralNode.coordinates);
+
+    // Verificar que las coordenadas sean válidas
+    if (!centralNode.coordinates || centralNode.coordinates.length !== 2) {
+      console.error('Coordenadas de Arteixo inválidas:', centralNode.coordinates);
+      return;
+    }
+
+    // Crear el label simple sin efectos
+    const centralContainer = document.createElement('div');
+    centralContainer.className = 'arteixo-label';
+    centralContainer.innerHTML = `
+      <span class="label-content">Arteixo</span>
+    `;
+
+    const marker = new maplibregl.Marker({
+      element: centralContainer,
+      anchor: 'center'
+    })
+    .setLngLat(centralNode.coordinates)
+    .addTo(map);
+
+    markers.push(marker);
+    console.log('Label central de Arteixo creado y agregado al mapa');
+
+    // Verificar posición después de agregarlo
+    setTimeout(() => {
+      const lngLat = marker.getLngLat();
+      const point = map.project(lngLat);
+      console.log('Label central Arteixo - LngLat:', lngLat, 'Screen position:', point);
+    }, 100);
+  }
+
+  function startTraceAnimation() {
+    console.log('🚀 Iniciando animación de trazado desde Arteixo');
+
+    // Limpiar tarjetas existentes antes de empezar
+    clearCountryCards();
+
+    // Crear SVG overlay para las líneas de trazado
+    createTraceLinesOverlay();
+
+    // Esperar a que el mapa esté completamente listo
+    const waitForMapReady = () => {
+      if (map && map.loaded()) {
+        console.log('✅ Mapa listo, iniciando animaciones...');
+        setTimeout(() => {
+          animateTraces();
+        }, 500);
+      } else {
+        console.log('⏳ Esperando que el mapa esté listo...');
+        setTimeout(waitForMapReady, 500);
+      }
+    };
+
+    waitForMapReady();
+  }
+
+  function clearCountryCards() {
+    // Remover todos los marcadores de países (mantener solo el central)
+    const countryMarkers = markers.filter((marker, index) => {
+      const element = marker.getElement();
+      if (element.classList.contains('country-card')) {
+        marker.remove();
+        return false; // No mantener este marcador
+      }
+      return true; // Mantener marcadores que no son country-card
+    });
+
+    markers = countryMarkers;
+    console.log('Tarjetas de países eliminadas, marcadores restantes:', markers.length);
+  }
+
+  function createTraceLinesOverlay() {
+    // Verificar si ya existe el overlay
+    let overlay = document.querySelector('.trace-lines');
+    if (overlay) {
+      overlay.remove();
+    }
+
+    // Crear el SVG overlay
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.classList.add('trace-lines');
+    svg.style.position = 'absolute';
+    svg.style.top = '0';
+    svg.style.left = '0';
+    svg.style.width = '100%';
+    svg.style.height = '100%';
+    svg.style.pointerEvents = 'none';
+    svg.style.zIndex = '501';
+
+    // Agregar el SVG al contenedor del mapa
+    const mapContainer = document.getElementById('world-map');
+    if (mapContainer) {
+      mapContainer.appendChild(svg);
+      traceLines = svg;
+      console.log('SVG overlay para trazas creado');
+    } else {
+      console.error('No se pudo encontrar el contenedor del mapa');
+    }
+  }
+
+  function animateTraces() {
+    const centralNode = latencyConfig.centralNode;
+    const centralPoint = map.project(centralNode.coordinates);
+
+    console.log('🎯 Central point:', centralPoint);
+
+    // Primero, crear todas las tarjetas (invisibles)
+    createAllCountryCards();
+
+    // Luego animar las trazas
+    latencyConfig.remoteNodes.forEach((node, index) => {
+      setTimeout(() => {
+        animateTraceToNode(centralPoint, node, index);
+      }, index * 600); // Aumentar el delay para mejor efecto visual
+    });
+  }
+
+  function createAllCountryCards() {
+    console.log('📋 Creando todas las tarjetas de países...');
+
+    latencyConfig.remoteNodes.forEach((node, index) => {
+      createCountryCardImmediate(node, index);
+    });
+  }
+
+  function createCountryCardImmediate(node: any, index: number) {
+    console.log(`🏷️ Creando tarjeta inmediata para ${node.country}`);
+
+    // Verificar coordenadas válidas
+    if (!node.coordinates || node.coordinates.length !== 2) {
+      console.error(`❌ Coordenadas inválidas para ${node.country}:`, node.coordinates);
+      return;
+    }
+
+    // Aplicar offset para evitar superposiciones
+    const positionOffsets: Record<string, { x: number; y: number }> = {
+      'China': { x: -15, y: -10 },
+      'Japan': { x: 20, y: 15 },
+      'Australia': { x: 0, y: 20 },
+      'South Africa': { x: 10, y: 0 },
+      'Brazil': { x: -10, y: 10 },
+      'United States': { x: 0, y: -15 }
+    };
+
+    let adjustedCoords = [...node.coordinates];
+    const offset = positionOffsets[node.country];
+    if (offset) {
+      const pixelToDegree = 0.02;
+      adjustedCoords[0] += offset.x * pixelToDegree;
+      adjustedCoords[1] += offset.y * pixelToDegree;
+    }
+
+    // Crear la tarjeta del país (invisible inicialmente)
+    const card = document.createElement('div');
+    const status = getLatencyStatus(node.latency);
+    card.className = `country-card ${status}`;
+    card.style.opacity = '0';
+    card.style.visibility = 'hidden';
+    card.setAttribute('data-country', node.country);
+
+    card.innerHTML = `
+      <div class="card-content">
+        <h3 class="country-name">${node.country}</h3>
+        <div class="latency-display">
+          <div class="latency-value ${status}">
+            ${node.latency}<span class="latency-unit">ms</span>
+          </div>
+        </div>
+      </div>
+    `;
+
+    try {
+      const marker = new maplibregl.Marker({
+        element: card,
+        anchor: 'center'
+      })
+      .setLngLat(adjustedCoords as [number, number])
+      .addTo(map);
+
+      markers.push(marker);
+      console.log(`✅ Tarjeta invisible creada para ${node.country}`);
+    } catch (error) {
+      console.error(`❌ Error creando tarjeta para ${node.country}:`, error);
+    }
+  }
+
+  function animateTraceToNode(fromPoint: { x: number; y: number }, toNode: any, index: number) {
+    const toPoint = map.project(toNode.coordinates);
+    console.log(`🎯 Animando traza ${index} hacia ${toNode.country}:`, {
+      from: fromPoint,
+      to: toPoint,
+      coordinates: toNode.coordinates
+    });
+
+    // Verificar que los puntos sean válidos
+    if (isNaN(toPoint.x) || isNaN(toPoint.y) || toPoint.x === 0 || toPoint.y === 0) {
+      console.error(`❌ Punto de destino inválido para ${toNode.country}:`, toPoint);
+      return;
+    }
+
+    // Crear la línea curva SVG
+    const path = createCurvedPath(fromPoint, toPoint);
+
+    if (traceLines && path) {
+      traceLines.appendChild(path);
+
+      // Animar el trazado de la línea
+      gsap.fromTo(path,
+        {
+          strokeDashoffset: path.getTotalLength(),
+          opacity: 0
+        },
+        {
+          strokeDashoffset: 0,
+          opacity: 0.8,
+          duration: 2,
+          ease: "power2.out",
+          onComplete: () => {
+            console.log(`✅ Traza completada hacia ${toNode.country}, mostrando tarjeta...`);
+
+            // Activar el color del país cuando la traza lo alcanza
+            activateCountryColor(toNode.country);
+
+            // Activar el efecto de pulso de energía
+            activateEnergyPulse(path);
+
+            // Cuando la traza llega al destino, mostrar la tarjeta existente
+            showExistingCountryCard(toNode.country);
+          }
+        }
+      );
+    } else {
+      console.error(`❌ No se pudo crear la traza para ${toNode.country}`);
+    }
+  }
+
+  function showExistingCountryCard(countryName: string) {
+    // Buscar la tarjeta existente por el atributo data-country
+    const existingCard = document.querySelector(`[data-country="${countryName}"]`) as HTMLElement;
+
+    if (existingCard) {
+      console.log(`🎉 Mostrando tarjeta existente para ${countryName}`);
+
+      // Hacer visible y animar
+      existingCard.style.visibility = 'visible';
+
+      gsap.fromTo(existingCard,
+        {
+          opacity: 0,
+          scale: 0.8
+        },
+        {
+          opacity: 1,
+          scale: 1,
+          duration: 0.8,
+          ease: "back.out(1.7)",
+          onComplete: () => {
+    console.log(`✨ Animación completada para ${countryName}`);
+          }
+        }
+      );
+    } else {
+      console.error(`❌ No se encontró tarjeta existente para ${countryName}`);
+      // Fallback: crear la tarjeta si no existe
+      const node = latencyConfig.remoteNodes.find(n => n.country === countryName);
+      if (node) {
+        showCountryCard(node, 0);
+      }
+    }
+  }
+
+  function activateEnergyPulse(path: SVGPathElement) {
+    // Activar el pulso de energía discreto
+    path.classList.add('active');
+
+    console.log('⚡ Activando pulso de energía en traza');
+
+    // Después de 5 segundos, añadir el efecto de flujo de energía
+    setTimeout(() => {
+      if (path.parentElement) { // Verificar que la línea aún existe
+        path.classList.add('energy-flow');
+        console.log('🌊 Activando flujo de energía');
+
+        // Crear partículas de energía ocasionalmente
+        startEnergyParticles(path);
+      }
+    }, 5000);
+  }
+
+  function startEnergyParticles(path: SVGPathElement) {
+    // Crear partículas de energía cada 8-12 segundos de forma aleatoria
+    const createParticle = () => {
+      if (path.parentElement) { // Verificar que la línea aún existe
+        createEnergyParticle(path);
+
+        // Programar la siguiente partícula en un intervalo aleatorio
+        const nextParticleDelay = 8000 + Math.random() * 4000; // Entre 8-12 segundos
+        setTimeout(createParticle, nextParticleDelay);
+      }
+    };
+
+    // Iniciar con la primera partícula después de un delay aleatorio
+    const initialDelay = 3000 + Math.random() * 3000; // Entre 3-6 segundos
+    setTimeout(createParticle, initialDelay);
+  }
+
+  function createEnergyParticle(path: SVGPathElement) {
+    // Crear una pequeña partícula de energía que viaje por la línea
+    const particle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    particle.setAttribute('r', '1.5');
+    particle.setAttribute('fill', 'rgba(59, 130, 246, 0.9)');
+    particle.setAttribute('class', 'energy-particle');
+    particle.setAttribute('opacity', '0');
+
+    if (traceLines) {
+      traceLines.appendChild(particle);
+
+      // Animar la partícula a lo largo del path
+      animateParticleAlongPath(particle, path);
+    }
+  }
+
+  function animateParticleAlongPath(particle: SVGElement, path: SVGPathElement) {
+    const pathLength = path.getTotalLength();
+    let progress = 0;
+    const duration = 4000; // 4 segundos para recorrer toda la línea
+    const startTime = Date.now();
+
+    // Activar clase CSS para efectos
+    particle.classList.add('active');
+
+    // Función de animación frame by frame
+    const animate = () => {
+      const elapsed = Date.now() - startTime;
+      progress = Math.min(elapsed / duration, 1);
+
+      // Obtener la posición en el path
+      const point = path.getPointAtLength(progress * pathLength);
+
+      // Actualizar posición de la partícula
+      particle.setAttribute('cx', point.x.toString());
+      particle.setAttribute('cy', point.y.toString());
+
+      // Animar opacidad con easing suave
+      let opacity = 0;
+      if (progress < 0.15) {
+        // Fade in suave
+        opacity = Math.sin((progress / 0.15) * (Math.PI / 2)) * 0.8;
+      } else if (progress > 0.85) {
+        // Fade out suave
+        opacity = Math.sin(((1 - progress) / 0.15) * (Math.PI / 2)) * 0.8;
+      } else {
+        // Completamente visible con ligera variación
+        opacity = 0.7 + 0.1 * Math.sin(progress * Math.PI * 4);
+      }
+
+      particle.setAttribute('opacity', opacity.toString());
+
+      // Continuar animación o limpiar
+      if (progress < 1) {
+        requestAnimationFrame(animate);
+      } else {
+        // Remover la partícula al completar el recorrido
+        if (particle.parentElement) {
+          particle.parentElement.removeChild(particle);
+        }
+      }
+    };
+
+    animate();
+  }
+
+  // Sistema inteligente de enrutamiento que evita cruces
+  const existingPaths: Array<{
+    from: { x: number; y: number },
+    to: { x: number; y: number },
+    controlPoint: { x: number; y: number },
+    waypoints?: Array<{ x: number; y: number }>,
+    intersectionCount?: number
+  }> = [];
+
+  function createCurvedPath(from: { x: number; y: number }, to: { x: number; y: number }): SVGPathElement {
+    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+
+    // Calcular la ruta óptima evitando cruces
+    const optimalRoute = calculateOptimalRoute(from, to);
+
+    // SIEMPRE crear una curva parabólica suave, sin segmentos
+    const pathData = createSmoothParabolicCurve(from, to, optimalRoute.controlPoint);
+
+    // Registrar esta ruta para futuras referencias
+    existingPaths.push({
+      from,
+      to,
+      controlPoint: optimalRoute.controlPoint,
+      intersectionCount: optimalRoute.intersectionCount
+    });
+
+    path.setAttribute('d', pathData);
+    path.setAttribute('stroke', 'rgba(59, 130, 246, 0.9)');
+    path.setAttribute('stroke-width', '3');
+    path.setAttribute('fill', 'none');
+    path.setAttribute('stroke-linecap', 'round');
+
+    // Configurar para animación
+    const pathLength = path.getTotalLength();
+    path.setAttribute('stroke-dasharray', `${pathLength}`);
+    path.setAttribute('stroke-dashoffset', `${pathLength}`);
+
+    // Añadir efecto de brillo
+    path.setAttribute('filter', 'drop-shadow(0 0 4px rgba(59, 130, 246, 0.5))');
+
+    return path;
+  }
+
+  function createSmoothParabolicCurve(from: { x: number; y: number }, to: { x: number; y: number }, apex: { x: number; y: number }): string {
+    // Crear una curva cúbica de Bézier que forme una parábola perfecta
+    // Control points que crean una parábola suave desde A hasta B
+
+    const distance = Math.sqrt(Math.pow(to.x - from.x, 2) + Math.pow(to.y - from.y, 2));
+
+    // Calcular puntos de control para curva cúbica que pase por el apex
+    const cp1x = from.x + (apex.x - from.x) * 0.5;
+    const cp1y = from.y + (apex.y - from.y) * 0.3;
+
+    const cp2x = to.x + (apex.x - to.x) * 0.5;
+    const cp2y = to.y + (apex.y - to.y) * 0.3;
+
+    // Crear curva cúbica de Bézier suave
+    const pathData = `M ${from.x} ${from.y} C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${to.x} ${to.y}`;
+
+    console.log(`🎨 Parábola suave creada: distancia=${Math.round(distance)}px, apex=(${Math.round(apex.x)}, ${Math.round(apex.y)})`);
+
+    return pathData;
+  }
+
+  function calculateOptimalRoute(from: { x: number; y: number }, to: { x: number; y: number }) {
+    const dx = to.x - from.x;
+    const dy = to.y - from.y;
+    const distance = Math.sqrt(dx * dx + dy * dy);
+
+    // Calcular múltiples posibles puntos de control para la parábola
+    const possibleControlPoints = generateControlPoints(from, to, distance);
+
+    // Evaluar cada punto de control para evitar cruces
+    let bestControlPoint = possibleControlPoints[0];
+    let minIntersections = Infinity;
+
+    for (const controlPoint of possibleControlPoints) {
+      const intersections = countIntersections(from, to, controlPoint);
+      if (intersections < minIntersections) {
+        minIntersections = intersections;
+        bestControlPoint = controlPoint;
+      }
+    }
+
+    console.log(`🎯 Punto de control óptimo seleccionado con ${minIntersections} intersecciones`);
+
+    return {
+      controlPoint: bestControlPoint,
+      intersectionCount: minIntersections
+    };
+  }
+
+  function generateControlPoints(from: { x: number; y: number }, to: { x: number; y: number }, distance: number) {
+    const midX = (from.x + to.x) / 2;
+    const midY = (from.y + to.y) / 2;
+
+    // Calcular el ángulo de la línea directa para orientar las parábolas
+    const angle = Math.atan2(to.y - from.y, to.x - from.x);
+    const perpAngle = angle + Math.PI / 2;
+
+    // Altura base de la parábola más pronunciada
+    const baseHeight = Math.min(distance * 0.4, 180);
+    const lateralOffset = Math.min(distance * 0.25, 120);
+
+    // Generar puntos de control que crean parábolas perfectas
+    const controlPoints = [];
+
+    // === PARÁBOLAS PRINCIPALES (sin segmentos) ===
+
+    // Parábola alta central
+    controlPoints.push({
+      x: midX,
+      y: midY - baseHeight
+    });
+
+    // Parábolas laterales simétricas
+    controlPoints.push({
+      x: midX + lateralOffset * 0.8,
+      y: midY - baseHeight * 0.85
+    });
+    controlPoints.push({
+      x: midX - lateralOffset * 0.8,
+      y: midY - baseHeight * 0.85
+    });
+
+    // Parábolas con diferentes alturas para evitar cruces
+    controlPoints.push({
+      x: midX + lateralOffset * 0.4,
+      y: midY - baseHeight * 1.2
+    });
+    controlPoints.push({
+      x: midX - lateralOffset * 0.4,
+      y: midY - baseHeight * 1.2
+    });
+
+    // Parábolas más amplias para distancias largas
+    if (distance > 400) {
+      controlPoints.push({
+        x: midX,
+        y: midY - baseHeight * 1.5
+      });
+
+      controlPoints.push({
+        x: midX + lateralOffset * 1.2,
+        y: midY - baseHeight * 0.7
+      });
+      controlPoints.push({
+        x: midX - lateralOffset * 1.2,
+        y: midY - baseHeight * 0.7
+      });
+    }
+
+    // Parábolas inferiores (solo para casos especiales)
+    controlPoints.push({
+      x: midX,
+      y: midY + baseHeight * 0.6
+    });
+
+    controlPoints.push({
+      x: midX + lateralOffset * 0.3,
+      y: midY + baseHeight * 0.4
+    });
+    controlPoints.push({
+      x: midX - lateralOffset * 0.3,
+      y: midY + baseHeight * 0.4
+    });
+
+    console.log(`🎨 Generados ${controlPoints.length} puntos de control para parábolas perfectas (distancia: ${Math.round(distance)}px)`);
+
+    return controlPoints;
+  }
+
+  function countIntersections(from: { x: number; y: number }, to: { x: number; y: number }, controlPoint: { x: number; y: number }): number {
+    let intersections = 0;
+
+    for (const existingPath of existingPaths) {
+      if (pathsIntersect(from, to, controlPoint, existingPath.from, existingPath.to, existingPath.controlPoint)) {
+        intersections++;
+      }
+    }
+
+    return intersections;
+  }
+
+  function pathsIntersect(
+    from1: { x: number; y: number }, to1: { x: number; y: number }, control1: { x: number; y: number },
+    from2: { x: number; y: number }, to2: { x: number; y: number }, control2: { x: number; y: number }
+  ): boolean {
+    // Implementación simplificada de detección de intersección para curvas cuadráticas
+    // Verificamos múltiples puntos a lo largo de cada curva
+    const samples = 10;
+
+    for (let i = 0; i <= samples; i++) {
+      const t1 = i / samples;
+      const point1 = getQuadraticBezierPoint(from1, control1, to1, t1);
+
+      for (let j = 0; j <= samples; j++) {
+        const t2 = j / samples;
+        const point2 = getQuadraticBezierPoint(from2, control2, to2, t2);
+
+        // Si los puntos están muy cerca, consideramos intersección
+        const distance = Math.sqrt(Math.pow(point1.x - point2.x, 2) + Math.pow(point1.y - point2.y, 2));
+        if (distance < 15) { // Umbral de 15 píxeles
+          return true;
+        }
+      }
+    }
+
+    return false;
+  }
+
+  function getQuadraticBezierPoint(start: { x: number; y: number }, control: { x: number; y: number }, end: { x: number; y: number }, t: number) {
+    const x = Math.pow(1 - t, 2) * start.x + 2 * (1 - t) * t * control.x + Math.pow(t, 2) * end.x;
+    const y = Math.pow(1 - t, 2) * start.y + 2 * (1 - t) * t * control.y + Math.pow(t, 2) * end.y;
+    return { x, y };
+  }
+
+  function calculateAlternativeRoute(from: { x: number; y: number }, to: { x: number; y: number }) {
+    // Para rutas muy complejas, crear waypoints que mantengan el estilo parabólico
+    const centerX = (from.x + to.x) / 2;
+    const centerY = (from.y + to.y) / 2;
+    const distance = Math.sqrt(Math.pow(to.x - from.x, 2) + Math.pow(to.y - from.y, 2));
+
+    // Calcular offset perpendicular a la línea directa para crear una ruta parabólica alternativa
+    const angle = Math.atan2(to.y - from.y, to.x - from.x);
+    const perpAngle = angle + Math.PI / 2;
+
+    // Offset más pronunciado para mantener el estilo parabólico
+    const offset = Math.min(distance * 0.6, 180); // Incrementamos el offset para más curvatura
+
+    // Crear waypoint con elevación parabólica
+    const waypoint = {
+      x: centerX + Math.cos(perpAngle) * offset,
+      y: centerY + Math.sin(perpAngle) * offset - Math.min(distance * 0.2, 60) // Elevación adicional para efecto parabólico
+    };
+
+    console.log(`🎯 Ruta alternativa parabólica calculada con offset ${Math.round(offset)}px`);
+
+    return [waypoint];
+  }
+
+  function createMultiSegmentPath(from: { x: number; y: number }, to: { x: number; y: number }, waypoints: Array<{ x: number; y: number }>): string {
+    let pathData = `M ${from.x} ${from.y}`;
+
+    let currentPoint = from;
+    for (const waypoint of waypoints) {
+      // Calcular distancia para determinar la curvatura
+      const segmentDistance = Math.sqrt(Math.pow(waypoint.x - currentPoint.x, 2) + Math.pow(waypoint.y - currentPoint.y, 2));
+
+      // Crear curva parabólica hacia cada waypoint
+      const controlX = (currentPoint.x + waypoint.x) / 2;
+      const controlY = (currentPoint.y + waypoint.y) / 2 - Math.min(segmentDistance * 0.3, 80); // Curvatura parabólica
+
+      pathData += ` Q ${controlX} ${controlY} ${waypoint.x} ${waypoint.y}`;
+      currentPoint = waypoint;
+    }
+
+    // Curva final parabólica hacia el destino
+    const finalDistance = Math.sqrt(Math.pow(to.x - currentPoint.x, 2) + Math.pow(to.y - currentPoint.y, 2));
+    const finalControlX = (currentPoint.x + to.x) / 2;
+    const finalControlY = (currentPoint.y + to.y) / 2 - Math.min(finalDistance * 0.35, 100);
+    pathData += ` Q ${finalControlX} ${finalControlY} ${to.x} ${to.y}`;
+
+    console.log(`🌀 Ruta multi-segmento parabólica creada con ${waypoints.length} waypoints`);
+
+    return pathData;
+  }
+
+  function showCountryCard(node: any, index: number) {
+    // Verificar que el mapa esté cargado y listo
+    if (!map || !map.loaded()) {
+      console.warn(`⚠️ Mapa no está listo para ${node.country}, reintentando...`);
+      setTimeout(() => showCountryCard(node, index), 500);
+      return;
+    }
+
+    console.log(`🏷️ Mostrando tarjeta para ${node.country}`, {
+      originalCoords: node.coordinates,
+      latency: node.latency
+    });
+
+    // Verificar que las coordenadas son válidas
+    if (!node.coordinates || node.coordinates.length !== 2) {
+      console.error(`❌ Coordenadas inválidas para ${node.country}:`, node.coordinates);
+      return;
+    }
+
+    // Aplicar offset si existe para evitar superposiciones
+    const positionOffsets: Record<string, { x: number; y: number }> = {
+      'China': { x: -15, y: -10 },
+      'Japan': { x: 20, y: 15 },
+      'Australia': { x: 0, y: 20 },
+      'South Africa': { x: 10, y: 0 },
+      'Brazil': { x: -10, y: 10 },
+      'United States': { x: 0, y: -15 }
+    };
+
+    let adjustedCoords = [...node.coordinates];
+    const offset = positionOffsets[node.country];
+    if (offset) {
+      const pixelToDegree = 0.02;
+      adjustedCoords[0] += offset.x * pixelToDegree;
+      adjustedCoords[1] += offset.y * pixelToDegree;
+      console.log(`📍 Aplicando offset a ${node.country}:`, {
+        original: node.coordinates,
+        offset: offset,
+        adjusted: adjustedCoords
+      });
+    }
+
+    // Crear la tarjeta del país
+    const card = document.createElement('div');
+    const status = getLatencyStatus(node.latency);
+    card.className = `country-card ${status}`;
+
+    // Configurar estilos iniciales para la animación
+    gsap.set(card, {
+      opacity: 0,
+      scale: 0.8
+    });
+
+    card.innerHTML = `
+      <div class="card-content">
+        <h3 class="country-name">${node.country}</h3>
+        <div class="latency-display">
+          <div class="latency-value ${status}">
+            ${node.latency}<span class="latency-unit">ms</span>
+          </div>
+        </div>
+      </div>
+    `;
+
+    // Crear el marcador y añadirlo al mapa
+    try {
+      const marker = new maplibregl.Marker({
+        element: card,
+        anchor: 'center'
+      })
+      .setLngLat(adjustedCoords as [number, number])
+      .addTo(map);
+
+      markers.push(marker);
+      console.log(`✅ Marcador creado para ${node.country}`);
+
+      // Verificar la posición del marcador después de crearlo
+      setTimeout(() => {
+        const lngLat = marker.getLngLat();
+        const screenPos = map.project(lngLat);
+        console.log(`📍 Tarjeta ${node.country} posicionada:`, {
+          lngLat: lngLat,
+          screenPosition: { x: screenPos.x, y: screenPos.y },
+          isVisible: screenPos.x > 0 && screenPos.y > 0 && screenPos.x < window.innerWidth && screenPos.y < window.innerHeight
+        });
+
+        // Animar la aparición de la tarjeta solo después de verificar la posición
+        gsap.fromTo(card,
+          {
+            opacity: 0,
+            scale: 0.8
+          },
+          {
+            opacity: 1,
+            scale: 1,
+            duration: 0.6,
+            ease: "back.out(1.7)",
+            delay: 0.1,
+            onComplete: () => {
+              console.log(`🎉 Animación completada para ${node.country}`);
+            }
+          }
+        );
+      }, 100);
+
+    } catch (error) {
+      console.error(`❌ Error creando marcador para ${node.country}:`, error);
+    }
+
+    console.log(`📋 Procesamiento completado para ${node.country} (Total marcadores: ${markers.length})`);
+  }
+
+  function restartTraceAnimation() {
+    console.log('🔄 Reiniciando animación de trazado');
+
+    // Resetear países activados - todos vuelven a gris except España
+    activatedCountries.clear();
+    activatedCountries.add('Spain'); // España siempre permanece activada
+    console.log('🎨 Países activados reseteados - todos vuelven a gris excepto España');
+
+    // Actualizar colores inmediatamente para mostrar todos en gris
+    updateCountryColors();
+
+    // Limpiar tarjetas de países existentes
+    clearCountryCards();
+
+    // Limpiar el historial de rutas para el sistema de enrutamiento inteligente
+    existingPaths.length = 0;
+    console.log('🧹 Historial de rutas limpiado');
+
+    // Limpiar trazas existentes
+    if (traceLines) {
+      // Desvanecer las trazas existentes
+      gsap.to(traceLines.children, {
+        opacity: 0,
+        duration: 0.5,
+        onComplete: () => {
+          // Limpiar todas las trazas
+          while (traceLines && traceLines.firstChild) {
+            traceLines.removeChild(traceLines.firstChild);
+          }
+
+          // Reiniciar la animación después de un breve delay
+          setTimeout(() => {
+            animateTraces();
+          }, 500);
+        }
+      });
+    } else {
+      // Si no hay trazas, simplemente reiniciar
+      setTimeout(() => {
+        animateTraces();
+      }, 500);
+    }
+  }
+
+  // Función para actualizar colores de países dinámicamente
+  function updateCountryColors() {
+    if (!map || !map.loaded()) return;
+
+    // Función para obtener color basado en latencia
+    function getColorByLatency(latency: number): string {
+      if (latency < 50) return '#4ade80';    // Verde - good
+      if (latency < 100) return '#fbbf24';   // Amarillo - warning
+      if (latency < 200) return '#fb923c';   // Naranja - critical
+      return '#ef4444';                      // Rojo - offline/muy crítico
+    }
+
+    console.log('🎨 Actualizando colores de países basado en latencia...');
+
+    // Crear nueva expresión con las latencias actuales
+    const expressionParts: any[] = ['case'];
+
+    // Añadir cada país con su color basado en latencia actual (solo si está activado)
+    latencyConfig.remoteNodes.forEach(node => {
+      // Solo aplicar color de latencia si el país ha sido activado, sino usar gris
+      const color = activatedCountries.has(node.country) ? getColorByLatency(node.latency) : '#515151';
+      console.log(`País: ${node.country}, Activado: ${activatedCountries.has(node.country)}, Latencia: ${node.latency}ms, Color: ${color}`);
+
+      // Añadir todas las variantes de nombres para cada país
+      switch(node.country) {
+        case 'United States':
+          expressionParts.push(
+            ['==', ['get', 'NAME'], 'United States'], color,
+            ['==', ['get', 'NAME'], 'United States of America'], color,
+            ['==', ['get', 'NAME'], 'USA'], color,
+            ['==', ['get', 'name'], 'United States'], color,
+            ['==', ['get', 'name'], 'United States of America'], color,
+            ['==', ['get', 'ADMIN'], 'United States of America'], color,
+            ['==', ['get', 'NAME_EN'], 'United States'], color,
+            ['==', ['get', 'iso_a2'], 'US'], color
+          );
+          break;
+        case 'Brazil':
+          expressionParts.push(
+            ['==', ['get', 'NAME'], 'Brazil'], color,
+            ['==', ['get', 'NAME'], 'Brasil'], color,
+            ['==', ['get', 'name'], 'Brazil'], color,
+            ['==', ['get', 'iso_a2'], 'BR'], color
+          );
+          break;
+        case 'South Africa':
+          expressionParts.push(
+            ['==', ['get', 'NAME'], 'South Africa'], color,
+            ['==', ['get', 'name'], 'South Africa'], color,
+            ['==', ['get', 'iso_a2'], 'ZA'], color
+          );
+          break;
+        case 'China':
+          expressionParts.push(
+            ['==', ['get', 'NAME'], 'China'], color,
+            ['==', ['get', 'name'], 'China'], color,
+            ['==', ['get', 'iso_a2'], 'CN'], color
+          );
+          break;
+        case 'Japan':
+          expressionParts.push(
+            ['==', ['get', 'NAME'], 'Japan'], color,
+            ['==', ['get', 'name'], 'Japan'], color,
+            ['==', ['get', 'iso_a2'], 'JP'], color
+          );
+          break;
+        case 'Australia':
+          expressionParts.push(
+            ['==', ['get', 'NAME'], 'Australia'], color,
+            ['==', ['get', 'name'], 'Australia'], color,
+            ['==', ['get', 'iso_a2'], 'AU'], color
+          );
+          break;
+      }
+    });
+
+    // España (nodo central) - siempre azul
+    expressionParts.push(
+      ['==', ['get', 'NAME'], 'Spain'], '#3B82F6',
+      ['==', ['get', 'name'], 'Spain'], '#3B82F6',
+      ['==', ['get', 'iso_a2'], 'ES'], '#3B82F6'
+    );
+
+    // Color por defecto para países no monitoreados
+    expressionParts.push('#515151');
+
+    const expression = expressionParts as ExpressionSpecification;
+
+    // Actualizar la capa de países coloreados
+    try {
+      if (map.getLayer('countries-highlighted')) {
+        map.setPaintProperty('countries-highlighted', 'fill-color', expression);
+        console.log('✅ Colores actualizados en countries-highlighted');
+      }
+      if (map.getLayer('countries-highlighted-fallback')) {
+        map.setPaintProperty('countries-highlighted-fallback', 'fill-color', expression);
+        console.log('✅ Colores actualizados en countries-highlighted-fallback');
+      }
+    } catch (error) {
+      console.error('❌ Error actualizando colores de países:', error);
+    }
+  }
+
+  // Función para activar el color de un país cuando la traza lo alcanza
+  function activateCountryColor(countryName: string) {
+    console.log(`🌍 Activando color para ${countryName}`);
+
+    // Añadir el país al conjunto de países activados
+    activatedCountries.add(countryName);
+
+    // Actualizar los colores del mapa inmediatamente
+    updateCountryColors();
+
+    // Animar la transición de color usando GSAP para suavizar el cambio
+    const targetCountryElements = document.querySelectorAll(`[data-country="${countryName}"]`);
+    targetCountryElements.forEach(element => {
+      gsap.fromTo(element,
+        {
+          filter: 'saturate(0.3) brightness(0.7)'
+        },
+        {
+          filter: 'saturate(1) brightness(1)',
+          duration: 1.5,
+          ease: "power2.out"
+        }
+      );
+    });
+  }
+
+  function getLatencyStatus(latency: number): string {
+    if (latency < 50) return 'good';
+    if (latency < 100) return 'warning';
+    if (latency < 200) return 'critical';
+    return 'offline';
+  }
+
+  function startLatencyUpdates() {
+    setInterval(() => {
+      // Buscar todas las tarjetas de países visibles
+      const cards = document.querySelectorAll('.country-card[data-country]');
+
+      cards.forEach((card, index) => {
+        const countryName = card.getAttribute('data-country');
+        const node = latencyConfig.remoteNodes.find(n => n.country === countryName);
+
+        if (node) {
+          const previousLatency = node.latency;
+          const previousStatus = getLatencyStatus(previousLatency);
+
+          // Simular variación de latencia
+          const variation = Math.floor(Math.random() * 60) - 30; // ±30ms
+          const newLatency = Math.max(10, Math.min(500, node.latency + variation));
+          const newStatus = getLatencyStatus(newLatency);
+
+          // Detectar cambios críticos para notificaciones
+          const statusChanged = previousStatus !== newStatus;
+
+          // Enviar notificación solo para cambios críticos
+          if (statusChanged && (newStatus === 'critical' || newStatus === 'offline' || (previousStatus === 'critical' && newStatus === 'good'))) {
+            sendLatencyNotification(node.country, previousLatency, newLatency, previousStatus, newStatus);
+          }
+
+          // Actualizar display de latencia
+          const latencyValueElement = card.querySelector('.latency-value');
+          if (latencyValueElement) {
+            latencyValueElement.innerHTML = `${newLatency}<span class="latency-unit">ms</span>`;
+            latencyValueElement.className = `latency-value ${newStatus}`;
+          }
+
+          // Actualizar clase de la card
+          card.className = `country-card ${newStatus}`;
+          if (countryName) {
+            card.setAttribute('data-country', countryName); // Mantener el atributo
+          }
+
+          // Actualizar latencia en configuración
+          node.latency = newLatency;
+        }
+      });
+
+      // Actualizar colores de países después de cambiar las latencias
+      updateCountryColors();
+    }, 15000); // Actualizar cada 15 segundos
+
+    // Notificación periódica de estado general cada 5 minutos
+    setInterval(() => {
+      sendPeriodicStatsNotification();
+    }, 300000);
+  }
+
+  // Función para enviar notificaciones críticas de latencia (solo cambios importantes)
+  function sendLatencyNotification(country: string, oldLatency: number, newLatency: number, oldStatus: string, newStatus: string) {
+    if (typeof (window as any).notificationUtils === 'undefined') {
+      return;
+    }
+
+    let type: 'success' | 'warning' | 'error' | 'info' = 'info';
+    let title = '';
+    let message = '';
+    let icon = '';
+
+    // Solo notificar cambios críticos
+    if (newStatus === 'critical' || newStatus === 'offline') {
+      type = 'error';
+      icon = '🚨';
+      title = 'Conexión Crítica';
+      message = `${country}: Latencia crítica de ${newLatency}ms - Requiere atención`;
+    } else if (oldStatus === 'critical' && newStatus === 'good') {
+      type = 'success';
+      icon = '✅';
+      title = 'Conexión Restaurada';
+      message = `${country}: Conexión restaurada - Latencia normalizada a ${newLatency}ms`;
+    }
+
+    if (message) {
+      (window as any).notificationUtils.show(type, title, message, icon);
+    }
+  }
+
+  // Función para limpiar y reinicializar el mapa
+  function resetMap() {
+    if (map) {
+      // Limpiar marcadores existentes
+      markers.forEach(marker => marker.remove());
+      markers = [];
+
+      // Remover el mapa
+      map.remove();
+    }
+
+    // Reinicializar
+    initializeMap();
+  }
+
+  // Función para obtener estadísticas del mapa
+  function getMapStats() {
+    const activeNodes = latencyConfig.remoteNodes.filter(node => node.status !== 'offline');
+    const criticalNodes = latencyConfig.remoteNodes.filter(node => getLatencyStatus(node.latency) === 'critical');
+    const averageLatency = Math.round(
+      latencyConfig.remoteNodes.reduce((sum, node) => sum + node.latency, 0) /
+      latencyConfig.remoteNodes.length
+    );
+
+    return {
+      totalNodes: latencyConfig.remoteNodes.length + 1, // +1 por Arteixo
+      activeConnections: activeNodes.length,
+      criticalConnections: criticalNodes.length,
+      averageLatency: averageLatency,
+      markersCount: markers.length,
+      mapLoaded: map ? map.loaded() : false,
+      healthStatus: criticalNodes.length === 0 ? 'healthy' : criticalNodes.length < 3 ? 'warning' : 'critical'
+    };
+  }
+
+  // Función para enviar notificaciones de estado general (cada 5 minutos)
+  function sendPeriodicStatsNotification() {
+    if (typeof (window as any).notificationUtils === 'undefined') {
+      return;
+    }
+
+    const stats = getMapStats();
+
+    // Solo notificar si hay conexiones críticas o estado muy bueno
+    if (stats.criticalConnections > 2) {
+      (window as any).notificationUtils.show(
+        'error',
+        'Alerta de Red',
+        `${stats.criticalConnections} conexiones críticas detectadas. Revisar infraestructura.`,
+        '🚨'
+      );
+    } else if (stats.criticalConnections === 0 && stats.averageLatency < 40) {
+      (window as any).notificationUtils.show(
+        'success',
+        'Red Óptima',
+        `Todas las conexiones funcionan correctamente. Latencia promedio: ${stats.averageLatency}ms`,
+        '🌟'
+      );
+    }
+  }
+
+  // Función de debugging para verificar estado del mapa
+  function debugMapState() {
+    console.log('=== DEBUG MAP STATE ===');
+    console.log('Map loaded:', map ? map.loaded() : 'Map not initialized');
+    console.log('Map center:', map ? map.getCenter() : 'N/A');
+    console.log('Map zoom:', map ? map.getZoom() : 'N/A');
+    console.log('Map bounds:', map ? map.getBounds() : 'N/A');
+    console.log('Total markers:', markers.length);
+    console.log('Latency config nodes:', latencyConfig.remoteNodes.length);
+
+    // Verificar cada marcador individualmente
+    markers.forEach((marker, index) => {
+      const lngLat = marker.getLngLat();
+      const screenPos = map.project(lngLat);
+      console.log(`Marker ${index}:`, {
+        lngLat: lngLat,
+        screenPosition: screenPos,
+        element: marker.getElement().className
+      });
+    });
+
+    // Verificar si hay elementos DOM creados
+    const cardElements = document.querySelectorAll('.country-card, .central-card');
+    console.log('Card elements in DOM:', cardElements.length);
+
+    cardElements.forEach((card, index) => {
+      const rect = card.getBoundingClientRect();
+      console.log(`Card ${index} DOM position:`, {
+        top: rect.top,
+        left: rect.left,
+        width: rect.width,
+        height: rect.height,
+        className: card.className,
+        isVisible: rect.width > 0 && rect.height > 0
+      });
+    });
+
+    // Verificar proyección específica de coordenadas conocidas
+    console.log('=== PROJECTION TEST ===');
+    const testCoords = [
+      { name: 'Arteixo', coords: [-8.5096, 43.3039] as [number, number] },
+      { name: 'New York', coords: [-74.0060, 40.7128] as [number, number] },
+      { name: 'London', coords: [-0.1276, 51.5074] as [number, number] },
+      { name: 'Tokyo', coords: [139.6917, 35.6895] as [number, number] }
+    ];
+
+    testCoords.forEach(test => {
+      const projected = map.project(test.coords);
+      console.log(`${test.name} (${test.coords}) -> Screen: (${projected.x}, ${projected.y})`);
+    });
+  }
+
+  // Inicializar cuando el DOM esté listo
+  document.addEventListener('DOMContentLoaded', initializeMap);
+
+  // Agregar debugging adicional después de que el mapa esté cargado
+  setTimeout(() => {
+    if (map && map.loaded()) {
+      debugMapState();
+
+      // Verificar features de países para debugging
+      console.log('=== DEBUGGING COUNTRY FEATURES ===');
+      const features = map.querySourceFeatures('countries', {
+        sourceLayer: 'countries'
+      });
+
+      // Buscar específicamente Estados Unidos
+      const usFeatures = features.filter(f =>
+        f.properties && (
+          f.properties.NAME === 'United States' ||
+          f.properties.NAME === 'United States of America' ||
+          f.properties.name === 'United States' ||
+          f.properties.ADMIN === 'United States of America'
+        )
+      );
+
+      console.log('US Features found:', usFeatures.length);
+      usFeatures.forEach((feature, index) => {
+        console.log(`US Feature ${index}:`, feature.properties);
+      });
+
+      // Log primeras 10 features para ver estructura
+      features.slice(0, 10).forEach((feature, index) => {
+        console.log(`Feature ${index}:`, feature.properties);
+      });
+    }
+  }, 5000);
+
+  // Funciones globales para debugging
+  (window as any).mapUtils = {
+    getLatencyConfig: () => latencyConfig,
+    getMap: () => map,
+    getMapStats: getMapStats,
+    resetMap: resetMap,
+    markers: () => markers,
+    debugMapState: debugMapState,
+    updateCountryColors: updateCountryColors, // Nueva función de debug
+    // Nuevas funciones de debug
+    debugCards: () => {
+      console.log('=== DEBUG CARDS ===');
+      const countryCards = document.querySelectorAll('.country-card');
+      const centralCards = document.querySelectorAll('.central-card');
+
+      console.log('Country cards found:', countryCards.length);
+      console.log('Central cards found:', centralCards.length);
+      console.log('Total markers:', markers.length);
+
+      countryCards.forEach((card, index) => {
+        const rect = card.getBoundingClientRect();
+        const countryName = card.getAttribute('data-country');
+        console.log(`Card ${index} (${countryName}):`, {
+          className: card.className,
+          position: { top: rect.top, left: rect.left, width: rect.width, height: rect.height },
+          visible: rect.width > 0 && rect.height > 0,
+          opacity: getComputedStyle(card).opacity,
+          visibility: getComputedStyle(card).visibility,
+          dataCountry: countryName
+        });
+      });
+    },
+    clearAndRestart: () => {
+      clearCountryCards();
+      setTimeout(() => {
+        startTraceAnimation();
+      }, 1000);
+    },
+    // Nueva función para forzar mostrar todas las tarjetas (debug)
+    showAllCards: () => {
+      const cards = document.querySelectorAll('.country-card[data-country]');
+      cards.forEach(card => {
+        const htmlCard = card as HTMLElement;
+        htmlCard.style.visibility = 'visible';
+        htmlCard.style.opacity = '1';
+      });
+      console.log(`Forzado mostrar ${cards.length} tarjetas`);
+    },
+    // Nueva función para debug de efectos de energía
+    debugEnergyEffects: () => {
+      console.log('=== DEBUG ENERGY EFFECTS ===');
+      const activePaths = document.querySelectorAll('.trace-path.active');
+      const energyPaths = document.querySelectorAll('.trace-path.energy-flow');
+      const particles = document.querySelectorAll('.energy-particle');
+
+      console.log('Paths con pulso activo:', activePaths.length);
+      console.log('Paths con flujo de energía:', energyPaths.length);
+      console.log('Partículas de energía activas:', particles.length);
+
+      activePaths.forEach((path, index) => {
+        console.log(`Path activo ${index}:`, {
+          classes: path.className,
+          opacity: getComputedStyle(path).opacity,
+          strokeWidth: getComputedStyle(path).strokeWidth
+        });
+      });
+    },
+    // Debug del sistema de enrutamiento inteligente
+    debugRouting: () => {
+      console.log('=== DEBUG SISTEMA DE PARÁBOLAS CONTINUAS ===');
+      console.log(`📊 Parábolas registradas: ${existingPaths.length}`);
+
+      if ((window as any).routingUtils) {
+        const intersections = (window as any).routingUtils.analyzeIntersections();
+        console.log(`🔍 Intersecciones detectadas: ${intersections}`);
+      }
+
+      // Mostrar estadísticas de parábolas
+      console.log(`🎨 Todas las rutas son parábolas continuas (sin segmentos)`);
+      console.log(`📈 Total de curvas parabólicas: ${existingPaths.length}`);
+    },
+    // Función completa de debug que incluye todo
+    fullDebug: () => {
+      console.log('=== DEBUG COMPLETO DEL WORLDMAP ===');
+      (window as any).mapUtils.debugEnergyEffects();
+      (window as any).mapUtils.debugRouting();
+
+      const totalPaths = document.querySelectorAll('.trace-path').length;
+      const cards = document.querySelectorAll('.country-card').length;
+
+      console.log(`🎯 Total paths SVG: ${totalPaths}`);
+      console.log(`🏷️ Total tarjetas: ${cards}`);
+    },
+    // Función para crear partícula manual (debug)
+    createTestParticle: () => {
+      const activePaths = document.querySelectorAll('.trace-path.active');
+      if (activePaths.length > 0) {
+        // Llamar a la función global que está definida en el scope del componente
+        if (typeof (window as any).energyUtils !== 'undefined') {
+          (window as any).energyUtils.createParticle(activePaths[0] as SVGPathElement);
+        }
+        console.log('✨ Partícula de prueba creada');
+      } else {
+        console.log('❌ No hay paths activos para crear partícula');
+      }
+    }
+  };
+
+  // Utilidades específicas para efectos de energía
+  (window as any).energyUtils = {
+    createParticle: (path: SVGPathElement) => createEnergyParticle(path),
+    activatePulse: (path: SVGPathElement) => activateEnergyPulse(path),
+    getEnergyStats: () => {
+      return {
+        activePaths: document.querySelectorAll('.trace-path.active').length,
+        energyFlows: document.querySelectorAll('.trace-path.energy-flow').length,
+        activeParticles: document.querySelectorAll('.energy-particle.active').length
+      };
+    }
+  };
+
+  // Utilidades para debug del sistema de parábolas continuas
+  (window as any).routingUtils = {
+    getExistingPaths: () => {
+      console.log(`🎨 Parábolas registradas: ${existingPaths.length}`);
+      existingPaths.forEach((path, index) => {
+        const distance = Math.sqrt(
+          Math.pow(path.to.x - path.from.x, 2) +
+          Math.pow(path.to.y - path.from.y, 2)
+        );
+        const midY = (path.from.y + path.to.y) / 2;
+        const curveHeight = Math.abs(midY - path.controlPoint.y);
+        const heightRatio = curveHeight / distance;
+
+        console.log(`Parábola ${index}:`, {
+          from: path.from,
+          to: path.to,
+          controlPoint: path.controlPoint,
+          distance: Math.round(distance),
+          height: Math.round(curveHeight),
+          curvature: Math.round(heightRatio * 100) / 100,
+          intersections: path.intersectionCount || 0
+        });
+      });
+      return existingPaths;
+    },
+    clearPaths: () => {
+      existingPaths.length = 0;
+      console.log('🧹 Historial de parábolas limpiado manualmente');
+    },
+    analyzeIntersections: () => {
+      console.log('🔍 Analizando intersecciones entre parábolas...');
+      let totalIntersections = 0;
+
+      for (let i = 0; i < existingPaths.length; i++) {
+        for (let j = i + 1; j < existingPaths.length; j++) {
+          const path1 = existingPaths[i];
+          const path2 = existingPaths[j];
+
+          if (pathsIntersect(path1.from, path1.to, path1.controlPoint, path2.from, path2.to, path2.controlPoint)) {
+            totalIntersections++;
+            console.log(`❌ Intersección detectada entre parábola ${i} y parábola ${j}`);
+          }
+        }
+      }
+
+      console.log(`📊 Total de intersecciones: ${totalIntersections}`);
+      return totalIntersections;
+    },
+    testRoute: (fromX: number, fromY: number, toX: number, toY: number) => {
+      const testFrom = { x: fromX, y: fromY };
+      const testTo = { x: toX, y: toY };
+      const route = calculateOptimalRoute(testFrom, testTo);
+
+      console.log('🧪 Ruta parabólica de prueba calculada:', {
+        from: testFrom,
+        to: testTo,
+        controlPoint: route.controlPoint,
+        intersections: route.intersectionCount,
+        type: 'Parábola continua'
+      });
+
+      return route;
+    },
+    // Nueva función para visualizar curvas parabólicas
+    analyzeParabolicCurves: () => {
+      console.log('=== ANÁLISIS DE CURVAS PARABÓLICAS ===');
+      const paths = document.querySelectorAll('.trace-path');
+
+      paths.forEach((path, index) => {
+        const pathElement = path as SVGPathElement;
+        const pathData = pathElement.getAttribute('d');
+        const length = pathElement.getTotalLength();
+
+        console.log(`🎨 Curva ${index}:`, {
+          pathData: pathData?.substring(0, 50) + '...',
+          length: Math.round(length),
+          isParabolic: pathData?.includes('Q') ? '✅ Sí' : '❌ No'
+        });
+      });
+
+      console.log(`📊 Total de curvas analizadas: ${paths.length}`);
+    },
+    // Función para medir altura de parábolas
+    measureCurveHeights: () => {
+      console.log('=== MEDICIÓN DE PARÁBOLAS CONTINUAS ===');
+
+      existingPaths.forEach((path, index) => {
+        const distance = Math.sqrt(
+          Math.pow(path.to.x - path.from.x, 2) +
+          Math.pow(path.to.y - path.from.y, 2)
+        );
+
+        const midY = (path.from.y + path.to.y) / 2;
+        const curveHeight = Math.abs(midY - path.controlPoint.y);
+        const heightRatio = curveHeight / distance;
+
+        console.log(`🎨 Parábola ${index}:`, {
+          distance: Math.round(distance),
+          height: Math.round(curveHeight),
+          ratio: Math.round(heightRatio * 100) / 100,
+          type: heightRatio > 0.35 ? '🚀 Alta parábola' : '🌊 Parábola suave',
+          isAbove: path.controlPoint.y < midY ? '⬆️ Superior' : '⬇️ Inferior'
+        });
+      });
+
+      // Estadísticas generales
+      const avgHeight = existingPaths.reduce((sum, path) => {
+        const midY = (path.from.y + path.to.y) / 2;
+        return sum + Math.abs(midY - path.controlPoint.y);
+      }, 0) / existingPaths.length;
+
+      console.log(`📊 Altura promedio de parábolas: ${Math.round(avgHeight)}px`);
+    }
+  };
+</script>

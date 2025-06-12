@@ -1,0 +1,155 @@
+---
+// Panel4.astro - Componente que encapsula el WorldMap para el videowall
+import WorldMap from './WorldMap.astro';
+---
+
+<div class="panel4-container">
+  <WorldMap />
+</div>
+
+<script>
+  // Script de debugging para Panel4
+  document.addEventListener('DOMContentLoaded', () => {
+    console.log('🎯 Panel4: DOM cargado');
+
+    // Verificar que el contenedor existe
+    const panel4Container = document.querySelector('.panel4-container');
+    if (panel4Container) {
+      console.log('✅ Panel4: Contenedor encontrado', panel4Container);
+
+      // Función para redimensionar el mapa
+      const resizeMap = () => {
+        if ((window as any).mapUtils && (window as any).mapUtils.getMap()) {
+          const map = (window as any).mapUtils.getMap();
+          console.log('🔄 Panel4: Redimensionando mapa');
+          setTimeout(() => {
+            map.resize();
+          }, 100);
+        }
+      };
+
+      // Observar cambios de tamaño del contenedor
+      const resizeObserver = new ResizeObserver(() => {
+        resizeMap();
+      });
+      resizeObserver.observe(panel4Container);
+
+      // Monitorear cuando aparezcan las cards de latencia
+      const observer = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+          mutation.addedNodes.forEach((node) => {
+            if (node.nodeType === 1) {
+              const element = node as Element;
+              if (element.classList && element.classList.contains('maplibregl-marker')) {
+                console.log('🏷️ Panel4: Marker detectado', element);
+                const countryCard = element.querySelector('.country-card') as HTMLElement;
+                if (countryCard) {
+                  console.log('📋 Panel4: Country card encontrada', countryCard);
+                  // Forzar visibilidad
+                  countryCard.style.opacity = '1';
+                  countryCard.style.visibility = 'visible';
+                  countryCard.style.zIndex = '1000';
+                }
+              }
+            }
+          });
+        });
+      });
+
+      observer.observe(panel4Container, {
+        childList: true,
+        subtree: true
+      });
+
+      // Redimensionar mapa después de que todo esté cargado
+      setTimeout(() => {
+        resizeMap();
+      }, 2000);
+
+      // Verificar después de 5 segundos
+      setTimeout(() => {
+        const markers = panel4Container.querySelectorAll('.maplibregl-marker');
+        const cards = panel4Container.querySelectorAll('.country-card');
+        console.log(`🔍 Panel4: ${markers.length} markers, ${cards.length} cards encontradas`);
+
+        cards.forEach((card, index) => {
+          const htmlCard = card as HTMLElement;
+          console.log(`📋 Panel4: Card ${index}:`, {
+            opacity: htmlCard.style.opacity,
+            visibility: htmlCard.style.visibility,
+            zIndex: htmlCard.style.zIndex,
+            position: htmlCard.style.position
+          });
+        });
+      }, 5000);
+    } else {
+      console.error('❌ Panel4: Contenedor no encontrado');
+    }
+  });
+</script>
+
+<style>
+  .panel4-container {
+    width: 100%;
+    height: 100%; /* Changed back from 100vh to 100% to fit within panel */
+    position: relative;
+    background: #1E1E1E;
+    overflow: visible; /* Changed to visible to allow complete world map display */
+    display: flex;
+    flex-direction: column;
+    padding-left: 4px; /* Small padding to separate from Panel3 */
+    box-sizing: border-box;
+    min-height: 0; /* Allow flexible sizing */
+  }
+
+  /* Asegurar que el WorldMap se ajuste completamente al panel */
+  .panel4-container :global(.world-map-container) {
+    width: 100% !important;
+    height: 100% !important;
+    position: relative !important;
+    overflow: visible !important; /* Allow complete world map visualization */
+    min-height: 600px; /* Minimum height to ensure proper map display */
+  }
+
+  /* Asegurar que el contenedor del mapa también sea visible */
+  .panel4-container :global(#world-map) {
+    width: 100% !important;
+    height: 100% !important;
+    overflow: visible !important; /* Allow complete map visualization */
+    min-height: 600px; /* Ensure adequate height for world map */
+  }
+
+  /* Preservar funcionalidad completa de las cards de latencia */
+  .panel4-container :global(.country-card) {
+    z-index: 1000 !important;
+    pointer-events: none !important;
+    position: absolute !important;
+  }
+
+  /* Mantener visibilidad de todas las animaciones */
+  .panel4-container :global(.trace-path),
+  .panel4-container :global(.energy-particle),
+  .panel4-container :global(.connection-line) {
+    z-index: 500 !important;
+  }
+
+  /* Asegurar que el pin de Arteixo sea visible */
+  .panel4-container :global(.arteixo-label) {
+    z-index: 1001 !important;
+  }
+
+  /* Asegurar que todos los markers de MapLibre GL sean visibles */
+  .panel4-container :global(.maplibregl-marker) {
+    z-index: 1000 !important;
+    overflow: visible !important;
+  }
+
+  /* Asegurar que el canvas del mapa no corte los elementos */
+  .panel4-container :global(.maplibregl-canvas-container) {
+    overflow: visible !important;
+  }
+
+  .panel4-container :global(.maplibregl-map) {
+    overflow: visible !important;
+  }
+</style>
