@@ -94,11 +94,12 @@ import WorldMap from './WorldMap.astro';
     height: 100%; /* Changed back from 100vh to 100% to fit within panel */
     position: relative;
     background: #1E1E1E;
-    overflow: hidden; /* Changed from visible to hidden to prevent overlap */
+    overflow: visible; /* Changed to visible to allow complete world map display */
     display: flex;
     flex-direction: column;
     padding-left: 4px; /* Small padding to separate from Panel3 */
     box-sizing: border-box;
+    min-height: 0; /* Allow flexible sizing */
   }
 
   /* Asegurar que el WorldMap se ajuste completamente al panel */
@@ -106,14 +107,16 @@ import WorldMap from './WorldMap.astro';
     width: 100% !important;
     height: 100% !important;
     position: relative !important;
-    overflow: hidden !important; /* Contain content within panel boundaries */
+    overflow: visible !important; /* Allow complete world map visualization */
+    min-height: 600px; /* Minimum height to ensure proper map display */
   }
 
   /* Asegurar que el contenedor del mapa también sea visible */
   .panel4-container :global(#world-map) {
     width: 100% !important;
     height: 100% !important;
-    overflow: hidden !important; /* Keep content contained */
+    overflow: visible !important; /* Allow complete map visualization */
+    min-height: 600px; /* Ensure adequate height for world map */
   }
 
   /* Preservar funcionalidad completa de las cards de latencia */

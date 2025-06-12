@@ -13,7 +13,7 @@ import Panel4 from '../components/Panel4.astro';
                 minmax(1600px, 1.4fr)    /* Panel1 - Increased from 1200px to 1600px for larger SVG */
                 minmax(965px, max-content) /* Panel2 - Charts (exact content width) */
                 minmax(600px, 0.8fr)     /* Panel3 - Semaphore indicators */
-                minmax(800px, 1fr);      /* Panel4 - World map with pins */
+                minmax(1200px, 1.5fr);   /* Panel4 - World map with more space for complete visualization */
             width: 100%;
             min-width: max-content; /* Allow horizontal expansion as needed */
             height: 100vh;
@@ -53,9 +53,9 @@ import Panel4 from '../components/Panel4.astro';
         .panel-wrapper:last-child {
             /* Panel4 - WorldMap component with pins */
             container-type: inline-size;
-            overflow: hidden;
+            overflow: visible; /* Allow map to display completely */
             position: relative;
-            min-width: 800px; /* Ensure world map displays completely */
+            min-width: 1200px; /* Increased minimum width to ensure world map displays completely */
         }
 
         /* Responsive behavior for very large screens */
@@ -65,7 +65,7 @@ import Panel4 from '../components/Panel4.astro';
                     minmax(1800px, 1.5fr)    /* Increased Panel1 space for large screens */
                     minmax(1065px, max-content) /* Slightly larger Panel2 but still content-based */
                     minmax(700px, 0.8fr)     /* Slightly more space for Panel3 */
-                    minmax(900px, 1fr);      /* More space for Panel4 */
+                    minmax(1400px, 1.5fr);   /* Significantly more space for Panel4 world map */
             }
         }
 
@@ -76,7 +76,7 @@ import Panel4 from '../components/Panel4.astro';
                     minmax(2200px, 1.6fr)    /* Maximum space for Panel1 - significantly increased */
                     minmax(1165px, max-content) /* Enhanced Panel2 but content-based */
                     minmax(800px, 0.9fr)     /* Enhanced Panel3 space */
-                    minmax(1000px, 1fr);     /* Enhanced Panel4 space */
+                    minmax(1600px, 1.6fr);   /* Maximum space for Panel4 world map */
             }
         }
     </style>

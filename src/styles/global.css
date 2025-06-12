@@ -71,8 +71,3 @@ html {
   scroll-behavior: smooth;
 }
 
-/* Optimize rendering for large displays */
-* {
-  backface-visibility: hidden;
-  transform: translateZ(0);
-}

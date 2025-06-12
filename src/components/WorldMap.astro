@@ -10,10 +10,11 @@ import { latencyConfig } from '../mocks/data/latency-data';
 <style>
   .world-map-container {
     width: 100%;
-    height: 100%;
+    height: 100%; /* Changed from 100vh to 100% for better panel integration */
     position: relative;
     background: #1E1E1E;
-    overflow: hidden;
+    overflow: visible; /* Allow complete world map visualization */
+    min-height: 600px; /* Minimum height for proper world map display */
   }
 
   /* Ocultar controles de MapLibre */
@@ -400,8 +401,10 @@ import { latencyConfig } from '../mocks/data/latency-data';
         }
       ]
     } as StyleSpecification,
-    center: [0, 0] as LngLatLike, // Centro del mundo para vista completa
-    zoom: 1.2, // Slightly increased zoom for better detail in Panel4
+    center: [0, 10] as LngLatLike, // Centro del mundo ligeramente al norte, más centrado
+    zoom: 1.8, // Reducido para mostrar el mapa mundial completo
+    minZoom: 1.5, // Límite mínimo para mantener el mundo visible
+    maxZoom: 4, // Límite máximo apropiado para videowall
     pitch: 0,
     bearing: 0,
     // Desactivar toda interacción para videowall estático
