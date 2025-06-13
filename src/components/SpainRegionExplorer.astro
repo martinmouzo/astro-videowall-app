@@ -416,6 +416,27 @@ const { hideInfoOverlay = false } = Astro.props;
     opacity: 0;
   }
 
+  /* Colores de pin por estado de latencia para ventana animada */
+  :global(.region-center-pin.excellent .pin-dot) {
+    background: radial-gradient(circle, #10b981, #059669);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+  }
+
+  :global(.region-center-pin.good .pin-dot) {
+    background: radial-gradient(circle, #4ade80, #22c55e);
+    box-shadow: 0 4px 12px rgba(74, 222, 128, 0.4);
+  }
+
+  :global(.region-center-pin.warning .pin-dot) {
+    background: radial-gradient(circle, #fbbf24, #f59e0b);
+    box-shadow: 0 4px 12px rgba(251, 191, 36, 0.4);
+  }
+
+  :global(.region-center-pin.critical .pin-dot) {
+    background: radial-gradient(circle, #ef4444, #dc2626);
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+  }
+
   /* Pins más pequeños en regiones de alta densidad */
   :global(.region-center-pin:not(.region-low-density .region-center-pin) .pin-dot) {
     width: 14px;
@@ -566,6 +587,48 @@ const { hideInfoOverlay = false } = Astro.props;
     pointer-events: none;
   }
 
+  /* Tooltips animados con colores por estado de latencia */
+  :global(.region-center-pin.excellent .pin-tooltip-animated) {
+    color: #10b981;
+    border-color: rgba(16, 185, 129, 0.3);
+  }
+
+  :global(.region-center-pin.good .pin-tooltip-animated) {
+    color: #4ade80;
+    border-color: rgba(74, 222, 128, 0.3);
+  }
+
+  :global(.region-center-pin.warning .pin-tooltip-animated) {
+    color: #fbbf24;
+    border-color: rgba(251, 191, 36, 0.3);
+  }
+
+  :global(.region-center-pin.critical .pin-tooltip-animated) {
+    color: #ef4444;
+    border-color: rgba(239, 68, 68, 0.3);
+  }
+
+  /* Tooltips con colores por estado de latencia para ventana animada */
+  :global(.region-center-pin.excellent .pin-tooltip-animated) {
+    color: #10b981;
+    border-color: rgba(16, 185, 129, 0.3);
+  }
+
+  :global(.region-center-pin.good .pin-tooltip-animated) {
+    color: #4ade80;
+    border-color: rgba(74, 222, 128, 0.3);
+  }
+
+  :global(.region-center-pin.warning .pin-tooltip-animated) {
+    color: #fbbf24;
+    border-color: rgba(251, 191, 36, 0.3);
+  }
+
+  :global(.region-center-pin.critical .pin-tooltip-animated) {
+    color: #ef4444;
+    border-color: rgba(239, 68, 68, 0.3);
+  }
+
   :global(.pin-tooltip-animated::after) {
     content: '';
     position: absolute;
@@ -574,6 +637,27 @@ const { hideInfoOverlay = false } = Astro.props;
     transform: translateX(-50%);
     border: 5px solid transparent;
     border-top-color: rgba(0, 0, 0, 0.95);
+  }
+
+  /* Tooltips con colores por estado de latencia para ventana animada */
+  :global(.region-center-pin.excellent .pin-tooltip-animated) {
+    color: #10b981;
+    border-color: rgba(16, 185, 129, 0.3);
+  }
+
+  :global(.region-center-pin.good .pin-tooltip-animated) {
+    color: #4ade80;
+    border-color: rgba(74, 222, 128, 0.3);
+  }
+
+  :global(.region-center-pin.warning .pin-tooltip-animated) {
+    color: #fbbf24;
+    border-color: rgba(251, 191, 36, 0.3);
+  }
+
+  :global(.region-center-pin.critical .pin-tooltip-animated) {
+    color: #ef4444;
+    border-color: rgba(239, 68, 68, 0.3);
   }
 
   :global(.region-center-pin:hover .pin-tooltip-animated) {
@@ -650,7 +734,7 @@ const { hideInfoOverlay = false } = Astro.props;
   import maplibregl from 'maplibre-gl';
   import 'maplibre-gl/dist/maplibre-gl.css';
   import { gsap } from 'gsap';
-  import { spainConfig } from '../mocks/data/spain-locations';
+  import { spainConfig, getLatencyClass, getLatencyText } from '../mocks/data/spain-locations';
 
   let regionMap: maplibregl.Map;
   let regionMarkers: maplibregl.Marker[] = [];
@@ -939,12 +1023,17 @@ const { hideInfoOverlay = false } = Astro.props;
 
     // Crear el pin propiamente dicho
     const pin = document.createElement('div');
-    pin.className = isCentral ? 'region-center-pin central' : 'region-center-pin';
+
+    // Usar la latencia real del nodo (sin generar valores aleatorios)
+    const latency = node.latency;
+
+    // Obtener la clase de latencia usando la función unificada
+    const latencyClass = getLatencyClass(latency);
+
+    // Aplicar clases CSS: region-center-pin + central (si aplica) + clase de latencia
+    pin.className = isCentral ? `region-center-pin central ${latencyClass}` : `region-center-pin ${latencyClass}`;
     pin.setAttribute('data-center-id', node.id || node.name);
     pin.setAttribute('data-center-name', node.name);
-
-    // Obtener latencia del nodo o generar una aleatoria
-    const latency = node.latency || Math.floor(Math.random() * 50) + 10;
 
     // Crear estructura del pin con tooltip de latencia (similar al mapa estático)
     pin.innerHTML = `
@@ -1095,18 +1184,10 @@ const { hideInfoOverlay = false } = Astro.props;
         if (node) {
           const listItem = document.createElement('li');
 
-          const getLatencyClass = (latency: number) => {
-            if (latency === 0) return 'excellent'; // HUB
-            if (latency <= 10) return 'excellent';
-            if (latency <= 20) return 'good';
-            if (latency <= 35) return 'warning';
-            return 'critical';
-          };
-
           const latencyClass = getLatencyClass(node.latency);
           listItem.classList.add(latencyClass); // Add class to li for styling
 
-          const latencyText = node.latency === 0 ? 'Nodo Central' : `${node.latency}ms`;
+          const latencyText = getLatencyText(node.latency);
 
           // Get location info (city or extract from name)
           const location = node.city || node.name.split('-')[0] || '';

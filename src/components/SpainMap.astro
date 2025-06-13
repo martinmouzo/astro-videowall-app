@@ -1,10 +1,13 @@
 ---
-// SpainMap.astro - Componente simplificado de mapa de España con ubicaciones estáticas
+// SpainMap.astro - Componente simplificado de mapa de España con sistema de conectores inteligentes
 import "@fontsource-variable/quicksand";
 import { spainConfig } from '../mocks/data/spain-locations';
 ---
 
-<div id="spain-map" class="spain-map-container"></div>
+<div id="spain-map" class="spain-map-container">
+  <svg class="pin-connector-system" id="pin-connectors">
+  </svg>
+</div>
 
 <style>
   .spain-map-container {
@@ -64,17 +67,37 @@ import { spainConfig } from '../mocks/data/spain-locations';
     width: 16px;
     height: 16px;
     border-radius: 50%;
-    background: linear-gradient(135deg, #4ade80, #22c55e);
     border: 2px solid rgba(255, 255, 255, 0.8);
-    box-shadow:
-      0 0 0 4px rgba(74, 222, 128, 0.3),
-      0 4px 12px rgba(0, 0, 0, 0.4);
     transition: all 0.3s ease;
   }
 
-  /* Dot del pin (ya no es necesario porque el pin en sí es el dot) */
-  :global(.region-center-pin .pin-dot) {
-    display: none; /* Ocultamos este elemento ya que usamos el pin directamente */
+  /* Colores de pin por estado de latencia */
+  :global(.region-center-pin.excellent) {
+    background: linear-gradient(135deg, #10b981, #059669);
+    box-shadow:
+      0 0 0 4px rgba(16, 185, 129, 0.3),
+      0 4px 12px rgba(16, 185, 129, 0.4);
+  }
+
+  :global(.region-center-pin.good) {
+    background: linear-gradient(135deg, #4ade80, #22c55e);
+    box-shadow:
+      0 0 0 4px rgba(74, 222, 128, 0.3),
+      0 4px 12px rgba(74, 222, 128, 0.4);
+  }
+
+  :global(.region-center-pin.warning) {
+    background: linear-gradient(135deg, #fbbf24, #f59e0b);
+    box-shadow:
+      0 0 0 4px rgba(251, 191, 36, 0.3),
+      0 4px 12px rgba(251, 191, 36, 0.4);
+  }
+
+  :global(.region-center-pin.critical) {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    box-shadow:
+      0 0 0 4px rgba(239, 68, 68, 0.3),
+      0 4px 12px rgba(239, 68, 68, 0.4);
   }
 
   :global(.region-center-pin:hover) {
@@ -84,62 +107,108 @@ import { spainConfig } from '../mocks/data/spain-locations';
       0 8px 20px rgba(0, 0, 0, 0.6);
   }
 
-  /* Tooltip simple con latencia - siempre visible */
-  :global(.pin-tooltip) {
+  /* Sistema de conectores SVG para labels */
+  :global(.pin-connector-system) {
     position: absolute;
-    bottom: 100%;
-    left: 50%;
-    transform: translateX(-50%);
-    margin-bottom: 8px;
-    background: linear-gradient(135deg, rgba(0, 0, 0, 0.95), rgba(20, 20, 20, 0.98));
-    backdrop-filter: blur(15px);
-    color: #4ade80;
-    padding: 4px 8px;
-    border-radius: 6px;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1002;
+    overflow: visible;
+  }
+
+  :global(.pin-connector-line) {
+    stroke-width: 1.5;
+    stroke-dasharray: 3,2;
+    opacity: 0.7;
+    transition: all 0.3s ease;
+    fill: none;
+  }
+
+  /* Líneas conectoras con colores por latencia */
+  :global(.pin-connector-line.excellent) {
+    stroke: #10b981;
+  }
+
+  :global(.pin-connector-line.good) {
+    stroke: #4ade80;
+  }
+
+  :global(.pin-connector-line.warning) {
+    stroke: #fbbf24;
+  }
+
+  :global(.pin-connector-line.critical) {
+    stroke: #ef4444;
+  }
+
+  /* Labels conectadas con posicionamiento inteligente */
+  :global(.pin-label-connected) {
+    position: absolute;
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.96), rgba(20, 20, 20, 0.98));
+    backdrop-filter: blur(18px);
+    border-radius: 10px;
+    padding: 7px 14px;
     font-family: 'Quicksand Variable', 'Quicksand', sans-serif;
     font-weight: 700;
     font-size: 11px;
     white-space: nowrap;
-    opacity: 0.8;
-    visibility: visible;
-    border: 1px solid rgba(74, 222, 128, 0.3);
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.6);
-    z-index: 1001;
-    transition: all 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow:
+      0 8px 25px rgba(0, 0, 0, 0.8),
+      0 2px 10px rgba(0, 0, 0, 0.6);
+    z-index: 1003;
     pointer-events: none;
+    opacity: 0.97;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    min-width: 85px;
+    text-align: center;
+    letter-spacing: 0.3px;
   }
 
-  :global(.pin-tooltip::after) {
-    content: '';
-    position: absolute;
-    top: 100%;
-    left: 50%;
-    transform: translateX(-50%);
-    border: 5px solid transparent;
-    border-top-color: rgba(0, 0, 0, 0.95);
+  /* Labels con colores por estado de latencia */
+  :global(.pin-label-connected.excellent) {
+    color: #10b981;
+    border-color: rgba(16, 185, 129, 0.4);
+    box-shadow: 0 4px 16px rgba(16, 185, 129, 0.2);
   }
 
-  :global(.region-center-pin:hover .pin-tooltip) {
-    background: linear-gradient(135deg, rgba(74, 222, 128, 0.95), rgba(34, 197, 94, 0.98));
-    color: #000000;
-    border-color: rgba(74, 222, 128, 0.6);
-    transform: translateX(-50%) scale(1.1);
+  :global(.pin-label-connected.good) {
+    color: #4ade80;
+    border-color: rgba(74, 222, 128, 0.4);
+    box-shadow: 0 4px 16px rgba(74, 222, 128, 0.2);
   }
 
-  @keyframes pulse-glow {
-    0%, 100% {
-      opacity: 1;
-    }
-    50% {
-      opacity: 0.7;
-    }
+  :global(.pin-label-connected.warning) {
+    color: #fbbf24;
+    border-color: rgba(251, 191, 36, 0.4);
+    box-shadow: 0 4px 16px rgba(251, 191, 36, 0.2);
+  }
+
+  :global(.pin-label-connected.critical) {
+    color: #ef4444;
+    border-color: rgba(239, 68, 68, 0.4);
+    box-shadow: 0 4px 16px rgba(239, 68, 68, 0.2);
+  }
+
+  /* Efectos hover para pins conectados */
+  :global(.region-center-pin:hover) + :global(.pin-connector-line) {
+    stroke-width: 2;
+    opacity: 1;
+  }
+
+  :global(.region-center-pin:hover) + :global(.pin-label-connected) {
+    opacity: 1;
+    transform: scale(1.05);
   }
 </style>
 
 <script>
   import maplibregl from 'maplibre-gl';
   import 'maplibre-gl/dist/maplibre-gl.css';
-  import { spainConfig, spainMapData, locationDetails } from '../mocks/data/spain-locations';
+  import { spainConfig, spainMapData, locationDetails, getLatencyClass } from '../mocks/data/spain-locations';
   import type { LngLatLike, StyleSpecification, ExpressionSpecification } from 'maplibre-gl';
 
   let map: maplibregl.Map;
@@ -212,6 +281,18 @@ import { spainConfig } from '../mocks/data/spain-locations';
 
         // Crear pins de todas las ubicaciones
         createAllLocationPins();
+
+        // Recalcular conectores después de que todo esté cargado
+        setTimeout(() => {
+          updateAllConnectors();
+        }, 500);
+      });
+
+      map.on('resize', () => {
+        // Recalcular posiciones de conectores cuando cambie el tamaño
+        setTimeout(() => {
+          updateAllConnectors();
+        }, 100);
       });
 
       map.on('error', (e) => {
@@ -297,37 +378,341 @@ import { spainConfig } from '../mocks/data/spain-locations';
   }
 
   function createRegionCenterPin(node: any) {
-    console.log(`📍 Creando region-center-pin para ${node.name}`);
+    console.log(`📍 Creando region-center-pin con conector para ${node.name}`, {
+      id: node.id,
+      coordinates: node.coordinates,
+      latency: node.latency
+    });
 
     if (!node.coordinates || node.coordinates.length !== 2) {
       console.error(`❌ Coordenadas inválidas para ${node.name}:`, node.coordinates);
       return;
     }
 
+    // Usar la latencia real del nodo
+    const latency = node.latency;
+    const latencyClass = getLatencyClass(latency);
+
+    // Crear pin simplificado (solo el círculo)
     const pin = document.createElement('div');
-    pin.className = 'region-center-pin';
-
-    // Obtener latencia del nodo o generar una aleatoria
-    const latency = node.latency || Math.floor(Math.random() * 50) + 10;
-
-    pin.innerHTML = `
-      <div class="pin-dot"></div>
-      <div class="pin-tooltip">${latency}ms</div>
-    `;
+    pin.className = `region-center-pin ${latencyClass}`;
+    pin.setAttribute('data-node-id', node.id);
+    pin.setAttribute('data-latency', latency.toString());
 
     try {
       const marker = new maplibregl.Marker({
         element: pin,
-        anchor: 'bottom'
+        anchor: 'center'
       })
       .setLngLat(node.coordinates)
       .addTo(map);
 
       markers.push(marker);
-      console.log(`✅ Region-center-pin creado para ${node.name} con latencia ${latency}ms`);
+
+      // Crear conector y label después de que el pin esté en el DOM
+      setTimeout(() => {
+        createPinConnector(node, pin, latencyClass);
+      }, 100);
+
+      console.log(`✅ Region-center-pin con conector creado para ${node.name} (${latencyClass})`);
     } catch (error) {
       console.error(`❌ Error creando region-center-pin para ${node.name}:`, error);
     }
+  }
+
+  // Nueva función para crear conectores inteligentes
+  function createPinConnector(node: any, pinElement: HTMLElement, latencyClass: string) {
+    const mapContainer = document.getElementById('spain-map');
+    const svgContainer = document.getElementById('pin-connectors');
+
+    if (!mapContainer || !svgContainer) {
+      console.error('❌ No se encontraron contenedores para conectores');
+      return;
+    }
+
+    // Obtener posición del pin en el mapa
+    const pinRect = pinElement.getBoundingClientRect();
+    const mapRect = mapContainer.getBoundingClientRect();
+
+    const pinX = pinRect.left - mapRect.left + pinRect.width / 2;
+    const pinY = pinRect.top - mapRect.top + pinRect.height / 2;
+
+    // Determinar posición óptima para la label (evitar solapamientos)
+    const labelPosition = calculateOptimalLabelPosition(pinX, pinY, node.name);
+
+    // Crear línea conectora SVG
+    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    line.setAttribute('x1', pinX.toString());
+    line.setAttribute('y1', pinY.toString());
+    line.setAttribute('x2', labelPosition.x.toString());
+    line.setAttribute('y2', labelPosition.y.toString());
+    line.setAttribute('class', `pin-connector-line ${latencyClass}`);
+
+    svgContainer.appendChild(line);
+
+    // Crear label conectada
+    const label = document.createElement('div');
+    label.className = `pin-label-connected ${latencyClass}`;
+    label.style.left = `${labelPosition.x}px`;
+    label.style.top = `${labelPosition.y}px`;
+    label.style.transform = 'translate(-50%, -50%)';
+
+    // Usar el nombre exacto del nodo
+    label.textContent = `${node.name} • ${node.latency}ms`;
+
+    mapContainer.appendChild(label);
+
+    console.log(`✅ Conector creado para ${node.name} en posición ${labelPosition.direction}`);
+  }
+
+  // Algoritmo de posicionamiento inteligente para evitar solapamientos
+  function calculateOptimalLabelPosition(pinX: number, pinY: number, nodeName: string) {
+    const mapContainer = document.getElementById('spain-map');
+    if (!mapContainer) return { x: pinX, y: pinY, direction: 'top' };
+
+    const mapRect = mapContainer.getBoundingClientRect();
+    const mapWidth = mapRect.width;
+    const mapHeight = mapRect.height;
+
+    // Distancia del conector (radio) - reducida para mayor cercanía
+    let connectorLength = 35;
+
+    // Distancias reducidas para la región Centro manteniendo separación
+    if (nodeName.includes('Meco') || nodeName.includes('Cabanillas') ||
+        nodeName.includes('Marchámalo') || nodeName.includes('Toledo') ||
+        nodeName.includes('Illescas')) {
+      connectorLength = 65; // Distancia reducida para región Centro
+      console.log(`🎯 Usando conector reducido (65px) para región Centro: ${nodeName}`);
+    }
+
+    // Posiciones candidatas (8 direcciones para mejor distribución)
+    const positions = [
+      {
+        x: pinX,
+        y: pinY - connectorLength,
+        direction: 'top',
+        priority: pinY > connectorLength + 30 ? 1 : 4
+      },
+      {
+        x: pinX,
+        y: pinY + connectorLength,
+        direction: 'bottom',
+        priority: pinY < mapHeight - connectorLength - 30 ? 2 : 4
+      },
+      {
+        x: pinX + connectorLength,
+        y: pinY,
+        direction: 'right',
+        priority: pinX < mapWidth - connectorLength - 80 ? 2 : 4
+      },
+      {
+        x: pinX - connectorLength,
+        y: pinY,
+        direction: 'left',
+        priority: pinX > connectorLength + 80 ? 3 : 4
+      },
+      {
+        x: pinX + connectorLength * 0.85,
+        y: pinY - connectorLength * 0.85,
+        direction: 'top-right',
+        priority: 3
+      },
+      {
+        x: pinX - connectorLength * 0.85,
+        y: pinY - connectorLength * 0.85,
+        direction: 'top-left',
+        priority: 3
+      },
+      {
+        x: pinX + connectorLength * 0.85,
+        y: pinY + connectorLength * 0.85,
+        direction: 'bottom-right',
+        priority: 3
+      },
+      {
+        x: pinX - connectorLength * 0.85,
+        y: pinY + connectorLength * 0.85,
+        direction: 'bottom-left',
+        priority: 3
+      }
+    ];
+
+    // Sistema de posicionamiento determinista por ubicación específica
+    // Distribución optimizada para la región Centro según especificaciones exactas
+
+    // Sistema de posicionamiento triangular para Marchámalo, Meco y Cabanillas
+    // Distribución específica en forma de triángulo equilátero
+
+    // Región Centro - Distribución triangular para las 3 ubicaciones principales
+    if (nodeName.includes('Marchámalo')) {
+      // Marchámalo - Vértice superior del triángulo (arriba)
+      const triangleDistance = connectorLength * 1.5;
+      const trianglePosition = {
+        x: pinX,
+        y: pinY - triangleDistance,
+        direction: 'triangle-top',
+        priority: 1
+      };
+      console.log(`🔺 Posicionando ${nodeName} en VÉRTICE SUPERIOR del triángulo (${triangleDistance}px)`);
+      return trianglePosition;
+    }
+    else if (nodeName.includes('Meco')) {
+      // Meco - Vértice inferior derecho del triángulo
+      const triangleDistance = connectorLength * 1.5;
+      const triangleX = pinX + (triangleDistance * 0.866); // cos(30°) ≈ 0.866
+      const triangleY = pinY + (triangleDistance * 0.5);   // sin(30°) = 0.5
+      const trianglePosition = {
+        x: triangleX,
+        y: triangleY,
+        direction: 'triangle-bottom-right',
+        priority: 1
+      };
+      console.log(`🔺 Posicionando ${nodeName} en VÉRTICE INFERIOR DERECHO del triángulo (${triangleDistance}px)`);
+      return trianglePosition;
+    }
+    else if (nodeName.includes('Cabanillas')) {
+      // Cabanillas - Vértice izquierdo del triángulo (movido hacia el norte)
+      const triangleDistance = connectorLength * 1.5;
+      const triangleX = pinX - (triangleDistance * 0.866); // cos(30°) ≈ 0.866
+      const triangleY = pinY - (triangleDistance * 0.2);   // Movido hacia el norte para evitar solapamiento con Illescas
+      const trianglePosition = {
+        x: triangleX,
+        y: triangleY,
+        direction: 'triangle-left-north',
+        priority: 1
+      };
+      console.log(`🔺 Posicionando ${nodeName} en VÉRTICE IZQUIERDO-NORTE del triángulo (${triangleDistance}px) - evitando Illescas`);
+      return trianglePosition;
+    }
+    // Otras ubicaciones del Centro con posicionamiento geográfico
+    else if (nodeName.includes('Toledo') || nodeName.includes('Illescas')) {
+      // Obtener las coordenadas reales del nodo
+      const node = spainConfig.remoteNodes.find(n => n.name === nodeName);
+      if (node && node.coordinates) {
+        const [lng, lat] = node.coordinates;
+
+        // Centro de referencia para la región Centro (Madrid aprox)
+        const centerLng = -3.7;
+        const centerLat = 40.4;
+
+        // Calcular diferencias relativas
+        const deltaLng = lng - centerLng; // negativo = oeste, positivo = este
+        const deltaLat = lat - centerLat;  // negativo = sur, positivo = norte
+
+        // Factores de escala para convertir grados a píxeles
+        let scaleX = connectorLength * 2.0; // Factor horizontal reducido para evitar solapamiento
+        let scaleY = connectorLength * 2.0; // Factor vertical reducido
+
+        // Ajuste específico para Illescas - posicionada a la izquierda del pin
+        if (nodeName.includes('Illescas')) {
+          // Posición fija a la izquierda del pin, lado opuesto
+          const illescasPosition = {
+            x: pinX - connectorLength * 1.2, // A la izquierda del pin con separación
+            y: pinY - connectorLength * 0.3, // Ligeramente hacia el norte
+            direction: 'illescas-left-positioned',
+            priority: 1
+          };
+          console.log(`🎯 Posicionando ${nodeName} a la IZQUIERDA del pin (lado opuesto)`);
+          return illescasPosition;
+        }
+
+        // Ajuste específico para Toledo - reducir distancia
+        if (nodeName.includes('Toledo')) {
+          scaleX = connectorLength * 1.4; // Reducir distancia horizontal para Toledo
+          scaleY = connectorLength * 1.4; // Reducir distancia vertical para Toledo
+          console.log(`🎯 Usando factores reducidos para ${nodeName}: scaleX=${scaleX}, scaleY=${scaleY}`);
+        }
+
+        // Calcular posición escalada para Toledo (mantener geográfico)
+        const scaledX = pinX + (deltaLng * scaleX);
+        const scaledY = pinY - (deltaLat * scaleY); // Invertir Y porque en pantalla Y crece hacia abajo
+
+        // Crear posición personalizada basada en coordenadas
+        const geographicPosition = {
+          x: scaledX,
+          y: scaledY,
+          direction: `geo-${deltaLng >= 0 ? 'east' : 'west'}-${deltaLat >= 0 ? 'north' : 'south'}`,
+          priority: 1
+        };
+
+        console.log(`🗺️ Posicionamiento geográfico para ${nodeName}:`, {
+          coordinates: [lng, lat],
+          deltas: [deltaLng, deltaLat],
+          scaledPosition: [scaledX, scaledY],
+          direction: geographicPosition.direction
+        });
+
+        return geographicPosition;
+      }
+    }
+
+    // Otras regiones con heurísticas específicas
+    else if (nodeName.includes('León')) {
+      // León - Norte-centro, posición izquierda
+      positions[3].priority = 1; // left
+      positions[5].priority = 2; // top-left
+    }
+    else if (nodeName.includes('Zaragoza')) {
+      // Zaragoza - Nordeste, posición superior
+      positions[0].priority = 1; // top
+      positions[4].priority = 2; // top-right
+    }
+    else if (nodeName.includes('Sallent')) {
+      // Barcelona/Sallent - Nordeste, posición izquierda
+      positions[3].priority = 1; // left
+      positions[5].priority = 2; // top-left
+    }
+    else if (nodeName.includes('Tordera')) {
+      // Barcelona/Tordera - Nordeste, posición superior-izquierda
+      positions[5].priority = 1; // top-left
+      positions[0].priority = 2; // top
+    }
+    else if (nodeName.includes('Elche')) {
+      // Alicante/Elche - Sureste, posición superior
+      positions[0].priority = 1; // top
+      positions[4].priority = 2; // top-right
+    }
+    else {
+      // Para otros nodos, usar heurística basada en posición geográfica
+      console.log(`🎯 Posicionamiento automático para ${nodeName}`);
+    }
+
+    // Ordenar por prioridad y elegir la mejor posición
+    positions.sort((a, b) => a.priority - b.priority);
+
+    return positions[0];
+  }
+
+  // Función para actualizar todas las posiciones de conectores
+  function updateAllConnectors() {
+    const svgContainer = document.getElementById('pin-connectors');
+    const mapContainer = document.getElementById('spain-map');
+
+    if (!svgContainer || !mapContainer) return;
+
+    // Limpiar conectores existentes
+    svgContainer.innerHTML = '';
+
+    // Limpiar labels existentes
+    const existingLabels = mapContainer.querySelectorAll('.pin-label-connected');
+    existingLabels.forEach(label => label.remove());
+
+    // Recrear conectores para todos los pins
+    const pins = mapContainer.querySelectorAll('.region-center-pin[data-node-id]');
+    pins.forEach(pin => {
+      const nodeId = pin.getAttribute('data-node-id');
+      const latency = pin.getAttribute('data-latency');
+      const node = spainConfig.remoteNodes.find(n => n.id === nodeId);
+
+      if (node && latency) {
+        const latencyClass = getLatencyClass(parseInt(latency));
+        setTimeout(() => {
+          createPinConnector(node, pin as HTMLElement, latencyClass);
+        }, 50);
+      }
+    });
+
+    console.log('🔄 Conectores actualizados');
   }
 
   // Función para obtener estadísticas básicas del mapa
@@ -349,12 +734,15 @@ import { spainConfig } from '../mocks/data/spain-locations';
     getMap: () => map,
     getStats: getSpainMapStats,
     markers: () => markers,
+    updateConnectors: updateAllConnectors,
     debugSpainMap: () => {
       console.log('=== DEBUG SPAIN MAP (STATIC) ===');
       console.log('Map loaded:', map ? map.loaded() : 'Not initialized');
       console.log('Total markers:', markers.length);
       console.log('Spain config locations:', spainConfig.remoteNodes.length);
       console.log('Central node:', spainConfig.centralNode);
+      console.log('Connectors:', document.querySelectorAll('.pin-connector-line').length);
+      console.log('Labels:', document.querySelectorAll('.pin-label-connected').length);
     },
     locationDetails: locationDetails
   };

@@ -103,7 +103,7 @@ const spainNodes: LatencyNode[] = [
     city: 'Cabanillas del Campo',
     coordinates: [-3.2369, 40.6378], // Plataforma Cabanillas S.A., Guadalajara
     screenPosition: { x: 47, y: 37 },
-    latency: 25,
+    latency: 28, // Warning range
     status: 'online',
     lastUpdate: new Date()
   },
@@ -114,7 +114,7 @@ const spainNodes: LatencyNode[] = [
     city: 'Marchámalo',
     coordinates: [-3.1752, 40.6246], // Plataforma XPO, Guadalajara
     screenPosition: { x: 48, y: 37 },
-    latency: 28,
+    latency: 32, // Warning range
     status: 'online',
     lastUpdate: new Date()
   },
@@ -125,7 +125,7 @@ const spainNodes: LatencyNode[] = [
     city: 'Toledo',
     coordinates: [-4.0273, 39.8628], // Polígono Santa María de Benquerencia
     screenPosition: { x: 42, y: 42 },
-    latency: 30,
+    latency: 38, // Critical range
     status: 'online',
     lastUpdate: new Date()
   },
@@ -136,7 +136,7 @@ const spainNodes: LatencyNode[] = [
     city: 'Illescas',
     coordinates: [-3.8494, 40.1217], // Polígono Pradillos II, Toledo
     screenPosition: { x: 43, y: 40 },
-    latency: 32,
+    latency: 42, // Critical range
     status: 'online',
     lastUpdate: new Date()
   },
@@ -147,7 +147,7 @@ const spainNodes: LatencyNode[] = [
     city: 'Elche',
     coordinates: [-0.7037, 38.2682], // Parque Industrial de Elche, Alicante
     screenPosition: { x: 52, y: 55 },
-    latency: 35,
+    latency: 29, // Warning range
     status: 'online',
     lastUpdate: new Date()
   }
@@ -175,6 +175,20 @@ export const spainConfig: LatencyConfig = {
     critical: 50  // > 50ms (Crítico para conexiones nacionales)
   }
 };
+
+// Función utilitaria para clasificar latencia de manera consistente
+export function getLatencyClass(latency: number): 'excellent' | 'good' | 'warning' | 'critical' {
+  if (latency === 0) return 'excellent'; // HUB/Central
+  if (latency <= 10) return 'excellent';
+  if (latency <= 20) return 'good';
+  if (latency <= 35) return 'warning';
+  return 'critical';
+}
+
+// Función para obtener el texto de latencia formateado
+export function getLatencyText(latency: number): string {
+  return latency === 0 ? 'Nodo Central' : `${latency}ms`;
+}
 
 // Función para calcular estadísticas específicas de España
 export function calculateSpainNetworkStats(config: LatencyConfig): NetworkStats {

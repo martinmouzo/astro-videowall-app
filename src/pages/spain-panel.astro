@@ -322,6 +322,11 @@ import SpainRegionExplorer from '../components/SpainRegionExplorer.astro';
     animation: pulse 2s infinite;
   }
 
+  .latency-excellent .latency-dot {
+    background: #10b981;
+    box-shadow: 0 0 6px rgba(16, 185, 129, 0.8);
+  }
+
   .latency-good .latency-dot {
     background: #4ade80;
     box-shadow: 0 0 6px rgba(74, 222, 128, 0.8);
@@ -335,6 +340,11 @@ import SpainRegionExplorer from '../components/SpainRegionExplorer.astro';
   .latency-error .latency-dot {
     background: #ef4444;
     box-shadow: 0 0 6px rgba(239, 68, 68, 0.8);
+  }
+
+  .latency-excellent {
+    color: #10b981;
+    background: rgba(16, 185, 129, 0.15);
   }
 
   .latency-good {
@@ -463,9 +473,12 @@ import SpainRegionExplorer from '../components/SpainRegionExplorer.astro';
         if (centersList && regionData.centers) {
           centersList.innerHTML = '';
           regionData.centers.forEach((center: any, index: number) => {
-            // Simular latencia aleatoria para demo
-            const latency = Math.floor(Math.random() * 200) + 10;
-            const latencyClass = latency < 50 ? 'latency-good' : latency < 100 ? 'latency-warning' : 'latency-error';
+            // Usar la latencia real del centro
+            const latency = center.latency;
+            const latencyClass = latency === 0 ? 'latency-excellent' :
+                                latency <= 10 ? 'latency-excellent' :
+                                latency <= 20 ? 'latency-good' :
+                                latency <= 35 ? 'latency-warning' : 'latency-error';
 
             const li = document.createElement('li');
             li.innerHTML = `
@@ -475,7 +488,7 @@ import SpainRegionExplorer from '../components/SpainRegionExplorer.astro';
                 </div>
                 <div class="latency-indicator ${latencyClass}">
                   <div class="latency-dot"></div>
-                  <span>${latency}ms</span>
+                  <span>${latency === 0 ? 'HUB' : latency + 'ms'}</span>
                 </div>
               </div>
             `;
