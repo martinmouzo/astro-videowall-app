@@ -397,37 +397,68 @@ const { hideInfoOverlay = false } = Astro.props;
     position: absolute;
     pointer-events: auto;
     z-index: 999;
+    transform: translate(-50%, -50%);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  /* Dot del pin (círculo principal) */
+  :global(.region-center-pin .pin-dot) {
     width: 16px;
     height: 16px;
     border-radius: 50%;
     background: radial-gradient(circle, #4ade80, #22c55e);
     border: 2px solid rgba(255, 255, 255, 0.8);
     box-shadow: 0 4px 12px rgba(74, 222, 128, 0.4);
-    transform: translate(-50%, -50%);
-    cursor: pointer;
-    transition: all 0.3s ease;
-    animation: pulsePin 2s infinite;
     opacity: 0;
   }
 
   /* Pins más pequeños en regiones de alta densidad */
-  :global(.region-center-pin:not(.region-low-density .region-center-pin)) {
+  :global(.region-center-pin:not(.region-low-density .region-center-pin) .pin-dot) {
     width: 14px;
     height: 14px;
   }
 
-  :global(.region-center-pin.fade-in) {
-    animation: fadeInPin 0.5s ease-out forwards, pulsePin 2s infinite 0.5s;
+  :global(.region-center-pin.fade-in .pin-dot) {
+    animation: fadeInPin 0.5s ease-out forwards;
+  }
+
+  :global(.region-center-pin:hover .pin-dot) {
+    transform: scale(1.2);
+    box-shadow: 0 6px 16px rgba(74, 222, 128, 0.6);
   }
 
   @keyframes fadeInPin {
     0% {
       opacity: 0;
-      transform: translate(-50%, -50%) scale(0.3);
+      transform: scale(0.3);
     }
     100% {
       opacity: 1;
-      transform: translate(-50%, -50%) scale(1);
+      transform: scale(1);
+    }
+  }
+
+  @keyframes pulsePin {
+    0%, 100% {
+      box-shadow: 0 4px 12px rgba(74, 222, 128, 0.4);
+    }
+    50% {
+      box-shadow: 0 4px 12px rgba(74, 222, 128, 0.8);
+    }
+  }
+
+  @keyframes highlightPulse {
+    0%, 100% {
+      box-shadow: 0 6px 20px rgba(251, 191, 36, 0.6);
+      transform: scale(1.2);
+    }
+    50% {
+      box-shadow: 0 8px 24px rgba(251, 191, 36, 1);
+      transform: scale(1.3);
     }
   }
 
@@ -510,36 +541,46 @@ const { hideInfoOverlay = false } = Astro.props;
     animation: fadeInPin 0.5s ease-out forwards;
   }
 
-  :global(.region-center-pin:hover) {
-    transform: translate(-50%, -50%) scale(1.2);
-    box-shadow: 0 6px 16px rgba(74, 222, 128, 0.6);
+  /* Tooltip de latencia para pins animados - siempre visible */
+  :global(.pin-tooltip-animated) {
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    margin-bottom: 8px;
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.95), rgba(20, 20, 20, 0.98));
+    backdrop-filter: blur(15px);
+    color: #4ade80;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-family: 'Quicksand Variable', 'Quicksand', sans-serif;
+    font-weight: 700;
+    font-size: 11px;
+    white-space: nowrap;
+    opacity: 1;
+    visibility: visible;
+    border: 1px solid rgba(74, 222, 128, 0.3);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.6);
+    z-index: 1001;
+    transition: all 0.3s ease;
+    pointer-events: none;
   }
 
-  :global(.region-center-pin.highlighted) {
-    background: radial-gradient(circle, #fbbf24, #f59e0b);
-    border-color: #fbbf24;
-    box-shadow: 0 6px 20px rgba(251, 191, 36, 0.6);
-    animation: highlightPulse 1.5s infinite;
+  :global(.pin-tooltip-animated::after) {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 5px solid transparent;
+    border-top-color: rgba(0, 0, 0, 0.95);
   }
 
-  @keyframes pulsePin {
-    0%, 100% {
-      box-shadow: 0 4px 12px rgba(74, 222, 128, 0.4);
-    }
-    50% {
-      box-shadow: 0 4px 12px rgba(74, 222, 128, 0.8);
-    }
-  }
-
-  @keyframes highlightPulse {
-    0%, 100% {
-      box-shadow: 0 6px 20px rgba(251, 191, 36, 0.6);
-      transform: translate(-50%, -50%) scale(1.2);
-    }
-    50% {
-      box-shadow: 0 8px 24px rgba(251, 191, 36, 1);
-      transform: translate(-50%, -50%) scale(1.3);
-    }
+  :global(.region-center-pin:hover .pin-tooltip-animated) {
+    background: linear-gradient(135deg, rgba(74, 222, 128, 0.95), rgba(34, 197, 94, 0.98));
+    color: #000000;
+    border-color: rgba(74, 222, 128, 0.6);
+    transform: translateX(-50%) scale(1.1);
   }
 
   /* Efecto de zoom de región */
@@ -621,7 +662,7 @@ const { hideInfoOverlay = false } = Astro.props;
   const spainRegions = [
     {
       name: 'Noroeste',
-      description: 'Galicia - Sede Central y Distribución Atlántica',
+      description: 'Galicia - Sede Central',
       bounds: [[-9.0, 43.0], [-7.5, 44.0]] as [[number, number], [number, number]],
       zoom: 8,
       centers: ['arteixo-central', 'laracha-cpd2-node', 'naron-node'],
@@ -629,7 +670,7 @@ const { hideInfoOverlay = false } = Astro.props;
     },
     {
       name: 'Norte-Centro',
-      description: 'Castilla y León - Distribución Norte',
+      description: 'Castilla y León',
       bounds: [[-6.5, 42.0], [-4.5, 43.5]] as [[number, number], [number, number]],
       zoom: 8,
       centers: ['leon-node'],
@@ -637,7 +678,7 @@ const { hideInfoOverlay = false } = Astro.props;
     },
     {
       name: 'Nordeste',
-      description: 'Cataluña y Aragón - Hub Industrial y Logístico',
+      description: 'Cataluña y Aragón',
       bounds: [[-1.5, 41.0], [3.5, 42.5]] as [[number, number], [number, number]],
       zoom: 7,
       centers: ['sallent-node', 'tordera-node', 'zaragoza-node'],
@@ -645,7 +686,7 @@ const { hideInfoOverlay = false } = Astro.props;
     },
     {
       name: 'Centro',
-      description: 'Madrid, Guadalajara y Toledo - Hub Central de Distribución',
+      description: 'Madrid, Guadalajara y Toledo',
       bounds: [[-4.5, 39.5], [-2.5, 41.0]] as [[number, number], [number, number]],
       zoom: 8.5,
       centers: ['meco-node', 'cabanillas-node', 'marchamalo-node', 'toledo-node', 'illescas-node'],
@@ -653,7 +694,7 @@ const { hideInfoOverlay = false } = Astro.props;
     },
     {
       name: 'Sureste',
-      description: 'Alicante - Centro Industrial del Calzado',
+      description: 'Alicante',
       bounds: [[-1.5, 37.5], [0.5, 39.0]] as [[number, number], [number, number]],
       zoom: 8.5,
       centers: ['elche-node'],
@@ -666,8 +707,8 @@ const { hideInfoOverlay = false } = Astro.props;
     container: 'region-map',
     style: 'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json', // URL del estilo Dark Matter
     center: [-3.7492, 40.2637] as [number, number], // Centro de España
-    zoom: 6,
-    minZoom: 5,
+    zoom: 4.2,
+    minZoom: 3.5,
     maxZoom: 12,
     pitch: 0,
     bearing: 0,
@@ -901,6 +942,15 @@ const { hideInfoOverlay = false } = Astro.props;
     pin.className = isCentral ? 'region-center-pin central' : 'region-center-pin';
     pin.setAttribute('data-center-id', node.id || node.name);
     pin.setAttribute('data-center-name', node.name);
+
+    // Obtener latencia del nodo o generar una aleatoria
+    const latency = node.latency || Math.floor(Math.random() * 50) + 10;
+
+    // Crear estructura del pin con tooltip de latencia (similar al mapa estático)
+    pin.innerHTML = `
+      <div class="pin-dot"></div>
+      <div class="pin-tooltip-animated">${latency}ms</div>
+    `;
 
     // Crear etiqueta para el pin
     const label = document.createElement('div');
@@ -1163,7 +1213,7 @@ const { hideInfoOverlay = false } = Astro.props;
     // Volver a la vista general de España
     regionMap.flyTo({
       center: [-3.7492, 40.2637],
-      zoom: 6,
+      zoom: 4.2,
       duration: 1500
     });
 

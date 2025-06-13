@@ -15,11 +15,7 @@ import SpainRegionExplorer from '../components/SpainRegionExplorer.astro';
     <!-- Panel de información de región externa (top-left) -->
     <div class="external-region-info-panel" id="regionInfoPanel">
       <div class="info-panel-header">
-        <h3>Información de Región</h3>
-        <div class="panel-status">
-          <div class="status-dot"></div>
-          <span>Selecciona una región</span>
-        </div>
+        <img src="/images/Logo_Inditex.webp" alt="Inditex" class="header-logo" />
       </div>
       <div class="info-panel-content">
         <div class="region-name"></div>
@@ -31,9 +27,6 @@ import SpainRegionExplorer from '../components/SpainRegionExplorer.astro';
 
     <!-- Ventana flotante de animación (right side) -->
     <div class="floating-animation-window" id="floatingWindow">
-      <div class="window-header">
-        <h3>Explorador de Regiones</h3>
-      </div>
       <div class="window-content">
         <SpainRegionExplorer hideInfoOverlay={true} />
       </div>
@@ -71,181 +64,297 @@ import SpainRegionExplorer from '../components/SpainRegionExplorer.astro';
   /* Panel de información de región externa (esquina superior izquierda) */
   .external-region-info-panel {
     position: absolute;
-    top: 30px;
-    left: 30px;
+    top: 20px;
+    left: 20px;
     background: linear-gradient(135deg, rgba(0, 0, 0, 0.95), rgba(20, 20, 20, 0.98));
     backdrop-filter: blur(25px);
-    border-radius: 20px;
+    border-radius: 16px;
     padding: 0;
-    min-width: 420px;
-    max-width: 500px;
+    min-width: 320px;
+    max-width: 380px;
     border: 1px solid rgba(255, 255, 255, 0.2);
     box-shadow:
-      0 20px 50px rgba(0, 0, 0, 0.7),
-      0 8px 20px rgba(0, 0, 0, 0.5),
+      0 15px 35px rgba(0, 0, 0, 0.6),
+      0 5px 15px rgba(0, 0, 0, 0.4),
       inset 0 1px 0 rgba(255, 255, 255, 0.15);
     z-index: 1000;
     opacity: 1;
-    transform: translateY(0) scale(1);
-    transition: all 0.5s ease;
     overflow: hidden;
   }
 
   .info-panel-header {
-    background: linear-gradient(135deg, rgba(74, 222, 128, 0.2), rgba(74, 222, 128, 0.1));
-    border-bottom: 1px solid rgba(74, 222, 128, 0.3);
-    padding: 20px 28px;
+    background: linear-gradient(135deg,
+      rgba(255, 255, 255, 0.25),
+      rgba(255, 255, 255, 0.15),
+      rgba(255, 255, 255, 0.1)
+    );
+    border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+    padding: 24px;
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
+    backdrop-filter: blur(30px) saturate(150%);
+    position: relative;
+    overflow: hidden;
   }
 
-  .info-panel-header h3 {
-    font-family: 'Quicksand Variable', 'Quicksand', sans-serif;
-    font-weight: 700;
-    font-size: 18px;
-    color: #4ade80;
-    margin: 0;
-    text-transform: uppercase;
-    letter-spacing: 1px;
+  .info-panel-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg,
+      rgba(255, 255, 255, 0.15),
+      rgba(255, 255, 255, 0.05),
+      transparent,
+      rgba(255, 255, 255, 0.08)
+    );
+    border-radius: 16px 16px 0 0;
+    z-index: -1;
   }
 
-  .panel-status {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 12px;
-    color: #e0e0e0;
+  .info-panel-header::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(ellipse at center,
+      rgba(255, 255, 255, 0.2) 0%,
+      rgba(255, 255, 255, 0.1) 50%,
+      transparent 100%
+    );
+    border-radius: 16px 16px 0 0;
+    z-index: 0;
   }
 
-  .status-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: #4ade80;
-    box-shadow: 0 0 10px rgba(74, 222, 128, 0.6);
-    animation: pulse 2s infinite;
+  .header-logo {
+    height: 36px;
+    width: auto;
+    filter:
+      brightness(1.5)
+      contrast(1.4)
+      saturate(1.1)
+      drop-shadow(0 4px 20px rgba(0, 0, 0, 0.8))
+      drop-shadow(0 2px 10px rgba(255, 255, 255, 0.5))
+      drop-shadow(0 0 15px rgba(255, 255, 255, 0.3))
+      drop-shadow(0 0 30px rgba(255, 255, 255, 0.2));
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    opacity: 1;
+    position: relative;
+    z-index: 10;
+    mix-blend-mode: normal;
   }
 
-  @keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.5; }
+  .header-logo:hover {
+    transform: scale(1.05) translateY(-1px);
+    filter:
+      brightness(1.6)
+      contrast(1.5)
+      saturate(1.2)
+      drop-shadow(0 6px 25px rgba(0, 0, 0, 0.9))
+      drop-shadow(0 3px 15px rgba(255, 255, 255, 0.6))
+      drop-shadow(0 0 20px rgba(255, 255, 255, 0.4))
+      drop-shadow(0 0 40px rgba(255, 255, 255, 0.3));
   }
 
   .info-panel-content {
-    padding: 28px;
+    padding: 20px;
   }
 
   .external-region-info-panel .region-name {
     font-family: 'Quicksand Variable', 'Quicksand', sans-serif;
     font-weight: 700;
-    font-size: 28px;
+    font-size: 24px;
     color: #ffffff;
-    margin-bottom: 12px;
+    margin-bottom: 10px;
     text-transform: uppercase;
-    letter-spacing: 1.5px;
-    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.6);
+    letter-spacing: 1.2px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
   }
 
   .external-region-info-panel .region-name::before {
-    content: "📍";
-    font-size: 24px;
-    filter: drop-shadow(0 0 10px rgba(74, 222, 128, 0.7));
+    content: "●";
+    font-size: 16px;
+    color: #4ade80;
+    filter: drop-shadow(0 0 8px rgba(74, 222, 128, 0.7));
   }
 
   .external-region-info-panel .region-details {
     font-family: 'Quicksand Variable', 'Quicksand', sans-serif;
     font-weight: 500;
-    font-size: 16px;
+    font-size: 14px;
     color: #e0e0e0;
-    margin-bottom: 22px;
-    line-height: 1.6;
+    margin-bottom: 16px;
+    line-height: 1.5;
     font-style: italic;
-    padding-left: 36px;
+    padding-left: 30px;
   }
 
   .external-region-info-panel .centers-count {
     font-family: 'Quicksand Variable', 'Quicksand', sans-serif;
     font-weight: 600;
-    font-size: 17px;
+    font-size: 15px;
     color: #4ade80;
     background: linear-gradient(135deg, rgba(74, 222, 128, 0.2), rgba(74, 222, 128, 0.1));
-    padding: 14px 18px;
-    border-radius: 14px;
+    padding: 12px 16px;
+    border-radius: 12px;
     border: 1px solid rgba(74, 222, 128, 0.5);
-    margin-bottom: 20px;
+    margin-bottom: 16px;
     text-align: center;
     text-transform: uppercase;
     letter-spacing: 1px;
-    box-shadow: 0 6px 16px rgba(74, 222, 128, 0.25);
+    box-shadow: 0 4px 12px rgba(74, 222, 128, 0.25);
   }
 
   .external-region-info-panel .centers-list {
     list-style: none;
     padding: 0;
     margin: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-    max-height: 300px;
-    overflow-y: auto;
-  }
-
-  .external-region-info-panel .centers-list::-webkit-scrollbar {
-    width: 6px;
-  }
-
-  .external-region-info-panel .centers-list::-webkit-scrollbar-track {
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 3px;
-  }
-
-  .external-region-info-panel .centers-list::-webkit-scrollbar-thumb {
-    background: rgba(74, 222, 128, 0.6);
-    border-radius: 3px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 8px;
+    max-height: none;
+    overflow: visible;
   }
 
   .external-region-info-panel .centers-list li {
     display: flex;
+    flex-direction: column;
     align-items: center;
-    padding: 14px 18px;
-    border-radius: 18px;
-    background: linear-gradient(135deg, rgba(50, 50, 50, 0.8), rgba(30, 30, 30, 0.85));
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    gap: 12px;
-    transition: all 0.3s ease;
+    justify-content: center;
+    padding: 12px 8px;
+    border-radius: 12px;
+    background: linear-gradient(135deg,
+      rgba(255, 255, 255, 0.08),
+      rgba(255, 255, 255, 0.04)
+    );
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     cursor: pointer;
+    backdrop-filter: blur(10px);
+    position: relative;
+    overflow: hidden;
+    min-height: 70px;
+  }
+
+  .external-region-info-panel .centers-list li::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle at 50% 0%,
+      rgba(74, 222, 128, 0.1) 0%,
+      transparent 70%
+    );
+    opacity: 0;
+    transition: opacity 0.3s ease;
   }
 
   .external-region-info-panel .centers-list li:hover {
-    background: linear-gradient(135deg, rgba(74, 222, 128, 0.2), rgba(74, 222, 128, 0.1));
+    background: linear-gradient(135deg,
+      rgba(74, 222, 128, 0.15),
+      rgba(74, 222, 128, 0.08)
+    );
     border-color: rgba(74, 222, 128, 0.4);
-    transform: translateX(5px);
+    transform: translateY(-2px) scale(1.02);
+    box-shadow:
+      0 8px 25px rgba(74, 222, 128, 0.2),
+      0 3px 10px rgba(0, 0, 0, 0.3);
   }
 
-  .center-icon {
-    font-size: 20px;
-    filter: drop-shadow(0 0 8px rgba(74, 222, 128, 0.5));
+  .external-region-info-panel .centers-list li:hover::before {
+    opacity: 1;
+  }
+
+  .center-main-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    flex: 1;
+    text-align: center;
   }
 
   .center-info {
     flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
   }
 
   .center-name {
-    font-weight: 600;
-    font-size: 15px;
+    font-weight: 700;
+    font-size: 12px;
     color: #ffffff;
-    margin-bottom: 4px;
+    text-align: center;
+    line-height: 1.2;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
   }
 
-  .center-location {
-    font-size: 13px;
-    color: #a0a0a0;
-    font-style: italic;
+  .latency-indicator {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    font-size: 10px;
+    font-weight: 600;
+    margin-top: 4px;
+    padding: 2px 6px;
+    border-radius: 8px;
+    background: rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(5px);
+  }
+
+  .latency-dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+  }
+
+  .latency-good .latency-dot {
+    background: #4ade80;
+    box-shadow: 0 0 6px rgba(74, 222, 128, 0.8);
+  }
+
+  .latency-warning .latency-dot {
+    background: #fbbf24;
+    box-shadow: 0 0 6px rgba(251, 191, 36, 0.8);
+  }
+
+  .latency-error .latency-dot {
+    background: #ef4444;
+    box-shadow: 0 0 6px rgba(239, 68, 68, 0.8);
+  }
+
+  .latency-good {
+    color: #4ade80;
+    background: rgba(74, 222, 128, 0.15);
+  }
+
+  .latency-warning {
+    color: #fbbf24;
+    background: rgba(251, 191, 36, 0.15);
+  }
+
+  .latency-error {
+    color: #ef4444;
+    background: rgba(239, 68, 68, 0.15);
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
   }
 
   /* Ventana flotante de animación (lateral derecha) */
@@ -265,53 +374,31 @@ import SpainRegionExplorer from '../components/SpainRegionExplorer.astro';
       inset 0 1px 0 rgba(255, 255, 255, 0.1);
     z-index: 900;
     opacity: 1;
-    transform: translateX(0) scale(1);
-    transition: all 0.6s ease;
     overflow: hidden;
     display: flex;
     flex-direction: column;
   }
 
-  .window-header {
-    background: linear-gradient(135deg, rgba(74, 222, 128, 0.2), rgba(74, 222, 128, 0.1));
-    border-bottom: 1px solid rgba(74, 222, 128, 0.3);
-    padding: 15px 20px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border-radius: 20px 20px 0 0;
-  }
-
-  .window-header h3 {
-    font-family: 'Quicksand Variable', 'Quicksand', sans-serif;
-    font-weight: 700;
-    font-size: 16px;
-    color: #4ade80;
-    margin: 0;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-  }
-
   .window-content {
     flex: 1;
     overflow: hidden;
-    border-radius: 0 0 20px 20px;
+    border-radius: 20px;
   }
 
   /* Estilos para el componente SpainRegionExplorer dentro de la ventana flotante */
   .floating-animation-window :global(.region-animation-container) {
     height: 100% !important;
     background: transparent !important;
-    border-radius: 0 0 20px 20px;
+    border-radius: 20px;
   }
 
   .floating-animation-window :global(.region-map-container) {
-    border-radius: 0 0 20px 20px;
+    border-radius: 20px;
     overflow: hidden;
   }
 
   .floating-animation-window :global(.region-map) {
-    border-radius: 0 0 20px 20px;
+    border-radius: 20px;
   }
 
   /* Responsivo */
@@ -363,25 +450,33 @@ import SpainRegionExplorer from '../components/SpainRegionExplorer.astro';
 
         // Actualizar detalles
         if (regionDetails) {
-          regionDetails.textContent = regionData.description || 'Región de España con centros comerciales.';
+          regionDetails.textContent = regionData.description || 'Región de España con sedes.';
         }
 
-        // Actualizar contador de centros
+        // Actualizar contador de sedes
         const centersNum = regionData.centers ? regionData.centers.length : 0;
         if (centersCount) {
-          centersCount.textContent = `${centersNum} centros comerciales`;
+          centersCount.textContent = `${centersNum} sedes`;
         }
 
-        // Actualizar lista de centros
+        // Actualizar lista de sedes
         if (centersList && regionData.centers) {
           centersList.innerHTML = '';
           regionData.centers.forEach((center: any, index: number) => {
+            // Simular latencia aleatoria para demo
+            const latency = Math.floor(Math.random() * 200) + 10;
+            const latencyClass = latency < 50 ? 'latency-good' : latency < 100 ? 'latency-warning' : 'latency-error';
+
             const li = document.createElement('li');
             li.innerHTML = `
-              <div class="center-icon">🏢</div>
-              <div class="center-info">
-                <div class="center-name">${center.name}</div>
-                <div class="center-location">${center.location || 'España'}</div>
+              <div class="center-main-info">
+                <div class="center-info">
+                  <div class="center-name">${center.name}</div>
+                </div>
+                <div class="latency-indicator ${latencyClass}">
+                  <div class="latency-dot"></div>
+                  <span>${latency}ms</span>
+                </div>
               </div>
             `;
             li.style.animationDelay = `${index * 0.1}s`;

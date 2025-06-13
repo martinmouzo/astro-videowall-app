@@ -51,49 +51,88 @@ import { spainConfig } from '../mocks/data/spain-locations';
     box-shadow: 0 4px 16px rgba(93, 93, 93, 0.3);
   }
 
-  /* Pins de ubicaciones */
-  :global(.spain-location-pin) {
+  /* Pins de centros regionales - estructura simplificada */
+  :global(.region-center-pin) {
     position: absolute;
-    pointer-events: none;
+    pointer-events: auto;
     z-index: 1000;
-    min-width: 120px;
-    max-width: 160px;
-    height: auto;
-    min-height: 50px;
-    border-radius: 12px;
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    background: linear-gradient(135deg, rgba(30, 30, 30, 0.95), rgba(45, 45, 45, 0.9));
-    backdrop-filter: blur(12px);
-    overflow: hidden;
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4), 0 0 10px rgba(255, 255, 255, 0.03);
-    transform: translate(-50%, -50%);
+    transform: translateX(-50%);
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    padding: 8px;
+    cursor: pointer;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #4ade80, #22c55e);
+    border: 2px solid rgba(255, 255, 255, 0.8);
+    box-shadow:
+      0 0 0 4px rgba(74, 222, 128, 0.3),
+      0 4px 12px rgba(0, 0, 0, 0.4);
+    transition: all 0.3s ease;
   }
 
-  :global(.location-name) {
+  /* Dot del pin (ya no es necesario porque el pin en sí es el dot) */
+  :global(.region-center-pin .pin-dot) {
+    display: none; /* Ocultamos este elemento ya que usamos el pin directamente */
+  }
+
+  :global(.region-center-pin:hover) {
+    transform: translateX(-50%) scale(1.2);
+    box-shadow:
+      0 0 0 8px rgba(74, 222, 128, 0.5),
+      0 8px 20px rgba(0, 0, 0, 0.6);
+  }
+
+  /* Tooltip simple con latencia - siempre visible */
+  :global(.pin-tooltip) {
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    margin-bottom: 8px;
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.95), rgba(20, 20, 20, 0.98));
+    backdrop-filter: blur(15px);
+    color: #4ade80;
+    padding: 4px 8px;
+    border-radius: 6px;
     font-family: 'Quicksand Variable', 'Quicksand', sans-serif;
-    font-weight: 600;
+    font-weight: 700;
     font-size: 11px;
-    color: #ffffff;
-    text-align: center;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    line-height: 1.2;
+    white-space: nowrap;
+    opacity: 0.8;
+    visibility: visible;
+    border: 1px solid rgba(74, 222, 128, 0.3);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.6);
+    z-index: 1001;
+    transition: all 0.3s ease;
+    pointer-events: none;
   }
 
-  :global(.location-type) {
-    font-family: 'Quicksand Variable', 'Quicksand', sans-serif;
-    font-weight: 400;
-    font-size: 9px;
-    color: rgba(255, 255, 255, 0.7);
-    text-align: center;
-    margin-top: 2px;
-    text-transform: uppercase;
-    letter-spacing: 0.3px;
+  :global(.pin-tooltip::after) {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 5px solid transparent;
+    border-top-color: rgba(0, 0, 0, 0.95);
+  }
+
+  :global(.region-center-pin:hover .pin-tooltip) {
+    background: linear-gradient(135deg, rgba(74, 222, 128, 0.95), rgba(34, 197, 94, 0.98));
+    color: #000000;
+    border-color: rgba(74, 222, 128, 0.6);
+    transform: translateX(-50%) scale(1.1);
+  }
+
+  @keyframes pulse-glow {
+    0%, 100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.7;
+    }
   }
 </style>
 
@@ -225,9 +264,9 @@ import { spainConfig } from '../mocks/data/spain-locations';
     // Crear pin central de Arteixo
     createCentralPin();
 
-    // Crear pins para todas las ubicaciones remotas
+    // Crear pins para todas las ubicaciones remotas como region-center-pin
     spainConfig.remoteNodes.forEach((node) => {
-      createLocationPin(node);
+      createRegionCenterPin(node);
     });
   }
 
@@ -257,8 +296,8 @@ import { spainConfig } from '../mocks/data/spain-locations';
     console.log('✅ Pin central de Arteixo creado');
   }
 
-  function createLocationPin(node: any) {
-    console.log(`📍 Creando pin para ${node.name}`);
+  function createRegionCenterPin(node: any) {
+    console.log(`📍 Creando region-center-pin para ${node.name}`);
 
     if (!node.coordinates || node.coordinates.length !== 2) {
       console.error(`❌ Coordenadas inválidas para ${node.name}:`, node.coordinates);
@@ -266,30 +305,28 @@ import { spainConfig } from '../mocks/data/spain-locations';
     }
 
     const pin = document.createElement('div');
-    pin.className = 'spain-location-pin';
+    pin.className = 'region-center-pin';
 
-    // Obtener información detallada si está disponible
-    const details = node.id && locationDetails[node.id as keyof typeof locationDetails];
-    const displayName = details?.fullName || node.name;
-    const locationType = details?.type || 'Centro';
+    // Obtener latencia del nodo o generar una aleatoria
+    const latency = node.latency || Math.floor(Math.random() * 50) + 10;
 
     pin.innerHTML = `
-      <div class="location-name">${displayName}</div>
-      <div class="location-type">${locationType}</div>
+      <div class="pin-dot"></div>
+      <div class="pin-tooltip">${latency}ms</div>
     `;
 
     try {
       const marker = new maplibregl.Marker({
         element: pin,
-        anchor: 'center'
+        anchor: 'bottom'
       })
       .setLngLat(node.coordinates)
       .addTo(map);
 
       markers.push(marker);
-      console.log(`✅ Pin creado para ${node.name}`);
+      console.log(`✅ Region-center-pin creado para ${node.name} con latencia ${latency}ms`);
     } catch (error) {
-      console.error(`❌ Error creando pin para ${node.name}:`, error);
+      console.error(`❌ Error creando region-center-pin para ${node.name}:`, error);
     }
   }
 
