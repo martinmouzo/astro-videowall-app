@@ -1,12 +1,12 @@
 ---
 // Página dedicada solo al panel de exploración por regiones
 import BaseLayout from '../layouts/BaseLayout.astro';
-import RegionAnimation from '../components/RegionAnimation.astro';
+import SpainRegionExplorer from '../components/SpainRegionExplorer.astro';
 ---
 
 <BaseLayout title="Exploración por Regiones - España">
   <div class="region-explorer-container">
-    <RegionAnimation />
+    <SpainRegionExplorer />
   </div>
 </BaseLayout>
 
@@ -24,21 +24,6 @@ import RegionAnimation from '../components/RegionAnimation.astro';
   /* Asegurar que el componente de animación use toda la pantalla */
   .region-explorer-container :global(.region-animation-container) {
     height: 100vh !important;
-  }
-
-  /* Ajustes específicos para vista completa */
-  .region-explorer-container :global(.region-header) {
-    padding: 25px 40px;
-    background: rgba(0, 0, 0, 0.4);
-    backdrop-filter: blur(15px);
-  }
-
-  .region-explorer-container :global(.region-header h2) {
-    font-size: 28px;
-    background: linear-gradient(135deg, #ffffff, #cccccc);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
   }
 
   /* Mejoras visuales para vista completa */
@@ -101,21 +86,9 @@ import RegionAnimation from '../components/RegionAnimation.astro';
       min-width: 280px;
       padding: 20px;
     }
-
-    .region-explorer-container :global(.region-header h2) {
-      font-size: 24px;
-    }
   }
 
   @media (max-width: 768px) {
-    .region-explorer-container :global(.region-header) {
-      padding: 20px 25px;
-    }
-
-    .region-explorer-container :global(.region-header h2) {
-      font-size: 20px;
-    }
-
     .region-explorer-container :global(.region-info-overlay) {
       top: 20px;
       left: 20px;

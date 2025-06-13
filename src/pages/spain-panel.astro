@@ -1,253 +1,424 @@
 ---
-// Página con vista dividida: Animación de regiones arriba y mapa estático de España abajo
+// Página videowall: Mapa estático de España con ventana flotante de animación de regiones
 import BaseLayout from '../layouts/BaseLayout.astro';
 import SpainMap from '../components/SpainMap.astro';
-import RegionAnimation from '../components/RegionAnimation.astro';
+import SpainRegionExplorer from '../components/SpainRegionExplorer.astro';
 ---
 
-<BaseLayout title="Panel España - Exploración y Mapa">
-  <div class="spain-panel-container">
-    <!-- Parte Superior: Animación de Regiones (50%) -->
-    <div class="top-panel">
-      <div class="animation-container">
-        <RegionAnimation />
+<BaseLayout title="Videowall España - Exploración de Regiones">
+  <div class="spain-videowall-container">
+    <!-- Mapa principal de España (pantalla completa) -->
+    <div class="main-map-view">
+      <SpainMap />
+    </div>
+
+    <!-- Panel de información de región externa (top-left) -->
+    <div class="external-region-info-panel" id="regionInfoPanel">
+      <div class="info-panel-header">
+        <h3>Información de Región</h3>
+        <div class="panel-status">
+          <div class="status-dot"></div>
+          <span>Selecciona una región</span>
+        </div>
+      </div>
+      <div class="info-panel-content">
+        <div class="region-name"></div>
+        <div class="region-details"></div>
+        <div class="centers-count"></div>
+        <ul class="centers-list"></ul>
       </div>
     </div>
 
-    <!-- Parte Inferior: Mapa Estático de España (50%) -->
-    <div class="bottom-panel">
-      <div class="map-container">
-        <SpainMap />
+    <!-- Ventana flotante de animación (right side) -->
+    <div class="floating-animation-window" id="floatingWindow">
+      <div class="window-header">
+        <h3>Explorador de Regiones</h3>
+      </div>
+      <div class="window-content">
+        <SpainRegionExplorer hideInfoOverlay={true} />
       </div>
     </div>
   </div>
 </BaseLayout>
 
 <style>
-  .spain-panel-container {
-    display: flex;
-    flex-direction: column;
+  .spain-videowall-container {
+    position: relative;
+    width: 100vw;
     height: 100vh;
     background: linear-gradient(135deg, #0f0f0f, #1a1a1a);
     color: #ffffff;
     font-family: 'Quicksand Variable', 'Quicksand', sans-serif;
     overflow: hidden;
-    position: relative;
   }
 
-  /* Panel Superior - Animación de Regiones */
-  .top-panel {
-    flex: 1; /* 50% de la altura */
-    display: flex;
-    flex-direction: column;
-    position: relative;
-    background: linear-gradient(135deg, #1a1a1a, #2a2a2a);
+  /* Mapa principal (pantalla completa) */
+  .main-map-view {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
   }
 
-  /* Panel Inferior - Mapa Estático */
-  .bottom-panel {
-    flex: 1; /* 50% de la altura */
-    display: flex;
-    flex-direction: column;
-    position: relative;
-    background: linear-gradient(135deg, #0f0f0f, #1a1a1a);
-  }
-
-  /* Contenedores de contenido */
-  .animation-container {
-    flex: 1;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .map-container {
-    flex: 1;
-    position: relative;
-    overflow: hidden;
-  }
-
-
-
-  /* Ajustes específicos para los componentes */
-
-  /* RegionAnimation en el panel superior */
-  .animation-container :global(.region-animation-container) {
-    height: 100% !important;
+  .main-map-view :global(.spain-map-container) {
+    height: 100vh !important;
+    width: 100vw !important;
     background: transparent !important;
   }
 
-  .animation-container :global(.region-header) {
-    display: none; /* Ocultamos el header duplicado */
-  }
-
-  .animation-container :global(.region-map-container) {
-    padding-top: 0;
-  }
-
-  .animation-container :global(.region-info-overlay) {
-    top: 20px;
-    left: 20px;
-    right: 20px;
-    min-width: auto;
-    max-width: 350px;
-    background: rgba(0, 0, 0, 0.9);
-    backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
-  }
-
-  .animation-container :global(.animation-controls) {
-    bottom: 20px;
-    right: 20px;
-    gap: 10px;
-  }
-
-  .animation-container :global(.control-btn) {
-    width: 45px;
-    height: 45px;
-    font-size: 18px;
-    background: rgba(0, 0, 0, 0.8);
-    backdrop-filter: blur(10px);
+  /* Panel de información de región externa (esquina superior izquierda) */
+  .external-region-info-panel {
+    position: absolute;
+    top: 30px;
+    left: 30px;
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.95), rgba(20, 20, 20, 0.98));
+    backdrop-filter: blur(25px);
+    border-radius: 20px;
+    padding: 0;
+    min-width: 420px;
+    max-width: 500px;
     border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow:
+      0 20px 50px rgba(0, 0, 0, 0.7),
+      0 8px 20px rgba(0, 0, 0, 0.5),
+      inset 0 1px 0 rgba(255, 255, 255, 0.15);
+    z-index: 1000;
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    transition: all 0.5s ease;
+    overflow: hidden;
   }
 
-  /* SpainMap en el panel inferior */
-  .map-container :global(.spain-map-container) {
+  .info-panel-header {
+    background: linear-gradient(135deg, rgba(74, 222, 128, 0.2), rgba(74, 222, 128, 0.1));
+    border-bottom: 1px solid rgba(74, 222, 128, 0.3);
+    padding: 20px 28px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .info-panel-header h3 {
+    font-family: 'Quicksand Variable', 'Quicksand', sans-serif;
+    font-weight: 700;
+    font-size: 18px;
+    color: #4ade80;
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .panel-status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: #e0e0e0;
+  }
+
+  .status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #4ade80;
+    box-shadow: 0 0 10px rgba(74, 222, 128, 0.6);
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+
+  .info-panel-content {
+    padding: 28px;
+  }
+
+  .external-region-info-panel .region-name {
+    font-family: 'Quicksand Variable', 'Quicksand', sans-serif;
+    font-weight: 700;
+    font-size: 28px;
+    color: #ffffff;
+    margin-bottom: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .external-region-info-panel .region-name::before {
+    content: "📍";
+    font-size: 24px;
+    filter: drop-shadow(0 0 10px rgba(74, 222, 128, 0.7));
+  }
+
+  .external-region-info-panel .region-details {
+    font-family: 'Quicksand Variable', 'Quicksand', sans-serif;
+    font-weight: 500;
+    font-size: 16px;
+    color: #e0e0e0;
+    margin-bottom: 22px;
+    line-height: 1.6;
+    font-style: italic;
+    padding-left: 36px;
+  }
+
+  .external-region-info-panel .centers-count {
+    font-family: 'Quicksand Variable', 'Quicksand', sans-serif;
+    font-weight: 600;
+    font-size: 17px;
+    color: #4ade80;
+    background: linear-gradient(135deg, rgba(74, 222, 128, 0.2), rgba(74, 222, 128, 0.1));
+    padding: 14px 18px;
+    border-radius: 14px;
+    border: 1px solid rgba(74, 222, 128, 0.5);
+    margin-bottom: 20px;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    box-shadow: 0 6px 16px rgba(74, 222, 128, 0.25);
+  }
+
+  .external-region-info-panel .centers-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    max-height: 300px;
+    overflow-y: auto;
+  }
+
+  .external-region-info-panel .centers-list::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .external-region-info-panel .centers-list::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
+  }
+
+  .external-region-info-panel .centers-list::-webkit-scrollbar-thumb {
+    background: rgba(74, 222, 128, 0.6);
+    border-radius: 3px;
+  }
+
+  .external-region-info-panel .centers-list li {
+    display: flex;
+    align-items: center;
+    padding: 14px 18px;
+    border-radius: 18px;
+    background: linear-gradient(135deg, rgba(50, 50, 50, 0.8), rgba(30, 30, 30, 0.85));
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    gap: 12px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+  }
+
+  .external-region-info-panel .centers-list li:hover {
+    background: linear-gradient(135deg, rgba(74, 222, 128, 0.2), rgba(74, 222, 128, 0.1));
+    border-color: rgba(74, 222, 128, 0.4);
+    transform: translateX(5px);
+  }
+
+  .center-icon {
+    font-size: 20px;
+    filter: drop-shadow(0 0 8px rgba(74, 222, 128, 0.5));
+  }
+
+  .center-info {
+    flex: 1;
+  }
+
+  .center-name {
+    font-weight: 600;
+    font-size: 15px;
+    color: #ffffff;
+    margin-bottom: 4px;
+  }
+
+  .center-location {
+    font-size: 13px;
+    color: #a0a0a0;
+    font-style: italic;
+  }
+
+  /* Ventana flotante de animación (lateral derecha) */
+  .floating-animation-window {
+    position: absolute;
+    top: 30px;
+    right: 30px;
+    width: 35%;
+    height: calc(100vh - 60px);
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.85), rgba(20, 20, 20, 0.9));
+    backdrop-filter: blur(20px);
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow:
+      0 20px 50px rgba(0, 0, 0, 0.6),
+      0 8px 20px rgba(0, 0, 0, 0.4),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    z-index: 900;
+    opacity: 1;
+    transform: translateX(0) scale(1);
+    transition: all 0.6s ease;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .window-header {
+    background: linear-gradient(135deg, rgba(74, 222, 128, 0.2), rgba(74, 222, 128, 0.1));
+    border-bottom: 1px solid rgba(74, 222, 128, 0.3);
+    padding: 15px 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 20px 20px 0 0;
+  }
+
+  .window-header h3 {
+    font-family: 'Quicksand Variable', 'Quicksand', sans-serif;
+    font-weight: 700;
+    font-size: 16px;
+    color: #4ade80;
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .window-content {
+    flex: 1;
+    overflow: hidden;
+    border-radius: 0 0 20px 20px;
+  }
+
+  /* Estilos para el componente SpainRegionExplorer dentro de la ventana flotante */
+  .floating-animation-window :global(.region-animation-container) {
     height: 100% !important;
     background: transparent !important;
+    border-radius: 0 0 20px 20px;
   }
 
-  /* Estilos para pins mejorados en vista dividida */
-  .map-container :global(.spain-location-pin),
-  .map-container :global(.arteixo-central-pin) {
-    backdrop-filter: blur(12px);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
-    border: 2px solid rgba(255, 255, 255, 0.2);
+  .floating-animation-window :global(.region-map-container) {
+    border-radius: 0 0 20px 20px;
+    overflow: hidden;
   }
 
-  .map-container :global(.arteixo-central-pin .pin-content) {
-    background: linear-gradient(135deg, #4ade80, rgba(74, 222, 128, 0.8));
-    border: 2px solid rgba(74, 222, 128, 0.4);
-    box-shadow: 0 4px 16px rgba(74, 222, 128, 0.4);
-  }
-
-  /* Efectos de animación */
-  @keyframes progressPulse {
-    0%, 100% {
-      box-shadow: 0 0 5px rgba(74, 222, 128, 0.3);
-    }
-    50% {
-      box-shadow: 0 0 15px rgba(74, 222, 128, 0.6);
-    }
+  .floating-animation-window :global(.region-map) {
+    border-radius: 0 0 20px 20px;
   }
 
   /* Responsivo */
-  @media (max-width: 1200px) {
-    .animation-container :global(.region-info-overlay) {
-      max-width: 300px;
-    }
-  }
-
   @media (max-width: 768px) {
-    .spain-panel-container {
-      flex-direction: column;
+    .floating-animation-window {
+      position: fixed;
+      top: auto;
+      bottom: 20px;
+      right: 20px;
+      left: 20px;
+      width: auto;
+      height: 40vh;
+      border-radius: 16px;
     }
 
-    .animation-container :global(.region-info-overlay) {
-      top: 15px;
-      left: 15px;
-      right: 15px;
+    .external-region-info-panel {
+      top: 20px;
+      left: 20px;
+      right: 20px;
+      width: auto;
+      min-width: auto;
       max-width: none;
-      padding: 15px;
+      border-radius: 16px;
     }
-
-    .animation-container :global(.animation-controls) {
-      bottom: 15px;
-      right: 15px;
-      gap: 8px;
-    }
-
-    .animation-container :global(.control-btn) {
-      width: 40px;
-      height: 40px;
-      font-size: 16px;
-    }
-  }
-
-  @media (max-width: 480px) {
-    .animation-container :global(.control-btn) {
-      width: 40px;
-      height: 40px;
-      font-size: 16px;
-    }
-  }
-
-  /* Efectos de entrada */
-  @keyframes fadeInUp {
-    from {
-      opacity: 0;
-      transform: translateY(20px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  .top-panel,
-  .bottom-panel {
-    animation: fadeInUp 0.8s ease-out;
-  }
-
-  .bottom-panel {
-    animation-delay: 0.2s;
-  }
-
-  /* Gradientes de fondo sutiles */
-  .top-panel::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: radial-gradient(circle at 30% 70%, rgba(74, 222, 128, 0.03) 0%, transparent 50%);
-    pointer-events: none;
-    z-index: 0;
-  }
-
-  .bottom-panel::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: radial-gradient(circle at 70% 30%, rgba(59, 130, 246, 0.03) 0%, transparent 50%);
-    pointer-events: none;
-    z-index: 0;
-  }
-
-  .animation-container,
-  .map-container {
-    position: relative;
-    z-index: 1;
   }
 </style>
 
 <script>
-  // Script para configuración básica del panel
   document.addEventListener('DOMContentLoaded', () => {
-    console.log('✅ Spain Panel loaded successfully');
+    console.log('✅ Spain Videowall Panel loaded successfully');
 
-    // Funciones globales para debugging
-    (window as any).spainPanelUtils = {
+    const regionInfoPanel = document.getElementById('regionInfoPanel');
+    const floatingWindow = document.getElementById('floatingWindow');
+
+    // Función para actualizar el panel de información externa
+    function updateExternalRegionInfo(regionData: any) {
+      if (!regionInfoPanel) return;
+
+      const regionName = regionInfoPanel.querySelector('.region-name') as HTMLElement;
+      const regionDetails = regionInfoPanel.querySelector('.region-details') as HTMLElement;
+      const centersCount = regionInfoPanel.querySelector('.centers-count') as HTMLElement;
+      const centersList = regionInfoPanel.querySelector('.centers-list') as HTMLElement;
+
+      if (regionData && regionData.name) {
+        // Actualizar nombre de región
+        if (regionName) {
+          regionName.textContent = regionData.name;
+        }
+
+        // Actualizar detalles
+        if (regionDetails) {
+          regionDetails.textContent = regionData.description || 'Región de España con centros comerciales.';
+        }
+
+        // Actualizar contador de centros
+        const centersNum = regionData.centers ? regionData.centers.length : 0;
+        if (centersCount) {
+          centersCount.textContent = `${centersNum} centros comerciales`;
+        }
+
+        // Actualizar lista de centros
+        if (centersList && regionData.centers) {
+          centersList.innerHTML = '';
+          regionData.centers.forEach((center: any, index: number) => {
+            const li = document.createElement('li');
+            li.innerHTML = `
+              <div class="center-icon">🏢</div>
+              <div class="center-info">
+                <div class="center-name">${center.name}</div>
+                <div class="center-location">${center.location || 'España'}</div>
+              </div>
+            `;
+            li.style.animationDelay = `${index * 0.1}s`;
+            centersList.appendChild(li);
+          });
+        }
+      }
+    }
+
+    // Escuchar eventos de cambio de región desde el componente SpainRegionExplorer
+    window.addEventListener('regionChanged', (event: Event) => {
+      const customEvent = event as CustomEvent;
+      const regionData = customEvent.detail;
+      console.log('📍 Region changed:', regionData);
+      updateExternalRegionInfo(regionData);
+    });
+
+    // Funciones globales para debugging y comunicación
+    (window as any).spainVideowallUtils = {
       debug: () => {
-        console.log('=== DEBUG SPAIN PANEL ===');
-        console.log('Top panel: Region Animation');
-        console.log('Bottom panel: Static Spain Map');
-        console.log('Layout: Clean split view (50/50)');
+        console.log('=== DEBUG SPAIN VIDEOWALL ===');
+        console.log('Layout: Fullscreen map with floating animation window');
+        console.log('Info panel:', regionInfoPanel ? 'Found' : 'Not found');
+        console.log('Floating window:', floatingWindow ? 'Found' : 'Not found');
+      },
+
+      updateRegionInfo: updateExternalRegionInfo,
+
+      // Función para ser llamada desde el componente SpainRegionExplorer
+      notifyRegionChange: (regionData: any) => {
+        updateExternalRegionInfo(regionData);
+        // Disparar evento personalizado
+        window.dispatchEvent(new CustomEvent('regionChanged', { detail: regionData }));
       }
     };
+
+    // Estado inicial del panel de información
+    updateExternalRegionInfo(null);
   });
 </script>

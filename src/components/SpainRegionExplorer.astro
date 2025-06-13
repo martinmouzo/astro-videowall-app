@@ -1,22 +1,20 @@
 ---
-// RegionAnimation.astro - Componente de animación de regiones de España
+// SpainRegionExplorer.astro - Componente de exploración interactiva de regiones de España
 import "@fontsource-variable/quicksand";
+
+export interface Props {
+  hideInfoOverlay?: boolean;
+}
+
+const { hideInfoOverlay = false } = Astro.props;
 ---
 
 <div id="region-animation" class="region-animation-container">
-  <div class="region-header">
-    <h2>Exploración por Regiones</h2>
-    <div class="animation-status">
-      <span class="status-indicator"></span>
-      <span class="status-text">Iniciando animación...</span>
-    </div>
-  </div>
-
   <div class="region-map-container">
     <div id="region-map" class="region-map"></div>
 
     <!-- Overlay de información de región -->
-    <div class="region-info-overlay">
+    <div class={`region-info-overlay ${hideInfoOverlay ? 'hidden' : ''}`}>
       <div class="region-name"></div>
       <div class="region-details"></div>
       <div class="centers-count"></div>
@@ -34,51 +32,6 @@ import "@fontsource-variable/quicksand";
     display: flex;
     flex-direction: column;
     overflow: hidden;
-  }
-
-  .region-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 20px 30px;
-    background: rgba(0, 0, 0, 0.3);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  }
-
-  .region-header h2 {
-    font-family: 'Quicksand Variable', 'Quicksand', sans-serif;
-    font-weight: 700;
-    font-size: 24px;
-    color: #ffffff;
-    margin: 0;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-  }
-
-  .animation-status {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-
-  .status-indicator {
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-    background: #4ade80;
-    animation: pulse 2s infinite;
-  }
-
-  .status-text {
-    font-family: 'Quicksand Variable', 'Quicksand', sans-serif;
-    font-weight: 500;
-    font-size: 14px;
-    color: #cccccc;
-  }
-
-  @keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.5; }
   }
 
   .region-map-container {
@@ -126,6 +79,10 @@ import "@fontsource-variable/quicksand";
   .region-info-overlay.visible {
     opacity: 1;
     transform: translateY(0) scale(1);
+  }
+
+  .region-info-overlay.hidden {
+    display: none !important;
   }
 
   .region-name {
@@ -592,14 +549,6 @@ import "@fontsource-variable/quicksand";
 
   /* Responsivo */
   @media (max-width: 768px) {
-    .region-header {
-      padding: 15px 20px;
-    }
-
-    .region-header h2 {
-      font-size: 20px;
-    }
-
     .region-info-overlay {
       top: 15px;
       left: 15px;
@@ -927,8 +876,6 @@ import "@fontsource-variable/quicksand";
         pinIndex++;
       }
     });
-
-    updateStatusText(`${centerIds.length} centros cargados en región`);
   }
 
   function createRegionPin(node: any, isCentral: boolean = false, isHighDensity: boolean = false) {
@@ -1028,7 +975,6 @@ import "@fontsource-variable/quicksand";
 
     isAnimating = true;
     currentRegionIndex = 0;
-    updateStatusText('Animación iniciada');
 
     animateToNextRegion();
   }
@@ -1060,8 +1006,6 @@ import "@fontsource-variable/quicksand";
       duration: 2000,
       zoom: region.zoom
     });
-
-    updateStatusText(`Explorando ${region.name}`);
 
     // Programar siguiente región
     animationTimer = setTimeout(() => {
@@ -1144,18 +1088,45 @@ import "@fontsource-variable/quicksand";
       { scale: 0.9, opacity: 0 },
       { scale: 1, opacity: 1, duration: 0.5, ease: "back.out(1.2)" }
     );
+
+    // Comunicar cambio de región al panel externo (si existe)
+    try {
+      // Preparar datos de región para el panel externo
+      const regionDataForExternal = {
+        name: region.name,
+        description: region.description,
+        centers: region.centers.map((centerId: string) => {
+          let node = spainConfig.remoteNodes.find(n => n.id === centerId);
+          if (!node && spainConfig.centralNode.id === centerId) {
+            node = spainConfig.centralNode;
+          }
+          return node ? {
+            name: node.name,
+            location: node.city || node.name.split('-')[0] || 'España',
+            latency: node.latency
+          } : null;
+        }).filter(Boolean)
+      };
+
+      // Notificar al panel externo si la función está disponible
+      if ((window as any).spainVideowallUtils?.notifyRegionChange) {
+        (window as any).spainVideowallUtils.notifyRegionChange(regionDataForExternal);
+      }
+
+      // También disparar evento personalizado
+      window.dispatchEvent(new CustomEvent('regionChanged', {
+        detail: regionDataForExternal
+      }));
+
+      console.log('📡 Region data sent to external panel:', regionDataForExternal);
+    } catch (error) {
+      console.log('ℹ️ External panel communication not available (normal in standalone mode)');
+    }
   }
 
   function highlightRegionCenters(centerIds: string[]) {
     // Esta función ya no es necesaria ya que creamos los pins dinámicamente
     console.log(`🎯 Pins creados dinámicamente para: ${centerIds.join(', ')}`);
-  }
-
-  function updateStatusText(text: string) {
-    const statusText = document.querySelector('.status-text') as HTMLElement;
-    if (statusText) {
-      statusText.textContent = text;
-    }
   }
 
   function focusOnCenter(node: any) {
@@ -1166,8 +1137,6 @@ import "@fontsource-variable/quicksand";
       zoom: 10,
       duration: 1500
     });
-
-    updateStatusText(`Enfocado en ${node.name}`);
   }
 
   function pauseAnimation() {
@@ -1176,7 +1145,6 @@ import "@fontsource-variable/quicksand";
       clearTimeout(animationTimer);
       animationTimer = null;
     }
-    updateStatusText('Animación pausada');
   }
 
   function resumeAnimation() {

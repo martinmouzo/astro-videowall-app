@@ -2,7 +2,7 @@
 // Página con mapa de España completo y modal lateral izquierdo para regiones
 import BaseLayout from '../layouts/BaseLayout.astro';
 import SpainMap from '../components/SpainMap.astro';
-import RegionAnimation from '../components/RegionAnimation.astro';
+import SpainRegionExplorer from '../components/SpainRegionExplorer.astro';
 ---
 
 <BaseLayout title="España - Mapa y Regiones">
@@ -25,7 +25,7 @@ import RegionAnimation from '../components/RegionAnimation.astro';
           <button class="close-modal" id="close-modal">✕</button>
         </div>
         <div class="modal-content">
-          <RegionAnimation />
+          <SpainRegionExplorer />
         </div>
       </div>
     </div>
@@ -182,14 +182,10 @@ import RegionAnimation from '../components/RegionAnimation.astro';
     overflow: hidden;
   }
 
-  /* Ajustes específicos para el componente RegionAnimation dentro del modal */
+  /* Ajustes específicos para el componente SpainRegionExplorer dentro del modal */
   .modal-content :global(.region-animation-container) {
     height: 100% !important;
     background: transparent !important;
-  }
-
-  .modal-content :global(.region-header) {
-    display: none; /* Ocultamos el header duplicado */
   }
 
   .modal-content :global(.region-map-container) {
